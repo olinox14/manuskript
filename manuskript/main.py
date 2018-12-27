@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication, qApp
 from path import Path
 import yaml
 
-from manuskript.functions import appPath, writablePath
+from manuskript.constants import MAIN_DIR
 import manuskript.ui.views.webView
 from manuskript.version import getVersion
 
@@ -45,7 +45,7 @@ def prepare(tests=False):
     logger.info("Running manuskript version {}.".format(getVersion()))
     icon = QIcon()
     for i in [16, 32, 64, 128, 256, 512]:
-        icon.addFile(appPath("icons/Manuskript/icon-{}px.png".format(i)))
+        icon.addFile(MAIN_DIR / "icons/Manuskript/icon-{}px.png".format(i))
     qApp.setWindowIcon(icon)
 
     app.setStyle("Fusion")
@@ -67,7 +67,7 @@ def prepare(tests=False):
         return filename[11:-3] if len(filename) >= 16 else ""
 
     def tryLoadTranslation(translation, source):
-        if appTranslator.load(appPath(os.path.join("i18n", translation))):
+        if appTranslator.load(MAIN_DIR / "i18n" / translation):
             app.installTranslator(appTranslator)
             logger.info(app.tr("Loaded translation from {}: {}.").format(source, translation))
             return True
@@ -87,7 +87,7 @@ def prepare(tests=False):
         translation = "manuskript_{}.qm".format(locale)
         tryLoadTranslation(translation, "system locale")
 
-    QIcon.setThemeSearchPaths(QIcon.themeSearchPaths() + [appPath("icons")])
+    QIcon.setThemeSearchPaths(QIcon.themeSearchPaths() + [MAIN_DIR / "icons"])
     QIcon.setThemeName("NumixMsk")
 
     # Font siue
@@ -106,9 +106,9 @@ def prepare(tests=False):
 
     # Command line project
     if len(sys.argv) > 1 and sys.argv[1][-4:] == ".msk":
-        if os.path.exists(sys.argv[1]):
-            path = os.path.abspath(sys.argv[1])
-            MW._autoLoadProject = path
+        path = Path(sys.argv[1])
+        if path.exists():
+            MW._autoLoadProject = path.abspath()
 
     return app, MW
 
@@ -129,7 +129,7 @@ def run():
     2. So that prepare can be used in tests, without running the whole thing
     """
     # Need to return and keep `app` otherwise it gets deleted.
-    app, MW = prepare()
+    app, MW = prepare()     #@UnusedVariable
     # Separating launch to avoid segfault, so it seem.
     # Cf. http://stackoverflow.com/questions/12433491/is-this-pyqt-4-python-bug-or-wrongly-behaving-code
     launch(MW)
