@@ -1,0 +1,5 @@
+PyQt5
+PyEnchant
+lxml
+yaml
+path.py
