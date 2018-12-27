@@ -16,6 +16,7 @@ import zipfile
 from PyQt5.QtCore import Qt, QModelIndex
 from PyQt5.QtGui import QColor, QStandardItem
 from lxml import etree as ET
+from path import Path
 
 from manuskript import settings
 from manuskript.converters import HTML2PlainText
@@ -126,7 +127,7 @@ def saveProject(zip=None):
     # General infos (book and author)
     # Saved in plain text, in infos.txt
 
-    path = "infos.txt"
+    path = Path("infos.txt")
     content = ""
     for name, col in [
             ("Title", 0),
@@ -156,7 +157,7 @@ def saveProject(zip=None):
     # Summary
     # In plain text, in summary.txt
 
-    path = "summary.txt"
+    path = Path("summary.txt")
     content = ""
     for name, col in [
             ("Situation", 0),
@@ -208,7 +209,7 @@ def saveProject(zip=None):
     # Characters
     # In a character folder
 
-    path = os.path.join("characters", "{name}.txt")
+    path = Path("characters") /  "{name}.txt"
     mdl = mw.mdlCharacter
 
     # Review characters
@@ -295,12 +296,12 @@ def saveProject(zip=None):
 
     files.append(("settings.txt", settings.save(protocol=0)))
 
-    project = mw.currentProject
+    project = Path(mw.currentProject)
 
     # We check if the file exist and we have write access. If the file does
     # not exists, we check the parent folder, because it might be a new project.
-    if os.path.exists(project) and not os.access(project, os.W_OK) or \
-       not os.path.exists(project) and not os.access(os.path.dirname(project), os.W_OK):
+    if project.exists() and not project.access(os.W_OK) or \
+       not project.exists() and not project.parent.access(os.W_OK):
         print("Error: you don't have write access to save this project there.")
         return False
 
@@ -329,29 +330,29 @@ def saveProject(zip=None):
         global cache
 
         # Project path
-        dir = os.path.dirname(project)
+        dir = project.parent
 
         # Folder containing file: name of the project file (without .msk extension)
-        folder = os.path.splitext(os.path.basename(project))[0]
+        folder, _ = project.parent.splitext()
 
         # Debug
         log("\nSaving to folder", folder)
 
         # If cache is empty (meaning we haven't loaded from disk), we wipe folder, just to be sure.
         if not cache:
-            if os.path.exists(os.path.join(dir, folder)):
-                shutil.rmtree(os.path.join(dir, folder))
+            if Path(dir / folder).exists():
+                shutil.rmtree(dir / folder)
 
         # Moving files that have been renamed
         for old, new in moves:
 
             # Get full path
-            oldPath = os.path.join(dir, folder, old)
-            newPath = os.path.join(dir, folder, new)
+            oldPath = dir / folder / old
+            newPath = dir / folder / new
 
             # Move the old file to the new place
             try:
-                os.replace(oldPath, newPath)
+                oldPath.rename(newPath)
                 log("* Renaming/moving {} to {}".format(old, new))
             except FileNotFoundError:
                 # Maybe parent folder has been renamed
@@ -368,8 +369,8 @@ def saveProject(zip=None):
 
         # Writing files
         for path, content in files:
-            filename = os.path.join(dir, folder, path)
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            filename = dir / folder / path
+            filename.parent.makedirs_p()
 
             # Check if content is in cache, and write if necessary
             if path not in cache or cache[path] != content:
@@ -386,28 +387,22 @@ def saveProject(zip=None):
 
         # Removing phantoms
         for path in [p for p in cache if p not in [p for p, c in files]]:
-            filename = os.path.join(dir, folder, path)
+            filename = dir / folder / path
             log("* Removing", path)
 
-            if os.path.isdir(filename):
+            if filename.isdir():
                 shutil.rmtree(filename)
-
-            else:  # elif os.path.exists(filename)
-                os.remove(filename)
+            else:  
+                filename.remove()
 
             # Clear cache
             cache.pop(path, 0)
 
         # Removing empty directories
-        for root, dirs, files in os.walk(os.path.join(dir, folder, "outline")):
+        for root, dirs, files in Path(dir / folder / "outline").walk():
             for dir in dirs:
-                newDir = os.path.join(root, dir)
-                try:
-                    os.removedirs(newDir)
-                    log("* Removing empty directory:", newDir)
-                except:
-                    # Directory not empty, we don't remove.
-                    pass
+                newDir = root / dir
+                newDir.removedirs_p()
 
         # Write the project file's content
         with open(project, "w", encoding='utf8') as f:
@@ -522,7 +517,7 @@ def exportOutlineItem(root):
 
     k = 0
     for child in root.children():
-        spath = os.path.join(*outlineItemPath(child))
+        spath = Path(os.path.join(*outlineItemPath(child)))
 
         k += 1
 
@@ -538,7 +533,7 @@ def exportOutlineItem(root):
 
         # Generating content
         if child.type() == "folder":
-            fpath = os.path.join(spath, "folder.txt")
+            fpath = spath / "folder.txt"
             content = outlineToMMD(child)
             files.append((fpath, content))
 
@@ -621,6 +616,7 @@ def loadProject(project, zip=None):
 
     mw = mainWindow()
     errors = []
+    project = Path(project)
 
     ####################################################################################################################
     # Read and store everything in a dict
@@ -636,17 +632,17 @@ def loadProject(project, zip=None):
 
     else:
         # Project path
-        dir = os.path.dirname(project)
+        dir = project.parent
 
         # Folder containing file: name of the project file (without .msk extension)
-        folder = os.path.splitext(os.path.basename(project))[0]
+        folder, _ = project.parent.splitext()
 
         # The full path towards the folder containing files
-        path = os.path.join(dir, folder, "")
+        path = dir / folder / ""
 
         files = {}
-        for dirpath, _, filenames in os.walk(path):
-            p = dirpath.replace(path, "")
+        for dirpath, _, filenames in path.walk():
+            p = dirpath.replace(path, "")       #TODO: Use a function like relpath instead of the replace
             # Skip directories that begin with a period
             if p[:1] == ".":
                 continue
@@ -656,11 +652,11 @@ def loadProject(project, zip=None):
                     continue
                 # mode = "r" + ("b" if f[-4:] in [".xml", "opml"] else "")
                 if f[-4:] in [".xml", "opml"]:
-                    with open(os.path.join(dirpath, f), "rb") as fo:
-                        files[os.path.join(p, f)] = fo.read()
+                    with open(dirpath / f, "rb") as fo:
+                        files[p / f] = fo.read()
                 else:
-                    with open(os.path.join(dirpath, f), "r", encoding="utf8") as fo:
-                        files[os.path.join(p, f)] = fo.read()
+                    with open(dirpath / f, "r", encoding="utf8") as fo:
+                        files[p / f] = fo.read()
 
         # Saves to cache (only if we loaded from disk and not zip)
         global cache
@@ -853,11 +849,11 @@ def loadProject(project, zip=None):
 
         last = ""
         parent = outline
-        parentLastPath = "outline"
+        parentLastPath = Path("outline")
         for i in split:
             if last:
                 parent = parent[last]
-                parentLastPath = os.path.join(parentLastPath, last)
+                parentLastPath = parentLastPath / last
             last = i
 
             if not i in parent:
@@ -870,7 +866,7 @@ def loadProject(project, zip=None):
                     parent[i] = files[f]
 
                 # We store f to add it later as lastPath
-                parent[i + ":lastPath"] = os.path.join(parentLastPath, i)
+                parent[i + ":lastPath"] = parentLastPath / i
 
 
 

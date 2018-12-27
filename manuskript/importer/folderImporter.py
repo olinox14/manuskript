@@ -4,6 +4,7 @@
 import os
 
 from PyQt5.QtWidgets import qApp
+from path import Path
 
 from manuskript.enums import Outline
 from manuskript.importer.abstractImporter import abstractImporter
@@ -25,6 +26,7 @@ class folderImporter(abstractImporter):
         """
         Imports from a folder.
         """
+        filePath = Path(filePath)
         ext = self.getSetting("ext").value()
         ext = [e.strip().replace("*", "").lower() for e in ext.split(",")]
 
@@ -33,7 +35,7 @@ class folderImporter(abstractImporter):
         items = []
         stack = {}
 
-        for dirpath, dirnames, filenames in os.walk(filePath):
+        for dirpath, dirnames, filenames in filePath.walk():
 
             if dirpath in stack:
                 item = stack[dirpath]
@@ -43,10 +45,10 @@ class folderImporter(abstractImporter):
                 item = parentItem
 
             def addFile(f):
-                fName, fExt = os.path.splitext(f)
+                fName, fExt = f.splitext()
                 if fExt.lower() in ext:
                     try:
-                        with open(os.path.join(dirpath, f), "r") as fr:
+                        with open(dirpath/ f, "r") as fr:
                             content = fr.read()
                         child = outlineItem(title=fName, _type="md", parent=item)
                         child._data[Outline.text] = content
@@ -58,7 +60,7 @@ class folderImporter(abstractImporter):
             def addFolder(d):
                 child = outlineItem(title=d, parent=item)
                 items.append(child)
-                stack[os.path.join(dirpath, d)] = child
+                stack[dirpath / d] = child
 
             if not self.getSetting("separateFolderFiles").value():
                 # Import folder and files together (only makes differences if

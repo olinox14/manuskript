@@ -9,6 +9,7 @@ from PyQt5.QtCore import QSettings, QRegExp, Qt, QDir
 from PyQt5.QtGui import QIcon, QBrush, QColor, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QWidget, QAction, QFileDialog, QSpinBox, QLineEdit, QLabel, QPushButton, QTreeWidgetItem, \
     qApp, QMessageBox
+from path import Path
 
 from manuskript import loadSave
 from manuskript import settings
@@ -117,8 +118,8 @@ class welcome(QWidget, Ui_welcome):
         if sttgns.contains("recentFiles"):
             lst = sttgns.value("recentFiles")
             self.mw.menuRecents.clear()
-            for f in [f for f in lst if os.path.exists(f)]:
-                name = os.path.split(f)[1]
+            for f in [Path(f) for f in lst if Path(f).exists()]:
+                name = f.name
                 a = QAction(name, self)
                 a.setData(f)
                 a.setStatusTip(f)
@@ -158,8 +159,9 @@ class welcome(QWidget, Ui_welcome):
                                                self.tr("Open project"),
                                                lastDirectory,
                                                self.tr("Manuskript project (*.msk);;All files (*)"))[0]
+        filename = Path(filename)
         if filename:
-            self.setLastAccessedDirectory(os.path.dirname(filename))
+            self.setLastAccessedDirectory(filename.parent)
             self.appendToRecentFiles(filename)
             self.mw.loadProject(filename)
 
@@ -172,18 +174,16 @@ class welcome(QWidget, Ui_welcome):
                                                self.tr("Save project as..."),
                                                lastDirectory,
                                                self.tr("Manuskript project (*.msk)"))[0]
-
+        filename = Path(filename)
         if filename:
-            self.setLastAccessedDirectory(os.path.dirname(filename))
-            if filename[-4:] != ".msk":
+            self.setLastAccessedDirectory(filename.parent)
+            if filename.ext != ".msk":
                 filename += ".msk"
             self.appendToRecentFiles(filename)
             loadSave.clearSaveCache()  # Ensure all file(s) are saved under new filename
             self.mw.saveDatas(filename)
             # Update Window's project name with new filename
-            pName = os.path.split(filename)[1]
-            if pName.endswith('.msk'):
-                pName=pName[:-4]
+            pName = filename.name.stripext()
             self.mw.setWindowTitle(pName + " - " + self.tr("Manuskript"))
 
     def createFile(self, filename=None, overwrite=False):
@@ -197,12 +197,13 @@ class welcome(QWidget, Ui_welcome):
                            self.tr("Create New Project"),
                            lastDirectory,
                            self.tr("Manuskript project (*.msk)"))[0]
+        filename = Path(filename)
 
         if filename:
-            self.setLastAccessedDirectory(os.path.dirname(filename))
-            if filename[-4:] != ".msk":
+            self.setLastAccessedDirectory(filename.parent)
+            if filename.ext != ".msk":
                 filename += ".msk"
-            if os.path.exists(filename) and not overwrite:
+            if filename.exists() and not overwrite:
                 # Check if okay to overwrite existing project
                 result = QMessageBox.warning(self, self.tr("Warning"),
                     self.tr("Overwrite existing project {} ?").format(filename),

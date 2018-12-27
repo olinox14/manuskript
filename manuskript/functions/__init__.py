@@ -10,7 +10,9 @@ from PyQt5.QtCore import Qt, QRect, QStandardPaths, QObject, QRegExp, QDir
 from PyQt5.QtGui import QBrush, QIcon, QPainter, QColor, QImage, QPixmap
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import qApp, QTextEdit
+from path import Path
 
+from manuskript.constants import MAIN_DIR
 from manuskript.enums import Outline
 
 
@@ -214,10 +216,7 @@ def colorifyPixmap(pixmap, color):
 
 
 def appPath(suffix=None):
-    p = os.path.realpath(os.path.join(os.path.split(__file__)[0], "../.."))
-    if suffix:
-        p = os.path.join(p, suffix)
-    return p
+    return MAIN_DIR / suffix if suffix else MAIN_DIR
 
 
 def writablePath(suffix=None):
@@ -226,10 +225,10 @@ def writablePath(suffix=None):
     else:
         # Qt < 5.4
         p = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
+    p = Path(p)
     if suffix:
-        p = os.path.join(p, suffix)
-    if not os.path.exists(p):
-        os.makedirs(p)
+        p /= suffix
+    p.mkdir_p()
     return p
 
 
@@ -243,7 +242,7 @@ def allPaths(suffix=None):
 
 def tempFile(name):
     "Returns a temp file."
-    return os.path.join(QDir.tempPath(), name)
+    return Path(QDir.tempPath()) / name
 
 
 def totalObjects():
@@ -275,12 +274,10 @@ def findFirstFile(regex, path="resources"):
     Returns full path of first file matching regular expression regex within folder path,
     otherwise returns full path of last file in folder path.
     """
-    paths = allPaths(path)
-    for p in paths:
-        lst = os.listdir(p)
-        for l in lst:
+    for p in allPaths(path):
+        for l in p.dirs():
             if re.match(regex, l):
-                return os.path.join(p, l)
+                return p / l
 
 def customIcons():
     """
@@ -394,7 +391,7 @@ def inspect():
     print("-----------------------")
     for s in inspect.stack()[1:]:
         print(" * {}:{} // {}".format(
-            os.path.basename(s.filename),
+            Path(s.filename).basename(),
             s.lineno,
             s.function))
         print("   " + "".join(s.code_context))

@@ -8,6 +8,7 @@ from PyQt5.QtCore import (pyqtSignal, QSignalMapper, QTimer, QSettings, Qt,
 from PyQt5.QtGui import QStandardItemModel, QIcon
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, qApp, QMenu, QActionGroup, QAction, QStyle, QListWidgetItem, \
     QWidget
+from path import Path
 
 from manuskript import loadSave
 from manuskript import settings
@@ -181,8 +182,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actAbout.triggered.connect(self.about)
 
         self.makeUIConnections()
-
-        # self.loadProject(os.path.join(appPath(), "test_project.zip"))
 
     def updateDockVisibility(self, restore=False):
         """
@@ -550,7 +549,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         If ``loadFromFile`` is False, then it does not load datas from file.
         It assumes that the datas have been populated in a different way."""
-        if loadFromFile and not os.path.exists(project):
+        project = Path(project)
+        if loadFromFile and not project.exists():
             print(self.tr("The file {} does not exist. Has it been moved or deleted?").format(project))
             F.statusMessage(
                     self.tr("The file {} does not exist. Has it been moved or deleted?").format(project), importance=3)
@@ -625,7 +625,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tabMain.currentChanged.emit(settings.lastTab)
 
         # Add project name to Window's name
-        pName = os.path.split(project)[1]
+        pName = project.name
         if pName.endswith('.msk'):
             pName=pName[:-4]
         self.setWindowTitle(pName + " - " + self.tr("Manuskript"))
@@ -760,13 +760,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
 
         if projectName:
-            self.currentProject = projectName
+            self.currentProject = Path(projectName)
             QSettings().setValue("lastProject", projectName)
 
         r = loadSave.saveProject()  # version=0
         self.saveTimerNoChanges.stop()
 
-        projectName = os.path.basename(self.currentProject)
+        projectName = self.currentProject.name
         if r:
             feedback = self.tr("Project {} saved.").format(projectName)
             F.statusMessage(feedback, importance=0)

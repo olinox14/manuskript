@@ -5,15 +5,17 @@ import os
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QColor, QIcon
 from PyQt5.QtWidgets import QWidget, QFileDialog, QStyle
+from path import Path
 
-from manuskript.functions import openURL, statusMessage
-from manuskript.ui.importers.importer_ui import Ui_importer
-from manuskript.ui.importers.generalSettings import generalSettings
-from manuskript.ui import style
 from manuskript import importer
-from manuskript.models import outlineModel, outlineItem
 from manuskript.enums import Outline
 from manuskript.exporter.pandoc import pandocExporter
+from manuskript.functions import openURL, statusMessage
+from manuskript.models import outlineModel, outlineItem
+from manuskript.ui import style
+from manuskript.ui.importers.generalSettings import generalSettings
+from manuskript.ui.importers.importer_ui import Ui_importer
+
 
 class importerDialog(QWidget, Ui_importer):
 
@@ -137,14 +139,15 @@ class importerDialog(QWidget, Ui_importer):
         Updates Ui with given filename. Filename can be empty.
         """
         if fileName:
+            fileName = Path(fileName)
             self.fileName = fileName
-            self.lblFileName.setText(os.path.basename(fileName))
+            self.lblFileName.setText(fileName.name)
             self.lblFileName.setToolTip(fileName)
-            ext = os.path.splitext(fileName)[1]
+            ext = fileName.ext
             icon = None
             if ext and ext in self.formatsIcon:
                 icon = QIcon.fromTheme(self.formatsIcon[ext])
-            elif os.path.isdir(fileName):
+            elif fileName.isdir():
                 icon = QIcon.fromTheme("folder")
 
             if icon:
@@ -286,8 +289,7 @@ class importerDialog(QWidget, Ui_importer):
 
         # Import in top-level folder?
         if self.settingsWidget.importInTopLevelFolder():
-            parent = outlineItem(title=os.path.basename(self.fileName),
-                                 parent=parentItem)
+            parent = outlineItem(title=self.fileName.name, parent=parentItem)
             parentItem = parent
             items.append(parent)
 

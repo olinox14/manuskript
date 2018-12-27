@@ -6,6 +6,7 @@ import subprocess
 
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QWidget
+from path import Path
 
 from manuskript.functions import mainWindow
 
@@ -16,17 +17,17 @@ class basicExporter:
     description = ""
     exportTo = []
     cmd = ""
-    customPath = ""
+    customPath = Path()
     icon = ""
     absentTip = ""  # A tip displayed when exporter is absent.
     absentURL = ""  # URL to open if exporter is absent.
 
     def __init__(self):
         settings = QSettings()
-        self.customPath = settings.value("Exporters/{}_customPath".format(self.name), "")
+        self.customPath = settings.value("Exporters/{}_customPath".format(self.name), Path())
 
     def setCustomPath(self, path):
-        self.customPath = path
+        self.customPath = Path(path)
         settings = QSettings()
         settings.setValue("Exporters/{}_customPath".format(self.name), self.customPath)
 
@@ -40,7 +41,7 @@ class basicExporter:
     def isValid(self):
         if self.path() != None:
             return 2
-        elif self.customPath and os.path.exists(self.customPath):
+        elif self.customPath and self.customPath.exists():
             return 1
         else:
             return 0
@@ -49,7 +50,7 @@ class basicExporter:
         return ""
 
     def path(self):
-        return shutil.which(self.cmd)
+        return Path(shutil.which(self.cmd))
 
     def run(self, args):
         if self.isValid() == 2:
@@ -133,5 +134,5 @@ class basicFormat:
 
     @classmethod
     def projectPath(cls):
-        return os.path.dirname(os.path.abspath(mainWindow().currentProject))
+        return Path(mainWindow().currentProject).abspath().parent
 

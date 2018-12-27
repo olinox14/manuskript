@@ -87,13 +87,12 @@ class fullScreenEditor(QWidget):
         self.lstThemes.setAttribute(Qt.WA_TranslucentBackground)
         paths = allPaths("resources/themes")
         for p in paths:
-            lst = [i for i in os.listdir(p) if os.path.splitext(i)[1] == ".theme"]
+            lst = [f for f in p.files() if f.ext == ".theme"]
             for t in lst:
-                themeIni = os.path.join(p, t)
+                themeIni = p / t
                 name = loadThemeDatas(themeIni)["Name"]
-                # self.lstThemes.addItem(os.path.splitext(t)[0])
                 self.lstThemes.addItem(name)
-                self.lstThemes.setItemData(self.lstThemes.count()-1, os.path.splitext(t)[0])
+                self.lstThemes.setItemData(self.lstThemes.count()-1, t.stripext())
 
         self.lstThemes.setCurrentIndex(self.lstThemes.findData(settings.fullScreenTheme))
         # self.lstThemes.setCurrentText(settings.fullScreenTheme)

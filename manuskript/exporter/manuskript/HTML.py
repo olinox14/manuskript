@@ -73,7 +73,7 @@ class HTML(markdown):
 
         md = markdown.output(self, settingsWidget)
         html = MD.markdown(md)
-        path = os.path.join(self.projectPath(), "dummy.html")
+        path = self.projectPath() / "dummy.html"
 
         self.preparesTextEditView(previewWidget.widget(0), settings["Preview"]["PreviewFont"])
         self.preparesTextEditViewMarkdown(previewWidget.widget(0), settings)

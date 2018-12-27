@@ -8,6 +8,7 @@ import re
 from PyQt5.QtCore import QSettings, QRect, QSize, Qt, QPoint, QFile, QIODevice, QTextStream
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QBrush, QImage, QTextBlockFormat, QTextCharFormat, QFont, qGray
 from PyQt5.QtWidgets import qApp, QFrame
+from path import Path
 
 from manuskript.functions import appPath, findBackground, findFirstFile
 from manuskript.ui.views.MDEditView import MDEditView
@@ -65,7 +66,7 @@ def getThemeName(theme):
     if settings.contains("Name"):
         return settings.value("Name")
     else:
-        return os.path.splitext(os.path.split(theme)[1])[0]
+        return Path(theme).name.stripext()
 
 
 def themeTextRect(themeDatas, screenRect):
@@ -98,7 +99,7 @@ def createThemePreview(theme, screenRect, size=QSize(200, 120)):
     """
 
     # Checking whether theme is a string or dict
-    if type(theme) == str and os.path.exists(theme):
+    if type(theme) == str and Path(theme).exists():
         # Theme is the path to an ini file
         themeDatas = loadThemeDatas(theme)
         fromFile = True

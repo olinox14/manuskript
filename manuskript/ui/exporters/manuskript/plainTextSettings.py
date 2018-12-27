@@ -127,7 +127,7 @@ class exporterSettings(QWidget, Ui_exporterSettings):
 
     def loadSettings(self):
         filename = self.getSettingsPath()
-        if os.path.exists(filename):
+        if filename.exists():
             with open(filename) as f:
                 self.settings = json.load(f)
             self.updateFromSettings()
@@ -143,7 +143,7 @@ class exporterSettings(QWidget, Ui_exporterSettings):
             json.dump(self.settings, f, indent=4, sort_keys=True)
 
     def getSettingsPath(self):
-        return os.path.join(writablePath(), "exporter.ini")
+        return writablePath() / "exporter.ini"
 
     def updateFromSettings(self):
         settings = self.settings

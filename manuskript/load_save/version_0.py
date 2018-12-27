@@ -11,6 +11,7 @@ from PyQt5.QtCore import QModelIndex, Qt
 from PyQt5.QtGui import QColor, QStandardItem
 from PyQt5.QtWidgets import qApp
 from lxml import etree as ET
+from path import Path
 
 from manuskript import settings
 from manuskript.functions import iconColor, iconFromColorString, mainWindow
@@ -179,7 +180,7 @@ def loadFilesFromZip(zipname):
     zf = zipfile.ZipFile(zipname)
     files = {}
     for f in zf.namelist():
-        files[os.path.normpath(f)] = zf.read(f)
+        files[Path(f).normpath()] = zf.read(f)
     return files
 
 

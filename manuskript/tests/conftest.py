@@ -58,8 +58,8 @@ def MWSampleProject(MW):
     lst = os.listdir(spDir)
     # We assume it's saved in folder, so there is a `name.msk` file and a
     # `name` folder.
-    src = [f for f in lst if f[-4:] == ".msk" and f[:-4] in lst][0]
-    src = os.path.join(spDir, src)
+    src = next((f for f in lst if f[-4:] == ".msk" and f[:-4] in lst))
+    src = spDir / src
     # Copy to a temp file
     import tempfile
     tf = tempfile.NamedTemporaryFile(suffix=".msk")

@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIntValidator, QIcon, QFont, QColor, QPixmap, QStandardItem, QPainter
 from PyQt5.QtWidgets import QStyleFactory, QWidget, QStyle, QColorDialog, QListWidgetItem
 from PyQt5.QtWidgets import qApp
+from path import Path
 
 from manuskript import settings
 from manuskript.enums import Outline
@@ -457,8 +458,8 @@ class settingsWindow(QWidget, Ui_Settings):
         self.btnCorkColor.setStyleSheet("background:{};".format(settings.corkBackground["color"]))
 
     def setCorkBackground(self, i):
-        img = self.cmbCorkImage.itemData(i)
-        img = os.path.basename(img)
+        img = Path(self.cmbCorkImage.itemData(i))
+        img = img.name
         if img:
             settings.corkBackground["image"] = img
         else:
@@ -474,12 +475,10 @@ class settingsWindow(QWidget, Ui_Settings):
         cmb.clear()
         cmb.addItem(QIcon.fromTheme("list-remove"), "", "")
         for p in paths:
-            lst = os.listdir(p)
-            for l in lst:
-                if l.lower()[-4:] in [".jpg", ".png"] or \
-                                l.lower()[-5:] in [".jpeg"]:
-                    px = QPixmap(os.path.join(p, l)).scaled(128, 64, Qt.KeepAspectRatio)
-                    cmb.addItem(QIcon(px), "", os.path.join(p, l))
+            for l in p.dirs():
+                if l.lower()[-4:] in [".jpg", ".png"] or l.lower()[-5:] in [".jpeg"]:
+                    px = QPixmap(p / l).scaled(128, 64, Qt.KeepAspectRatio)
+                    cmb.addItem(QIcon(px), "", p / l)
 
         cmb.setIconSize(QSize(128, 64))
 
@@ -650,8 +649,8 @@ class settingsWindow(QWidget, Ui_Settings):
             self.btnThemeEdit.setEnabled(current.data(Qt.UserRole + 1))
             self.btnThemeRemove.setEnabled(current.data(Qt.UserRole + 1))
             # Save settings
-            theme = current.data(Qt.UserRole)
-            settings.fullScreenTheme = os.path.splitext(os.path.split(theme)[1])[0]
+            theme = Path(current.data(Qt.UserRole))
+            settings.fullScreenTheme = theme.name.stripext()
         else:
             # UI updates
             self.btnThemeEdit.setEnabled(False)
@@ -660,13 +659,13 @@ class settingsWindow(QWidget, Ui_Settings):
     def newTheme(self):
         path = writablePath("resources/themes")
         name = self.tr("newtheme")
-        if os.path.exists(os.path.join(path, "{}.theme".format(name))):
+        if Path(path / "{}.theme".format(name)).exists():
             i = 1
-            while os.path.exists(os.path.join(path, "{}_{}.theme".format(name, i))):
+            while Path(path / "{}_{}.theme".format(name, i)).exists():
                 i += 1
-            name = os.path.join(path, "{}_{}.theme".format(name, i))
+            name = path / "{}_{}.theme".format(name, i)
         else:
-            name = os.path.join(path, "{}.theme".format(name))
+            name = path / "{}.theme".format(name)
 
         settings = QSettings(name, QSettings.IniFormat)
         settings.setValue("Name", self.tr("New theme"))
@@ -692,9 +691,9 @@ class settingsWindow(QWidget, Ui_Settings):
         self.lstThemes.clear()
 
         for p in paths:
-            lst = [i for i in os.listdir(p) if os.path.splitext(i)[1] == ".theme"]
+            lst = [f for f in p.files() if p.ext == ".theme"]
             for t in lst:
-                theme = os.path.join(p, t)
+                theme = p / t
                 editable = not appPath() in theme
                 n = getThemeName(theme)
 
@@ -705,10 +704,10 @@ class settingsWindow(QWidget, Ui_Settings):
                     n,
                     self.tr(" (read-only)") if not editable else ""))
 
-                thumb = os.path.join(p, t.replace(".theme", ".jpg"))
+                thumb = p / t.replace(".theme", ".jpg")
                 px = QPixmap(200, 120)
                 px.fill(Qt.white)
-                if not os.path.exists(thumb):
+                if not thumb.exists():
                     currentScreen = qApp.desktop().screenNumber(self)
                     screenRect = qApp.desktop().screenGeometry(currentScreen)
                     thumb = createThemePreview(theme, screenRect)
@@ -867,10 +866,10 @@ class settingsWindow(QWidget, Ui_Settings):
         self.timerUpdateFSPreview.start()
 
     def updateThemeBackground(self, i):
-        img = self.cmbCorkImage.itemData(i)
+        img = Path(self.cmbCorkImage.itemData(i))
 
         if img:
-            self._themeData["Background/ImageFile"] = os.path.split(img)[1]
+            self._themeData["Background/ImageFile"] = img.name
         else:
             self._themeData["Background/ImageFile"] = ""
         self.updatePreview()
