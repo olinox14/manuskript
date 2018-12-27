@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
+from collections import Counter
+import re
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QWidget, QHeaderView
 
 from manuskript import settings
-from manuskript.ui.tools.frequency_ui import Ui_FrequencyAnalyzer
-import re
-from collections import Counter
+from manuskript.ui._uic.frequency_ui import Ui_FrequencyAnalyzer
+
 
 class frequencyAnalyzer(QWidget, Ui_FrequencyAnalyzer):
     def __init__(self, mainWindow):
@@ -45,14 +47,14 @@ class frequencyAnalyzer(QWidget, Ui_FrequencyAnalyzer):
             txt = item.text()
 
             # Split into words
-            lst = re.findall(r"[\w']+", txt)            # Ignores punctuation
+            lst = re.findall(r"[\w']+", txt)  # Ignores punctuation
             # lst = re.findall(r"[\w']+|[.,!?;]", txt)  # Includes punctuation
             phrases = []
 
             # Make tuples of n-length
             for n in range(nMin, nMax + 1):
                 for l in range(len(lst) - n + 1):
-                    phrases.append(tuple(lst[l:l+n]))
+                    phrases.append(tuple(lst[l:l + n]))
 
             for c in item.children():
                 phrases += listPhrases(c, nMin, nMax)

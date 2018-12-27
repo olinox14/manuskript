@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QWidget, QAbstractItemView
 
 from manuskript.enums import Outline
 from manuskript.ui import style
-from manuskript.ui.views.metadataView_ui import Ui_metadataView
+from manuskript.ui._uic.metadataView_ui import Ui_metadataView
 
 
 class metadataView(QWidget, Ui_metadataView):
@@ -95,9 +95,9 @@ class metadataView(QWidget, Ui_metadataView):
             # Allow edition of multiple indexes.
             # Bug: Multiple selections of items sometimes gets Notes/references
             #      field to be erased. See #10 on github.
-            #self.txtSummarySentence.setCurrentModelIndexes(indexes)
-            #self.txtSummaryFull.setCurrentModelIndexes(indexes)
-            #self.txtNotes.setCurrentModelIndexes(indexes)
+            # self.txtSummarySentence.setCurrentModelIndexes(indexes)
+            # self.txtSummaryFull.setCurrentModelIndexes(indexes)
+            # self.txtNotes.setCurrentModelIndexes(indexes)
 
             self.revisions.setEnabled(False)
 

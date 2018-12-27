@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QListWidgetItem, QTreeVie
 
 from manuskript.functions import mainWindow, writablePath
 from manuskript.ui import style as S
-from manuskript.ui.exporters.manuskript.plainTextSettings_ui import Ui_exporterSettings
+from manuskript.ui._uic.plainTextSettings_ui import Ui_exporterSettings
 
 
 class exporterSettings(QWidget, Ui_exporterSettings):
@@ -196,7 +196,7 @@ class exporterSettings(QWidget, Ui_exporterSettings):
 
         for val, chk, cmb, txtA, txtB in [
             ("DoubleQuotes", self.chkTransDoubleQuotes, self.cmbTransDoubleQuotes, self.txtTransDoubleQuotesA, self.txtTransDoubleQuotesB),
-            ("SingleQuote",  self.chkTransSingleQuote,  self.cmbTransSingleQuote,  self.txtTransSingleQuoteA,  self.txtTransSingleQuoteB),
+            ("SingleQuote", self.chkTransSingleQuote, self.cmbTransSingleQuote, self.txtTransSingleQuoteA, self.txtTransSingleQuoteB),
         ]:
             chk.setChecked(s[val] != False)
             if s[val]:
@@ -309,7 +309,7 @@ class exporterSettings(QWidget, Ui_exporterSettings):
         cmb = self.sender()
         map_ = {
             self.cmbTransDoubleQuotes: (self.txtTransDoubleQuotesA, self.lblTransDoubleQuotes, self.txtTransDoubleQuotesB),
-            self.cmbTransSingleQuote:  (self.txtTransSingleQuoteA,  self.lblTransSingleQuote,  self.txtTransSingleQuoteB),
+            self.cmbTransSingleQuote:  (self.txtTransSingleQuoteA, self.lblTransSingleQuote, self.txtTransSingleQuoteB),
         }
         for txt in map_[cmb]:
             txt.setVisible(cmb.currentData() == "custom")
@@ -367,10 +367,10 @@ class exporterSettings(QWidget, Ui_exporterSettings):
 
     def transAddTableRow(self, checked=True, A="", B="", regexp=False):
         self.tableWidgetAddRow(self.tblReplacements, [
-            self.tableWidgetMakeItem("", "", True,  checked),
+            self.tableWidgetMakeItem("", "", True, checked),
             self.tableWidgetMakeItem(A, "", False, False),
             self.tableWidgetMakeItem(B, "", False, False),
-            self.tableWidgetMakeItem("", "", True,  regexp),
+            self.tableWidgetMakeItem("", "", True, regexp),
         ])
         self.tableWidgetAdjustToContent(self.tblReplacements)
 
@@ -416,8 +416,8 @@ class exporterSettings(QWidget, Ui_exporterSettings):
         for i in range(lst.count()):
             h += lst.item(i).sizeHint().height()
 
-        lst.setMinimumSize(QSize(0, h+2))
-        lst.setMaximumSize(QSize(16777215, h+2))
+        lst.setMinimumSize(QSize(0, h + 2))
+        lst.setMaximumSize(QSize(16777215, h + 2))
 
 
 

@@ -4,7 +4,7 @@ from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget
 
 from manuskript.enums import Outline
-from manuskript.ui.views.propertiesView_ui import Ui_propertiesView
+from manuskript.ui._uic.propertiesView_ui import Ui_propertiesView
 
 
 class propertiesView(QWidget, Ui_propertiesView):

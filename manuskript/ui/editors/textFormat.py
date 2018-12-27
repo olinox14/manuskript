@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QWidget, QAction
 
 from manuskript.enums import Outline
 from manuskript.models import outlineModel
-from manuskript.ui.editors.textFormat_ui import Ui_textFormat
+from manuskript.ui._uic.textFormat_ui import Ui_textFormat
 
 
 class textFormat(QWidget, Ui_textFormat):

@@ -21,7 +21,7 @@ from manuskript.models.characterModel import characterModel
 from manuskript.models.plotModel import plotModel
 from manuskript.models.worldModel import worldModel
 from manuskript.ui import style as S
-from manuskript.ui.welcome_ui import Ui_welcome
+from manuskript.ui._uic.welcome_ui import Ui_welcome
 
 
 try:
@@ -210,7 +210,7 @@ class welcome(QWidget, Ui_welcome):
                 # Check if okay to overwrite existing project
                 result = QMessageBox.warning(self, self.tr("Warning"),
                     self.tr("Overwrite existing project {} ?").format(filename),
-                    QMessageBox.Ok|QMessageBox.Cancel, QMessageBox.Cancel)
+                    QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
                 if result == QMessageBox.Cancel:
                     return
             # Create new project

@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QListWidgetItem, QFileDialog
 
 from manuskript import exporter
 from manuskript.ui import style as S
-from manuskript.ui.exporters.exportersManager_ui import Ui_ExportersManager
+from manuskript.ui._uic.exportersManager_ui import Ui_ExportersManager
 
 
 class exportersManager(QWidget, Ui_ExportersManager):

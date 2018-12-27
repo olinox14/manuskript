@@ -10,7 +10,7 @@ from PyQt5.QtGui import QPalette, QFontMetrics
 from PyQt5.QtWidgets import QWidget, QMenu, QActionGroup, QAction, QListWidgetItem, QStyledItemDelegate, QStyle
 
 from manuskript.enums import Outline
-from manuskript.ui.revisions_ui import Ui_revisions
+from manuskript.ui._uic.revisions_ui import Ui_revisions
 
 
 class revisions(QWidget, Ui_revisions):

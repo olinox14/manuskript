@@ -22,12 +22,12 @@ from manuskript.models.plotModel import plotModel
 from manuskript.models.worldModel import worldModel
 from manuskript.settingsWindow import settingsWindow
 from manuskript.ui import style
+from manuskript.ui._uic.mainWindow import Ui_MainWindow
 from manuskript.ui.about import aboutDialog
 from manuskript.ui.collapsibleDockWidgets import collapsibleDockWidgets
 from manuskript.ui.exporters.exporter import exporterDialog
 from manuskript.ui.helpLabel import helpLabel
 from manuskript.ui.importers.importer import importerDialog
-from manuskript.ui.mainWindow import Ui_MainWindow
 from manuskript.ui.statusLabel import statusLabel
 from manuskript.ui.tools.frequencyAnalyzer import frequencyAnalyzer
 from manuskript.ui.views.MDEditView import MDEditView
@@ -67,7 +67,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.currentProject = None
         self._lastFocus = None
         self._lastMDEditView = None
-        self._defaultCursorFlashTime = 1000 # Overriden at startup with system
+        self._defaultCursorFlashTime = 1000  # Overriden at startup with system
                                             # value. In manuskript.main.
         self._autoLoadProject = None  # Used to load a command line project
 
@@ -396,10 +396,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #        as well as selectionBehavior=SelectRows, then when moving a row
         #        hidden cells (here: summary and ID) are deleted...
         #        So instead we set their width to 0.
-        #for i in range(self.mdlPlots.columnCount()):
-            #self.lstSubPlots.hideColumn(i)
-        #self.lstSubPlots.showColumn(PlotStep.name)
-        #self.lstSubPlots.showColumn(PlotStep.meta)
+        # for i in range(self.mdlPlots.columnCount()):
+            # self.lstSubPlots.hideColumn(i)
+        # self.lstSubPlots.showColumn(PlotStep.name)
+        # self.lstSubPlots.showColumn(PlotStep.meta)
 
         self.lstSubPlots.horizontalHeader().setSectionResizeMode(
                 PlotStep.ID, QHeaderView.Fixed)
@@ -628,7 +628,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Add project name to Window's name
         pName = project.name
         if pName.endswith('.msk'):
-            pName=pName[:-4]
+            pName = pName[:-4]
         self.setWindowTitle(pName + " - " + self.tr("Manuskript"))
 
         # Stuff
@@ -803,7 +803,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for e in errors:
                 logger.error(self.tr(" * {} wasn't found in project file.").format(e))
             F.statusMessage(
-                    self.tr("Project {} loaded with some errors.").format(project), 5000, importance = 3)
+                    self.tr("Project {} loaded with some errors.").format(project), 5000, importance=3)
 
     ###############################################################################
     # MAIN CONNECTIONS
@@ -827,7 +827,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tabMain.currentChanged.connect(self.toolbar.setCurrentGroup)
         self.tabMain.currentChanged.connect(self.tabMainChanged)
 
-        qApp.focusChanged.connect(self.focusChanged)    #@UndefinedVariable
+        qApp.focusChanged.connect(self.focusChanged)  # @UndefinedVariable
 
     def makeConnections(self):
 
@@ -1153,8 +1153,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lstTabs.setIconSize(QSize(48, 48))
         for i in range(self.tabMain.count()):
 
-            icons = [QIcon.fromTheme("stock_view-details"), #info
-                     QIcon.fromTheme("application-text-template"), #applications-publishing
+            icons = [QIcon.fromTheme("stock_view-details"),  # info
+                     QIcon.fromTheme("application-text-template"),  # applications-publishing
                      F.themeIcon("characters"),
                      F.themeIcon("plots"),
                      F.themeIcon("world"),

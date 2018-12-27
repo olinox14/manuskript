@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget
 from manuskript.enums import Outline
 from manuskript.functions import mainWindow
 from manuskript.ui import style
-from manuskript.ui.importers.generalSettings_ui import Ui_generalSettings
+from manuskript.ui._uic.generalSettings_ui import Ui_generalSettings
 
 
 class generalSettings(QWidget, Ui_generalSettings):
@@ -54,7 +54,7 @@ class generalSettings(QWidget, Ui_generalSettings):
             if idx.isValid():
                 return idx.internalPointer().ID()
 
-        return "0" # 0 is root's ID
+        return "0"  # 0 is root's ID
 
     def importInTopLevelFolder(self):
         """
