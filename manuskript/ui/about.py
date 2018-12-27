@@ -7,9 +7,8 @@ from PyQt5.QtCore import QT_VERSION_STR
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget
 
-from manuskript.constants import ICONS_DIR
+from manuskript.constants import ICONS_DIR, VERSION
 from manuskript.ui.about_ui import Ui_about
-from manuskript.version import getVersion
 
 
 class aboutDialog(QWidget, Ui_about):
@@ -28,7 +27,7 @@ class aboutDialog(QWidget, Ui_about):
         self.labelLogo.setPixmap(logoPic)
 
         self.labelManuskriptVersion.setText(
-              "<b>" + self.tr("Version") + " " + getVersion() + "</b><br>"
+              "<b>" + self.tr("Version") + " " + VERSION + "</b><br>"
             + "&nbsp;"*5 + """<a href="http://www.theologeek.ch/manuskript/">
                                 http://www.theologeek.ch/manuskript/
                                </a><br>"""

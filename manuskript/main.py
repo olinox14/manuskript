@@ -11,8 +11,7 @@ from PyQt5.QtWidgets import QApplication, qApp
 from path import Path
 import yaml
 
-from manuskript.constants import MAIN_DIR
-from manuskript.version import getVersion
+from manuskript import constants
 
 
 faulthandler.enable()
@@ -32,20 +31,26 @@ def _excepthook(typ, value, trace):
     SYS_EXCEPT_HOOK(typ, value, trace)
 sys.excepthook = _excepthook
 
+__VERSION__ = constants.VERSION
 
-
-def prepare(tests=False):
+def prepare():
+    
+    logger.info("Running manuskript version {}.".format(constants.VERSION))
+    
     app = QApplication(sys.argv)
-    app.setOrganizationName("manuskript"+("_tests" if tests else ""))
-    app.setOrganizationDomain("www.theologeek.ch")
-    app.setApplicationName("manuskript"+("_tests" if tests else ""))
-    app.setApplicationVersion(getVersion())
+    app.setOrganizationName(constants.APP_NAME)
+    app.setOrganizationDomain(constants.APP_WEBSITE)
+    app.setApplicationName(constants.APP_NAME)
+    app.setApplicationVersion(constants.VERSION)
 
-    logger.info("Running manuskript version {}.".format(getVersion()))
     icon = QIcon()
     for i in [16, 32, 64, 128, 256, 512]:
-        icon.addFile(MAIN_DIR / "icons/Manuskript/icon-{}px.png".format(i))
-    qApp.setWindowIcon(icon)
+        icon_file = constants.MAIN_DIR / "icons/Manuskript/icon-{}px.png".format(i)
+        if icon_file.exists():
+            icon.addFile(icon_file)
+        else:
+            logger.warning("%s does not exist", icon_file.name)
+    app.setWindowIcon(icon)
 
     app.setStyle("Fusion")
 
@@ -58,35 +63,25 @@ def prepare(tests=False):
     # Translation process
     locale = QLocale.system().name()
 
-    appTranslator = QTranslator(app)
-    # By default: locale
-
-    def extractLocale(filename):
-        # len("manuskript_") = 13, len(".qm") = 3
-        return filename[11:-3] if len(filename) >= 16 else ""
-
-    def tryLoadTranslation(translation, source):
-        if appTranslator.load(MAIN_DIR / "i18n" / translation):
-            app.installTranslator(appTranslator)
-            logger.info(app.tr("Loaded translation from {}: {}.").format(source, translation))
-            return True
-        else:
-            logger.info(app.tr("Note: No translator found or loaded from {} for locale {}.").
-                  format(source, extractLocale(translation)))
-            return False
+    appTranslator = QTranslator(app)    # By default: locale
 
     # Load translation from settings
-    translation = ""
+    translation_file = ""
     if settings.contains("applicationTranslation"):
-        translation = settings.value("applicationTranslation")
-        logger.info("Found translation in settings:", translation)
+        translation_file = settings.value("applicationTranslation")
+        logger.info("Found translation in settings:", translation_file)
+    else:
+        translation_file = "manuskript_{}.qm".format(locale)
+        logger.info("No translation in settings, use: %s", translation_file)
 
-    if (translation != "" and not tryLoadTranslation(translation, "settings")) or translation == "":
-        # load from settings failed or not set, fallback
-        translation = "manuskript_{}.qm".format(locale)
-        tryLoadTranslation(translation, "system locale")
+    if appTranslator.load(constants.MAIN_DIR / "i18n" / translation_file):
+        app.installTranslator(appTranslator)
+        logger.info(app.tr("Loaded translation: {}.").format(translation_file))
+    else:
+        logger.warning(app.tr("No translator found or loaded for locale %s", locale))
 
-    QIcon.setThemeSearchPaths(QIcon.themeSearchPaths() + [MAIN_DIR / "icons"])
+
+    QIcon.setThemeSearchPaths(QIcon.themeSearchPaths() + [constants.ICONS_DIR])
     QIcon.setThemeName("NumixMsk")
 
     # Font siue
@@ -99,15 +94,17 @@ def prepare(tests=False):
     from manuskript.mainWindow import MainWindow
 
     MW = MainWindow()
+    
     # We store the system default cursor flash time to be able to restore it
     # later if necessary
     MW._defaultCursorFlashTime = qApp.cursorFlashTime()
 
-    # Command line project
-    if len(sys.argv) > 1 and sys.argv[1][-4:] == ".msk":
-        path = Path(sys.argv[1])
-        if path.exists():
-            MW._autoLoadProject = path.abspath()
+    # Parse sys args
+    args = sys.argv[1:]
+    if args:
+        project_path = Path(args[0])
+        if project_path.ext == ".msk" and project_path.exists():
+            MW._autoLoadProject = project_path.abspath()
 
     return app, MW
 
