@@ -2,6 +2,7 @@
 # --!-- coding: utf8 --!--
 
 import locale
+import logging
 import time
 
 from PyQt5.QtCore import Qt
@@ -24,6 +25,7 @@ except:
     # number formatting
     pass
 
+logger = logging.getLogger('manuskript')
 
 class outlineItem(abstractItem):
 
@@ -366,7 +368,7 @@ class outlineItem(abstractItem):
                     searchIn = c.name()
                 else:
                     searchIn = ""
-                    print("Character POV not found:", self.POV())
+                    logger.error("Character POV not found: %s", self.POV())
 
             elif c == self.enum.status:
                 searchIn = mainWindow.mdlStatus.item(F.toInt(self.status()), 0).text()

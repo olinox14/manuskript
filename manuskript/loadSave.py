@@ -3,11 +3,14 @@
 
 # The loadSave file calls the proper functions to load and save file
 # trying to detect the proper file format if it comes from an older version
+import logging
 import zipfile
 
 import manuskript.load_save.version_0 as v0
 import manuskript.load_save.version_1 as v1
 
+
+logger = logging.getLogger('manuskript')
 
 def saveProject(version=None):
 
@@ -56,8 +59,8 @@ def loadProject(project):
         with open(project, "r") as f:
             version = int(f.read())
 
-    print("Loading:", project)
-    print("Detected file format version: {}. Zip: {}.".format(version, isZip))
+    logger.info("Loading: %s", project)
+    logger.info("Detected file format version: %s. Zip: %s.", version, isZip)
 
     if version == 0:
         v0.loadProject(project)

@@ -4,6 +4,7 @@
 # Version 0 of file saving format.
 # Was used at the beginning and up until version XXX when
 # it was superseded by Version 1, which is more open and flexible
+import logging
 import zipfile
 
 from PyQt5.QtCore import QModelIndex, Qt
@@ -24,6 +25,8 @@ try:
 except:
     compression = zipfile.ZIP_STORED
 
+logger = logging.getLogger('manuskript')
+
 ###########################################################################################
 # SAVE
 ###########################################################################################
@@ -38,7 +41,7 @@ def saveProject():
 
     files.append((saveStandardItemModelXML(mw.mdlFlatData),
                   "flatModel.xml"))
-    print("ERROR: file format 0 does not save characters !")
+    logger.error("file format 0 does not save characters !")
     # files.append((saveStandardItemModelXML(mw.mdlCharacter),
     #               "perso.xml"))
     files.append((saveStandardItemModelXML(mw.mdlWorld),
@@ -92,7 +95,6 @@ def saveStandardItemModelXML(mdl, xml=None):
     data = ET.SubElement(root, "data")
     saveItem(data, mdl)
 
-    # print(qApp.tr("Saving to {}.").format(xml))
     if xml:
         ET.ElementTree(root).write(xml, encoding="UTF-8", xml_declaration=True, pretty_print=True)
     else:
@@ -187,13 +189,11 @@ def loadStandardItemModelXML(mdl, xml, fromString=False):
     """Load data to a QStandardItemModel mdl from xml.
     By default xml is a filename. If fromString=True, xml is a string containing the data."""
 
-    # print(qApp.tr("Loading {}... ").format(xml), end="")
-
     if not fromString:
         try:
             _ = ET.parse(xml)
         except:
-            print("Failed.")
+            logger.error("Failed.")
             return
     else:
         root = ET.fromstring(xml)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
+import logging
 import shutil
 import subprocess
 
@@ -9,6 +10,8 @@ from path import Path
 
 from manuskript.functions import mainWindow
 
+
+logger = logging.getLogger('manuskript')
 
 class basicExporter:
 
@@ -57,7 +60,7 @@ class basicExporter:
         elif self.isValid() == 1:
             run = self.customPath
         else:
-            print("Error: no command for", self.name)
+            logger.error("no command for %s", self.name)
             return
         r = subprocess.check_output([run] + args)  # timeout=.2
         return r.decode("utf-8")

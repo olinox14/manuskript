@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
+import logging
+
 from PyQt5.Qt import QApplication
 from PyQt5.QtCore import QTimer, QModelIndex, Qt, QEvent, pyqtSignal, QRegExp, QLocale, QPersistentModelIndex
 from PyQt5.QtGui import QTextBlockFormat, QTextCharFormat, QFont, QColor, QIcon, QMouseEvent, QTextCursor
@@ -17,6 +19,7 @@ try:
 except ImportError:
     enchant = None
 
+logger = logging.getLogger('manuskript')
 
 class textEditView(QTextEdit):
     def __init__(self, parent=None, index=None, html=None, spellcheck=True,
@@ -341,7 +344,7 @@ class textEditView(QTextEdit):
             for i in self._indexes:
                 item = i.internalPointer()
                 if self.toPlainText() != F.toString(item.data(self._column)):
-                    print("Submitting many indexes")
+                    logger.debug("Submitting many indexes")
                     self._model.setData(i, self.toPlainText())
             self._updating = False
 

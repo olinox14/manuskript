@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
+import logging
 import shutil
 import subprocess
 
@@ -11,6 +12,8 @@ from path import Path
 from manuskript.converters import abstractConverter
 from manuskript.functions import mainWindow
 
+
+logger = logging.getLogger('manuskript')
 
 class pandocConverter(abstractConverter):
 
@@ -37,7 +40,7 @@ class pandocConverter(abstractConverter):
     @classmethod
     def convert(cls, src, _from="markdown", to="html", args=None, outputfile=None):
         if not cls.isValid:
-            print("ERROR: pandocConverter is called but not valid.")
+            logger.error("pandocConverter is called but not valid.")
             return ""
 
         cmd = [cls.runCmd()]
@@ -69,7 +72,7 @@ class pandocConverter(abstractConverter):
 
         if stderr:
             err = stderr.decode("utf-8")
-            print(err)
+            logger.error(err)
             QMessageBox.critical(mainWindow().dialog,
                                  qApp.translate("Export", "Error"), err)
             return None

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
 
+
+logger = logging.getLogger('manuskript')
 
 
 def MDFormatSelection(editor, style):
@@ -11,5 +14,6 @@ def MDFormatSelection(editor, style):
         1: italic
         2: code
     """
-    print("Formatting:", style, " (Unimplemented yet !)")
+    logger.error("Formatting: %s", style)
+    raise NotImplementedError()
     # FIXME

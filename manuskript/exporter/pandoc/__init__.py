@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
+import logging
 import subprocess
 
 from PyQt5.QtCore import Qt
@@ -13,6 +14,8 @@ from manuskript.exporter.pandoc.outputFormats import ePub, OpenDocument, DocX
 from manuskript.exporter.pandoc.plainText import reST, markdown, latex, OPML
 from manuskript.functions import mainWindow
 
+
+logger = logging.getLogger('manuskript')
 
 class pandocExporter(basicExporter):
 
@@ -91,7 +94,7 @@ class pandocExporter(basicExporter):
                 + "Return code" + ": %d\n" % (p.returncode) \
                 + "Command and parameters" + ":\n%s\n" % (p.args) \
                 + "Stderr content" + ":\n" + stderr.decode("utf-8") 
-            print(err)
+            logger.error(err)
             QMessageBox.critical(mainWindow().dialog, qApp.translate("Export", "Error"), err)
             return None
 

@@ -6,23 +6,27 @@ A QSyntaxHighlighter for markdown, using tokenizer. More accurate than simple
 regexp, but not yet perfect.
 """
 
+import logging
+
 from PyQt5.QtCore import Qt, pyqtSignal, qWarning
 from PyQt5.QtGui import (QTextBlock, QColor, QFont,
                          QTextCharFormat, QBrush)
 from PyQt5.QtWidgets import qApp, QStyle
 
+from manuskript import functions as F
+from manuskript import settings
+from manuskript.ui import style as S
 from manuskript.ui.highlighters import BasicHighlighter
-from manuskript.ui.highlighters import MarkdownTokenizer
+from manuskript.ui.highlighters import BlockquoteStyle as BS
 from manuskript.ui.highlighters import MarkdownState as MS
 from manuskript.ui.highlighters import MarkdownTokenType as MTT
-from manuskript.ui.highlighters import BlockquoteStyle as BS
-from manuskript.ui import style as S
-from manuskript import settings
-from manuskript import functions as F
+from manuskript.ui.highlighters import MarkdownTokenizer
+
 
 # Un longue ligne. Un longue ligne. Un longue ligne. Un longue ligne.asdasdasda
-
 GW_FADE_ALPHA = 140
+
+logger = logging.getLogger('manuskript')
 
 # Highlighter based on GhostWriter (http://wereturtle.github.io/ghostwriter/).
 # GPLV3+.
@@ -445,16 +449,16 @@ class MarkdownHighlighter(BasicHighlighter):
 
             ## Debug
             def debug():
-                print("{}\n{}{}{}{}   (state:{})".format(
-                    text,
-                    " "*token.position,
-                    "^"*token.openingMarkupLength,
-                    str(token.type).center(token.length
-                                           - token.openingMarkupLength
-                                           - token.closingMarkupLength, "-"),
-                    "^" * token.closingMarkupLength,
-                    self.currentBlockState(),)
-                     )
+                logger.debug("{}\n{}{}{}{}   (state:{})".format(
+                                                        text,
+                                                        " "*token.position,
+                                                        "^"*token.openingMarkupLength,
+                                                        str(token.type).center(token.length
+                                                                               - token.openingMarkupLength
+                                                                               - token.closingMarkupLength, "-"),
+                                                        "^" * token.closingMarkupLength,
+                                                        self.currentBlockState(),)
+                                                         )
 
             # if token.type in range(6, 10):
             # debug()

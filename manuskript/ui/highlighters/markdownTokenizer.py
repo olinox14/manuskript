@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
 import re
 
 from PyQt5.QtCore import QRegExp
@@ -8,6 +9,8 @@ from PyQt5.QtCore import QRegExp
 from manuskript.ui.highlighters import MarkdownState as MS
 from manuskript.ui.highlighters import MarkdownTokenType as MTT
 
+
+logger = logging.getLogger('manuskript')
 
 # This file is simply a python translation of GhostWriter's Tokenizer.
 # http://wereturtle.github.io/ghostwriter/
@@ -55,7 +58,7 @@ class HighlightTokenizer:
         self.tokens.append(token)
 
         if token.type == -1:
-            print("Error here", token.position, token.length)
+            logger.error("Error here %s %s", token.position, token.length)
 
     def setState(self, state):
         self.state = state

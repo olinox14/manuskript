@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #--!-- coding: utf8 --!--
 
+import logging
 import os
 from random import *
 import re
@@ -15,6 +16,8 @@ from path import Path
 from manuskript.constants import MAIN_DIR
 from manuskript.enums import Outline
 
+
+logger = logging.getLogger('manuskript')
 
 # Used to detect multiple connections
 AUC = Qt.AutoConnection | Qt.UniqueConnection
@@ -246,7 +249,7 @@ def totalObjects():
 
 
 def printObjects():
-    print("Objects:", str(totalObjects()))
+    logger.debug("Objects: %s", str(totalObjects()))
 
 
 def findWidgetsOfClass(cls):
@@ -384,10 +387,10 @@ def inspect():
     Debugging tool. Call it to see a stack of calls up to that point.
     """
     import inspect
-    print("-----------------------")
+    logger.debug("-----------------------")
     for s in inspect.stack()[1:]:
-        print(" * {}:{} // {}".format(
+        logger.debug(" * {}:{} // {}".format(
             Path(s.filename).basename(),
             s.lineno,
             s.function))
-        print("   " + "".join(s.code_context))
+        logger.debug("   " + "".join(s.code_context))

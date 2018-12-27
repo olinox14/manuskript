@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 
+import logging
+
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import QVariant
 from PyQt5.QtCore import Qt
@@ -8,6 +10,8 @@ from lxml import etree as ET
 
 from manuskript import enums
 
+
+logger = logging.getLogger('manuskript')
 
 class abstractItem():
 
@@ -192,7 +196,7 @@ class abstractItem():
         self.IDs = self.listAllIDs()
 
         if max([self.IDs.count(i) for i in self.IDs if i]) != 1:
-            print("WARNING ! There are some items with same IDs:", [i for i in self.IDs if i and self.IDs.count(i) != 1])
+            logger.warning("There are some items with same IDs: %s", [i for i in self.IDs if i and self.IDs.count(i) != 1])
 
         def checkChildren(item):
             for c in item.children():

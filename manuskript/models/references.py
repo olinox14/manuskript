@@ -2,6 +2,7 @@
 # --!-- coding: utf8 --!--
 
 
+import logging
 import re
 
 from PyQt5.QtCore import Qt
@@ -15,6 +16,8 @@ from manuskript.enums import PlotStep
 from manuskript.functions import mainWindow, mixColors
 from manuskript.ui import style as S
 
+
+logger = logging.getLogger('manuskript')
 
 ###############################################################################
 # SHORT REFERENCES
@@ -627,7 +630,7 @@ def open_(ref):
             mw.lstCharacters.setCurrentItem(item)
             return True
 
-        print("Error: Ref {} not found".format(ref))
+        logger.error("Ref {} not found".format(ref))
         return False
 
     elif _type == TextLetter:
@@ -639,7 +642,7 @@ def open_(ref):
             mw.mainEditor.setCurrentModelIndex(index, newTab=True)
             return True
         else:
-            print("Ref not found")
+            logger.error("Ref not found")
             return False
 
     elif _type == PlotLetter:
@@ -651,7 +654,7 @@ def open_(ref):
             mw.lstPlots.setCurrentItem(item)
             return True
 
-        print("Ref not found")
+        logger.error("Ref not found")
         return False
 
     elif _type == WorldLetter:
@@ -664,8 +667,8 @@ def open_(ref):
                     mw.mdlWorld.indexFromItem(item))
             return True
 
-        print("Ref not found")
+        logger.error("Ref not found")
         return False
 
-    print("Ref not implemented")
+    logger.error("Ref not implemented")
     return False

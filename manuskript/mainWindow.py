@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 import imp
+import logging
 
 from PyQt5.QtCore import (pyqtSignal, QSignalMapper, QTimer, QSettings, Qt,
                           QRegExp, QSize, QModelIndex)
@@ -41,6 +42,7 @@ try:
 except ImportError:
     enchant = None
 
+logger = logging.getLogger('manuskript')
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     dictChanged = pyqtSignal(str)
@@ -550,7 +552,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         It assumes that the datas have been populated in a different way."""
         project = Path(project)
         if loadFromFile and not project.exists():
-            print(self.tr("The file {} does not exist. Has it been moved or deleted?").format(project))
+            logger.info(self.tr("The file {} does not exist. Has it been moved or deleted?").format(project))
             F.statusMessage(
                     self.tr("The file {} does not exist. Has it been moved or deleted?").format(project), importance=3)
             return
@@ -774,7 +776,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             F.statusMessage(feedback, importance=3)
 
         # Giving some feedback in console
-        print(feedback)
+        logger.debug(feedback)
 
     def loadEmptyDatas(self):
         self.mdlFlatData = QStandardItemModel(self)
@@ -793,13 +795,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Giving some feedback
         if not errors:
-            print(self.tr("Project {} loaded.").format(project))
+            logger.info(self.tr("Project {} loaded.").format(project))
             F.statusMessage(
                     self.tr("Project {} loaded.").format(project), 2000)
         else:
-            print(self.tr("Project {} loaded with some errors:").format(project))
+            logger.error(self.tr("Project {} loaded with some errors:").format(project))
             for e in errors:
-                print(self.tr(" * {} wasn't found in project file.").format(e))
+                logger.error(self.tr(" * {} wasn't found in project file.").format(e))
             F.statusMessage(
                     self.tr("Project {} loaded with some errors.").format(project), 5000, importance = 3)
 
@@ -1384,8 +1386,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menuView.clear()
         self.menuView.addMenu(self.menuMode)
         self.menuView.addSeparator()
-
-        # print("Generating menus with", settings.viewSettings)
 
         for mnu, mnud, icon in menus:
             m = QMenu(mnu, self.menuView)

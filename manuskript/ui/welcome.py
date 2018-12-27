@@ -3,6 +3,7 @@
 
 import imp
 import locale
+import logging
 
 from PyQt5.QtCore import QSettings, QRegExp, Qt, QDir
 from PyQt5.QtGui import QIcon, QBrush, QColor, QStandardItemModel, QStandardItem
@@ -27,6 +28,8 @@ try:
     locale.setlocale(locale.LC_ALL, '')
 except:
     pass
+
+logger = logging.getLogger('manuskript')
 
 class welcome(QWidget, Ui_welcome):
     def __init__(self, parent=None):
@@ -59,7 +62,7 @@ class welcome(QWidget, Ui_welcome):
         sttgs = QSettings()
         lastDirectory = sttgs.value("lastAccessedDirectory", defaultValue=".", type=str)
         if lastDirectory != '.':
-            print(qApp.translate("lastAccessedDirectoryInfo", "Last accessed directory \"{}\" loaded.").format(
+            logger.info(qApp.translate("lastAccessedDirectoryInfo", "Last accessed directory \"{}\" loaded.").format(
                 lastDirectory))
         return lastDirectory
 

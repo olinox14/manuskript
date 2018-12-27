@@ -2,6 +2,8 @@
 # --!-- coding: utf8 --!--
 
 
+import logging
+
 from manuskript.converters import abstractConverter
 
 
@@ -10,6 +12,7 @@ try:
 except ImportError:
     MD = None
 
+logger = logging.getLogger('manuskript')
 
 class markdownConverter(abstractConverter):
     """
@@ -25,7 +28,7 @@ class markdownConverter(abstractConverter):
     @classmethod
     def convert(self, markdown):
         if not self.isValid:
-            print("ERROR: markdownConverter is called but not valid.")
+            logger.error("markdownConverter is called but not valid.")
             return ""
 
         html = MD.markdown(markdown)

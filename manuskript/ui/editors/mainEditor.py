@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 import locale
+import logging
 
 from PyQt5.QtCore import QModelIndex, QRect, QPoint
 from PyQt5.QtCore import Qt
@@ -20,6 +21,8 @@ try:
     locale.setlocale(locale.LC_ALL, '')
 except:
     pass
+
+logger = logging.getLogger('manuskript')
 
 class mainEditor(QWidget, Ui_mainEditor):
     """
@@ -360,7 +363,7 @@ class mainEditor(QWidget, Ui_mainEditor):
     ###############################################################################
 
     def setDict(self, dict_):
-        print(dict_)
+        logger.debug("%s", dict_)
         for w in self.allAllTabs():
             w.setDict(dict_)
 

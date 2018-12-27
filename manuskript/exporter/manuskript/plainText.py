@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
+import logging
 import re
 
 from PyQt5.QtGui import QFont, QTextCharFormat
@@ -10,6 +11,8 @@ from manuskript.functions import mainWindow
 from manuskript.models import outlineItem
 from manuskript.ui.exporters.manuskript.plainTextSettings import exporterSettings
 
+
+logger = logging.getLogger('manuskript')
 
 class plainText(basicFormat):
     name = qApp.translate("Export", "Plain text")
@@ -93,7 +96,7 @@ class plainText(basicFormat):
         content = self.output(settingsWidget)
 
         if not content:
-            print("Error: content is empty. Nothing saved.")
+            logger.error("content is empty. Nothing saved.")
             return
 
         if filename:

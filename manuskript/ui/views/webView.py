@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import PyQt5
+import logging
 import os
+
+import PyQt5
+
+
+logger = logging.getLogger('manuskript')
 
 features = {'qtwebkit': False, 'qtwebengine': False}
 
@@ -22,16 +27,16 @@ else:
 
 if features['qtwebkit']:
     from PyQt5.QtWebKitWidgets import QWebView
-    print("Debug: Web rendering engine used: QWebView")
+    logger.debug("Web rendering engine used: QWebView")
     webEngine = "QtWebKit"
     webView = QWebView
 elif features['qtwebengine']:
     from PyQt5 import QtWebEngineWidgets
-    print("Debug: Web rendering engine used: QWebEngineView")
+    logger.debug("Web rendering engine used: QWebEngineView")
     webEngine = "QtWebEngine"
     webView = QtWebEngineWidgets.QWebEngineView
 else:
     from PyQt5.QtWidgets import QTextEdit
-    print("Debug: Web rendering engine used: QTextEdit")
+    logger.debug("Web rendering engine used: QTextEdit")
     webEngine = "QTextEdit"
     webView = QTextEdit
