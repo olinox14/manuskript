@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import faulthandler
-import logging
+import logging.config
 import os
 import sys
 import traceback
