@@ -1,18 +1,39 @@
 # -*- coding: utf-8 -*-
 
 import faulthandler
+import logging
 import os
 import sys
+import traceback
 
-import manuskript.ui.views.webView
 from PyQt5.QtCore import QLocale, QTranslator, QSettings
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, qApp
+from path import Path
+import yaml
 
 from manuskript.functions import appPath, writablePath
+import manuskript.ui.views.webView
 from manuskript.version import getVersion
 
+
 faulthandler.enable()
+
+
+# load logging configuration from 'logging.yaml'
+with open(Path(__file__).parent / 'logging.yaml', 'rt') as f:
+    logging.config.dictConfig(yaml.load(f))
+
+logger = logging.getLogger('manuskript')
+
+SYS_EXCEPT_HOOK = sys.excepthook
+def _excepthook(typ, value, trace):
+    """ Override the standard error handling to log any uncatched exception """
+    logger.error("{}\n{}\n{}".format(typ.__name__, value, ''.join(traceback.format_tb(trace))))
+    SYS_EXCEPT_HOOK(typ, value, trace)
+sys.excepthook = _excepthook
+
+
 
 def prepare(tests=False):
     app = QApplication(sys.argv)
@@ -21,7 +42,7 @@ def prepare(tests=False):
     app.setApplicationName("manuskript"+("_tests" if tests else ""))
     app.setApplicationVersion(getVersion())
 
-    print("Running manuskript version {}.".format(getVersion()))
+    logger.info("Running manuskript version {}.".format(getVersion()))
     icon = QIcon()
     for i in [16, 32, 64, 128, 256, 512]:
         icon.addFile(appPath("icons/Manuskript/icon-{}px.png".format(i)))
@@ -48,10 +69,10 @@ def prepare(tests=False):
     def tryLoadTranslation(translation, source):
         if appTranslator.load(appPath(os.path.join("i18n", translation))):
             app.installTranslator(appTranslator)
-            print(app.tr("Loaded translation from {}: {}.").format(source, translation))
+            logger.info(app.tr("Loaded translation from {}: {}.").format(source, translation))
             return True
         else:
-            print(app.tr("Note: No translator found or loaded from {} for locale {}.").
+            logger.info(app.tr("Note: No translator found or loaded from {} for locale {}.").
                   format(source, extractLocale(translation)))
             return False
 
@@ -59,7 +80,7 @@ def prepare(tests=False):
     translation = ""
     if settings.contains("applicationTranslation"):
         translation = settings.value("applicationTranslation")
-        print("Found translation in settings:", translation)
+        logger.info("Found translation in settings:", translation)
 
     if (translation != "" and not tryLoadTranslation(translation, "settings")) or translation == "":
         # load from settings failed or not set, fallback
