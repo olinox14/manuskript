@@ -255,9 +255,7 @@ class MarkdownHighlighter(BasicHighlighter):
         # Base Colors
         background = self.backgroundColor
         text = self.defaultTextColor
-        highlightedText = QColor(S.highlightedText)
         highlightedTextDark = QColor(S.highlightedTextDark)
-        highlightedTextLight = QColor(S.highlightedTextLight)
         highlight = QColor(S.highlight)
         link = self.linkColor
         linkVisited = QColor(S.linkVisited)
@@ -497,35 +495,35 @@ class MarkdownHighlighter(BasicHighlighter):
             qWarning("MarkdownHighlighter.applyFormattingForToken() was passed"
                      " in a token of unknown type.")
 
-    def formatsFromTheme(self, theme, format=None,
+    def formatsFromTheme(self, theme, format_=None,
                          markupFormat=QTextCharFormat()):
         # Token
         if theme.get("color"):
-            format.setForeground(theme["color"])
+            format_.setForeground(theme["color"])
         if theme.get("deltaSize"):
             size = self.editor._defaultFontSize + theme["deltaSize"]
             if size >= 0:
-                f = format.font()
+                f = format_.font()
                 f.setPointSize(size)
-                format.setFont(f)
+                format_.setFont(f)
         if theme.get("background"):
-            format.setBackground(theme["background"])
+            format_.setBackground(theme["background"])
         if theme.get("monospace"):
-            format.setFontFamily("Monospace")
+            format_.setFontFamily("Monospace")
         if theme.get("bold"):
-            format.setFontWeight(QFont.Bold)
+            format_.setFontWeight(QFont.Bold)
         if theme.get("italic"):
-            format.setFontItalic(theme["italic"])
+            format_.setFontItalic(theme["italic"])
         if theme.get("underline"):
-            format.setFontUnderline(theme["underline"])
+            format_.setFontUnderline(theme["underline"])
         if theme.get("overline"):
-            format.setFontOverline(theme["overline"])
+            format_.setFontOverline(theme["overline"])
         if theme.get("strike"):
-            format.setFontStrikeOut(theme["strike"])
+            format_.setFontStrikeOut(theme["strike"])
         if theme.get("super"):
-            format.setVerticalAlignment(QTextCharFormat.AlignSuperScript)
+            format_.setVerticalAlignment(QTextCharFormat.AlignSuperScript)
         if theme.get("sub"):
-            format.setVerticalAlignment(QTextCharFormat.AlignSubScript)
+            format_.setVerticalAlignment(QTextCharFormat.AlignSubScript)
 
         # Markup
         if theme.get("formatMarkup"):
@@ -541,7 +539,7 @@ class MarkdownHighlighter(BasicHighlighter):
         if theme.get("markupMonospace"):
             markupFormat.setFontFamily("Monospace")
 
-        return format, markupFormat
+        return format_, markupFormat
 
     ###########################################################################
     # SETTINGS

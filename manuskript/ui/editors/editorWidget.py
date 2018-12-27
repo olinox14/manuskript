@@ -194,7 +194,7 @@ class editorWidget(QWidget, Ui_editorWidget_ui):
             edt = MDEditView(self,
                                index=itm.index(),
                                spellcheck=self.spellcheck,
-                               dict=settings.dict,
+                               dict=settings.dict_,
                                highlighting=True,
                                autoResize=True)
             edt.setFrameShape(QFrame.NoFrame)

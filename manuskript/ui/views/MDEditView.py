@@ -23,9 +23,9 @@ class MDEditView(textEditView):
     automaticLinkRegex = QRegExp("(<([a-zA-Z]+\\:[^\n]+)>)|(<([^\n]+@[^\n]+)>)")
 
     def __init__(self, parent=None, index=None, html=None, spellcheck=True,
-                 highlighting=False, dict="", autoResize=False):
+                 highlighting=False, dict_="", autoResize=False):
         textEditView.__init__(self, parent, index, html, spellcheck,
-                              highlighting=True, dict=dict,
+                              highlighting=True, dict_=dict_,
                               autoResize=autoResize)
 
         # Highlighter
@@ -203,7 +203,7 @@ class MDEditView(textEditView):
             offset = viewport.center() - cursor.center()
             scrollbar.setValue(scrollbar.value() - offset.y())
 
-    def scrollBarRangeChanged(self, min, max):
+    def scrollBarRangeChanged(self, min_, max_):
         """
         Adds viewport height to scrollbar max so that we can center cursor
         on screen.
@@ -522,8 +522,8 @@ class MDEditView(textEditView):
             tooltip = ct.texts[2] or ct.texts[4]
 
         elif ct.regex == self.imageRegex:
-            tt = ("<p><b>" + ct.texts[1] + "</b></p>"
-                  +"<p><img src='data:image/png;base64,{}'></p>")
+#             tt = ("<p><b>" + ct.texts[1] + "</b></p>"
+#                   +"<p><img src='data:image/png;base64,{}'></p>")
             tooltip = None
             pos = event.pos() + QPoint(0, ct.rect.height())
             imageTooltiper.fromUrl(ct.texts[2], pos, self)

@@ -477,7 +477,7 @@ def title(ref):
     else:
         return None
 
-def type(ref):
+def get_type(ref):
     infos = shortInfos(ref)
     if infos and infos != -1:
         return infos["type"]
@@ -609,7 +609,7 @@ def basicFormat(text):
     text = linkifyAllRefs(text)
     return text
 
-def open(ref):
+def open_(ref):
     """Identify ``ref`` and open it."""
     match = re.fullmatch(RegEx, ref)
     if not match:

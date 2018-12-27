@@ -75,7 +75,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
 
         self.tab.tabCloseRequested.connect(self.closeTab)
         self.tab.currentChanged.connect(self.mainEditor.tabChanged)
-        qApp.focusChanged.connect(self.focusChanged)
+        qApp.focusChanged.connect(self.focusChanged)           #@UndefinedVariable
 
     def updateStyleSheet(self):
         self.setStyleSheet(style.mainEditorTabSS())
@@ -190,7 +190,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
 
         for st in reversed(l):
             st.setParent(None)
-            qApp.focusChanged.disconnect(st.focusChanged)
+            qApp.focusChanged.disconnect(st.focusChanged)            #@UndefinedVariable
             st.deleteLater()
 
         self.focusTab = 1
@@ -228,7 +228,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
         if self.focusTab != oldFT:
             self.mainEditor.tabChanged()
 
-    def eventFilter(self, object, event):
+    def eventFilter(self, object_, event):
         if object == self.btnSplit and event.type() == event.HoverEnter:
             # self.setAutoFillBackground(True)
             # self.setBackgroundRole(QPalette.Highlight)
@@ -245,7 +245,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
                 }}""".format(
                     name=self.splitter.objectName(),
                     color=style.highlight))
-        elif object == self.btnSplit and event.type() == event.HoverLeave:
+        elif object_ == self.btnSplit and event.type() == event.HoverLeave:
             # self.setAutoFillBackground(False)
             # self.setBackgroundRole(QPalette.Window)
 
@@ -254,4 +254,4 @@ class tabSplitter(QWidget, Ui_tabSplitter):
             #     }}""".format(self.splitter.objectName()))
 
             self.setStyleSheet(style.mainEditorTabSS())
-        return QWidget.eventFilter(self, object, event)
+        return QWidget.eventFilter(self, object_, event)

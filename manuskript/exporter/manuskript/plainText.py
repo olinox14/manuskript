@@ -44,13 +44,13 @@ class plainText(basicFormat):
         settings = settingsWidget.getSettings()
         return self.concatenate(mainWindow().mdlOutline.rootItem, settings)
 
-    def getExportFilename(self, settingsWidget, varName=None, filter=None):
+    def getExportFilename(self, settingsWidget, varName=None, filter_=None):
 
         if varName is None:
             varName = self.exportVarName
 
-        if filter is None:
-            filter = self.exportFilter
+        if filter_ is None:
+            filter_ = self.exportFilter
 
         settings = settingsWidget.getSettings()
 
@@ -60,7 +60,7 @@ class plainText(basicFormat):
         else:
             filename = ""
 
-        filename, filter = QFileDialog.getSaveFileName(settingsWidget.parent(),
+        filename, filter_ = QFileDialog.getSaveFileName(settingsWidget.parent(),
                                                        caption=qApp.translate("Export", "Chose output file..."),
                                                        filter=filter,
                                                        directory=filename)
@@ -88,8 +88,6 @@ class plainText(basicFormat):
         return filename
 
     def export(self, settingsWidget):
-        settings = settingsWidget.getSettings()
-
         filename = self.getExportFilename(settingsWidget)
         settingsWidget.writeSettings()
         content = self.output(settingsWidget)

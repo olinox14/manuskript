@@ -359,10 +359,10 @@ class mainEditor(QWidget, Ui_mainEditor):
     # DICT AND STUFF LIKE THAT
     ###############################################################################
 
-    def setDict(self, dict):
-        print(dict)
+    def setDict(self, dict_):
+        print(dict_)
         for w in self.allAllTabs():
-            w.setDict(dict)
+            w.setDict(dict_)
 
     def toggleSpellcheck(self, val):
         for w in self.allAllTabs():

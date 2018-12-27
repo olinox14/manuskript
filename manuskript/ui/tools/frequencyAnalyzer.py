@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-from PyQt5.QtCore import QVariant, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QWidget, QTextEdit, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QWidget, QHeaderView
 
 from manuskript import settings
-from manuskript.enums import Outline
 from manuskript.ui.tools.frequency_ui import Ui_FrequencyAnalyzer
 import re
 from collections import Counter

@@ -101,7 +101,6 @@ def styleMainWindow(mw):
 
 def appPalette():
     p = qApp.palette()
-    c = p.color(p.Window)
     # p.setColor(p.Window, QColor(window))
     # p.setColor(p.Base, c.lighter(115))
     # p.setColor(p.Base, QColor("#FFF"))

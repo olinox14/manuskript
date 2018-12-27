@@ -73,7 +73,6 @@ class markdownImporter(abstractImporter):
         items = []
 
         parent = parentItem
-        lastLevel = 0
         content = ""
 
         def saveContent(content, parent):
@@ -148,8 +147,6 @@ class markdownImporter(abstractImporter):
 
                 # title becomes the new parent
                 parent = child
-
-                lastLevel = level
 
             else:
                 content += l + "\n"

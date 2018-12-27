@@ -121,7 +121,7 @@ class search(QWidget, Ui_search):
 
     def openItem(self, item):
         r = Ref.textReference(item.data(Qt.UserRole))
-        Ref.open(r)
+        Ref.open_(r)
         # mw = mainWindow()
         # index = mw.mdlOutline.getIndexByID(item.data(Qt.UserRole))
         # mw.mainEditor.setCurrentModelIndex(index, newTab=True)

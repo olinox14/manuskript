@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import os
-
 from PyQt5.QtCore import Qt, QSize, QPoint, QRect, QEvent, QTimer
 from PyQt5.QtGui import QFontMetrics, QColor, QBrush, QPalette, QPainter, QPixmap
 from PyQt5.QtGui import QIcon
@@ -39,7 +37,7 @@ class fullScreenEditor(QWidget):
                                 index=index,
                                 spellcheck=settings.spellcheck,
                                 highlighting=True,
-                                dict=settings.dict)
+                                dict=settings.dict_)
         self.editor.setFrameStyle(QFrame.NoFrame)
         self.editor.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.editor.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -313,17 +311,17 @@ class myScrollBar(QScrollBar):
     def setColor(self, color):
         self._color = color
 
-    def rangeHasChanged(self, min, max):
+    def rangeHasChanged(self, _, max_):
         """
         Adds viewport height to scrollbar max so that we can center cursor
         on screen.
         """
         if settings.textEditor["alwaysCenter"]:
             self.blockSignals(True)
-            self.setMaximum(max + self.parent().height())
+            self.setMaximum(max_ + self.parent().height())
             self.blockSignals(False)
 
-    def paintEvent(self, event):
+    def paintEvent(self, _):
         opt = QStyleOptionSlider()
         self.initStyleOption(opt)
         style = qApp.style()

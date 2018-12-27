@@ -98,7 +98,6 @@ class plotDelegate(QStyledItemDelegate):
         model.setData(index, val)
 
     def popupMenu(self):
-        act = self.sender()
         self.menu.popup(self.txt.parent().mapToGlobal(self.txt.geometry().bottomLeft()))
 
     def submit(self):

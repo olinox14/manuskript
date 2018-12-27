@@ -3,7 +3,6 @@
 
 import imp
 import locale
-import os
 
 from PyQt5.QtCore import QSettings, QRegExp, Qt, QDir
 from PyQt5.QtGui import QIcon, QBrush, QColor, QStandardItemModel, QStandardItem
@@ -64,9 +63,9 @@ class welcome(QWidget, Ui_welcome):
                 lastDirectory))
         return lastDirectory
 
-    def setLastAccessedDirectory(self, dir):
+    def setLastAccessedDirectory(self, dir_):
         sttgs = QSettings()
-        sttgs.setValue("lastAccessedDirectory", dir)
+        sttgs.setValue("lastAccessedDirectory", dir_)
 
     ###############################################################################
     # AUTOLOAD
@@ -407,8 +406,8 @@ class welcome(QWidget, Ui_welcome):
 
         # Add Demo project
         item = self.addTopLevelItem(self.tr("Demo projects"))
-        dir = QDir(MAIN_DIR / "sample-projects")
-        for f in dir.entryList(["*.msk"], filters=QDir.Files):
+        dir_ = QDir(MAIN_DIR / "sample-projects")
+        for f in dir_.entryList(["*.msk"], filters=QDir.Files):
             sub = QTreeWidgetItem(item, [f[:-4]])
             sub.setData(0, Qt.UserRole, f)
 

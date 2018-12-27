@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 
-import os
-
 from PyQt5.QtWidgets import qApp
 from path import Path
 

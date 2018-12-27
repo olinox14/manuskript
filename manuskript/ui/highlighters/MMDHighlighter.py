@@ -61,11 +61,11 @@ class MMDHighlighter(BasicHighlighter):
 
         # Code blocks
         r = self.rules["Code"]
-        format = QTextCharFormat()
-        format.setForeground(Qt.darkGray)
-        format.setFontFixedPitch(True)
+        format_ = QTextCharFormat()
+        format_.setForeground(Qt.darkGray)
+        format_.setFontFixedPitch(True)
         for m in r.finditer(text):
-            self.setFormat(m.start(), m.end() - m.start(), format)
+            self.setFormat(m.start(), m.end() - m.start(), format_)
 
         # Basic stuff
         stuff = [
@@ -76,10 +76,10 @@ class MMDHighlighter(BasicHighlighter):
         ]
         for name, color in stuff:
             r = self.rules[name]
-            format = QTextCharFormat()
-            format.setForeground(color)
+            format_ = QTextCharFormat()
+            format_.setForeground(color)
             for m in r.finditer(text):
-                self.setFormat(m.start(), m.end() - m.start(), format)
+                self.setFormat(m.start(), m.end() - m.start(), format_)
 
         # Bold and Italic
         for name, style in [
@@ -104,8 +104,8 @@ class MMDHighlighter(BasicHighlighter):
         cfIdentifier = QTextCharFormat()
         cfIdentifier.setForeground(Qt.darkMagenta)
 
-        for type in ['Links-inline', 'Links-ref']:
-            r = self.rules[type]
+        for type_ in ['Links-inline', 'Links-ref']:
+            r = self.rules[type_]
             for m in r.finditer(text):
                 self.setFormat(m.start(1), len(m.group(1)), cfOperator)
                 self.setFormat(m.start(2), len(m.group(2)), cfText)

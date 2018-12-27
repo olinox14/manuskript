@@ -67,12 +67,12 @@ class abstractImporter:
         g.setLayout(QVBoxLayout())
         return g
 
-    def addSetting(self, name, type, label, widget=None,  default=None,
-                   tooltip=None, min=None, max=None, vals=None, suffix=""):
+    def addSetting(self, name, type_, label, widget=None,  default=None,
+                   tooltip=None, min_=None, max_=None, vals=None, suffix=""):
 
         self.settingsList.append(name)
-        self.settings[name] = self.setting(name, type, label, widget,  default,
-                                         tooltip, min, max, vals, suffix)
+        self.settings[name] = self.setting(name, type_, label, widget,  default,
+                                         tooltip, min_, max_, vals, suffix)
 
     def widget(self, name):
         if name in self.settings:
@@ -97,15 +97,15 @@ class abstractImporter:
         A class used to store setting, and display a widget for the user to
         modify it.
         """
-        def __init__(self, name, type, label, widget=None,  default=None,
-                     tooltip=None, min=None, max=None, vals=None, suffix=""):
+        def __init__(self, name, type_, label, widget=None,  default=None,
+                     tooltip=None, min_=None, max_=None, vals=None, suffix=""):
             self.name = name
-            self.type = type
+            self.type = type_
             self.label = label
             self._widget = widget
             self.default = default
-            self.min = min
-            self.max = max
+            self.min = min_
+            self.max = max_
             self.vals = vals.split("|") if vals else []
             self.suffix = suffix
             self.tooltip = tooltip

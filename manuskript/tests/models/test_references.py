@@ -87,7 +87,7 @@ def test_references(MWSampleProject):
     assert Ref.title(Ref.plotReference("999")) is None
 
     # Other stuff
-    assert Ref.type(Ref.plotReference(plotID)) == Ref.PlotLetter
+    assert Ref.get_type(Ref.plotReference(plotID)) == Ref.PlotLetter
     assert Ref.ID(Ref.textReference(textID)) == textID
     assert "Unknown" in Ref.tooltip(Ref.worldReference("999"))
     assert "Not a ref" in Ref.tooltip("<invalid>")
@@ -104,11 +104,11 @@ def test_references(MWSampleProject):
         assert "<a href" in Ref.refToLink(ref)
 
     # Open
-    assert Ref.open("<invalid>") is None
-    assert Ref.open(Ref.plotReference("999")) == False
-    assert Ref.open(Ref.characterReference("999")) == False
-    assert Ref.open(Ref.textReference("999")) == False
-    assert Ref.open(Ref.worldReference("999")) == False
+    assert Ref.open_("<invalid>") is None
+    assert Ref.open_(Ref.plotReference("999")) == False
+    assert Ref.open_(Ref.characterReference("999")) == False
+    assert Ref.open_(Ref.textReference("999")) == False
+    assert Ref.open_(Ref.worldReference("999")) == False
     for ref in refs:
-        assert Ref.open(ref) == True
-    assert Ref.open(Ref.EmptyRef.format("Z", 14, "")) == False
+        assert Ref.open_(ref) == True
+    assert Ref.open_(Ref.EmptyRef.format("Z", 14, "")) == False

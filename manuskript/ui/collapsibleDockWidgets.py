@@ -95,7 +95,7 @@ class collapsibleDockWidgets(QToolBar):
 
     def setCurrentGroup(self, group):
         self.currentGroup = group
-        for btn, action, widget, grp in self.otherWidgets:
+        for _, action, _, grp in self.otherWidgets:
             if not grp == group or grp is None:
                 action.setVisible(False)
             else:
@@ -111,7 +111,7 @@ class collapsibleDockWidgets(QToolBar):
         docks is not saved since it is included in `QMainWindow.saveState`.
         """
         state = []
-        for btn, act, w, grp in self.otherWidgets:
+        for btn, _, _, grp in self.otherWidgets:
             state.append(
                 (grp, btn.text(), btn.isChecked())
             )
@@ -120,7 +120,7 @@ class collapsibleDockWidgets(QToolBar):
     def restoreState(self, state):
         """Restores the state of the custom widgets."""
         for group, title, status in state:
-            for btn, act, widget, grp in self.otherWidgets:
+            for btn, _, widget, grp in self.otherWidgets:
                 # Strip '&' from both title and btn.text() to improve matching because
                 #   title contains "&" shortcut character whereas btn.text() does not.
                 if group == grp and title.replace('&', '') == btn.text().replace('&', ''):

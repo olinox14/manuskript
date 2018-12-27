@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import re
-
 from PyQt5.Qt import QApplication
 from PyQt5.QtCore import QTimer, QModelIndex, Qt, QEvent, pyqtSignal, QRegExp, QLocale, QPersistentModelIndex
 from PyQt5.QtGui import QTextBlockFormat, QTextCharFormat, QFont, QColor, QIcon, QMouseEvent, QTextCursor
@@ -22,7 +20,7 @@ except ImportError:
 
 class textEditView(QTextEdit):
     def __init__(self, parent=None, index=None, html=None, spellcheck=True,
-                 highlighting=False, dict="", autoResize=False):
+                 highlighting=False, dict_="", autoResize=False):
         QTextEdit.__init__(self, parent)
         self._column = Outline.text
         self._index = None
@@ -40,7 +38,7 @@ class textEditView(QTextEdit):
         self._highlighterClass = BasicHighlighter
 
         self.spellcheck = spellcheck
-        self.currentDict = dict if dict else settings.dict
+        self.currentDict = dict_ if dict_ else settings.dict_
         self._defaultFontSize = qApp.font().pointSize()
         self.highlighter = None
         self.setAutoResize(autoResize)

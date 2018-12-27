@@ -153,7 +153,7 @@ class cheatSheet(QWidget, Ui_cheatSheet):
                 self.view.setText(Ref.infos(ref))
 
     def openLink(self, link):
-        Ref.open(link)
+        Ref.open_(link)
 
     def linkHovered(self, link):
         if link:

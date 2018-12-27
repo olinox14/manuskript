@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import os
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QColor, QIcon
 from PyQt5.QtWidgets import QWidget, QFileDialog, QStyle

@@ -292,7 +292,7 @@ class abstractItem():
 
         for child in root:
             if child.tag == self.name:
-                item = self.__class__(self._model, xml=ET.tostring(child), parent=self)
+                _ = self.__class__(self._model, xml=ET.tostring(child), parent=self)
 
     def setFromXMLProcessMore(self, root):
         """

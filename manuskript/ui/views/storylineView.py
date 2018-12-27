@@ -110,14 +110,14 @@ class storylineView(QWidget, Ui_storylineView):
 
         # Get Max Level (max depth)
         root = self._mdlOutline.rootItem
-        def maxLevel(item, level=0, max=0):
+        def maxLevel(item, level=0, max_=0):
             if level > max:
-                max = level
+                max_ = level
             for c in item.children():
                 m = maxLevel(c, level + 1)
-                if m > max:
-                    max = m
-            return max
+                if m > max_:
+                    max_ = m
+            return max_
 
         MAX_LEVEL = maxLevel(root)
 
@@ -195,7 +195,7 @@ class storylineView(QWidget, Ui_storylineView):
 
                         # Tests if POV
                         scenePOV = False  # Will hold true of character is POV of the current text, not containing folder
-                        if references.type(ref) == references.CharacterLetter:
+                        if references.get_type(ref) == references.CharacterLetter:
                             ID = references.ID(ref)
                             c = child
                             while c:
@@ -238,7 +238,7 @@ class storylineView(QWidget, Ui_storylineView):
         ]
 
         for ref in trackedItems:
-            if references.type(ref) == references.CharacterLetter:
+            if references.get_type(ref) == references.CharacterLetter:
                 color = self._mdlCharacter.getCharacterByID(references.ID(ref)).color()
             else:
                 color = QColor(colors[i % len(colors)])
@@ -306,7 +306,7 @@ class RefCircle(QGraphicsEllipseItem):
         self.setPos(self.pos() + r1.center() - r2.center())
 
     def mouseDoubleClickEvent(self, event):
-        references.open(self._ref)
+        references.open_(self._ref)
 
     def hoverEnterEvent(self, event):
         self.multiplyDiameter(2)

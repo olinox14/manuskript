@@ -36,7 +36,7 @@ viewSettings = {
 
 # Application
 spellcheck = False
-dict = None
+dict_ = None
 corkSizeFactor = 100
 folderView = "cork"
 lastTab = 0
@@ -116,7 +116,7 @@ def initDefaultValues():
 
 def save(filename=None, protocol=None):
 
-    global spellcheck, dict, corkSliderFactor, viewSettings, corkSizeFactor, folderView, lastTab, openIndexes, \
+    global spellcheck, dict_, corkSliderFactor, viewSettings, corkSizeFactor, folderView, lastTab, openIndexes, \
            autoSave, autoSaveDelay, saveOnQuit, autoSaveNoChanges, autoSaveNoChangesDelay, outlineViewColumns, \
            corkBackground, corkStyle, fullScreenTheme, defaultTextType, textEditor, revisions, frequencyAnalyzer, viewMode, \
            saveToZip, dontShowDeleteWarning
@@ -200,8 +200,8 @@ def load(string, fromString=False, protocol=None):
                 viewSettings[cat][name] = default
 
     if "dict" in allSettings:
-        global dict
-        dict = allSettings["dict"]
+        global dict_
+        dict_ = allSettings["dict"]
 
     if "spellcheck" in allSettings:
         global spellcheck

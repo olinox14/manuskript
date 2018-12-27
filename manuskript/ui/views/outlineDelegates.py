@@ -127,9 +127,6 @@ class outlineCharacterDelegate(QStyledItemDelegate):
         return s + QSize(18, 0)
 
     def createEditor(self, parent, option, index):
-        item = index.internalPointer()
-        # if item.isFolder():  # No POV for folders
-        # return
 
         editor = QComboBox(parent)
         editor.setAutoFillBackground(True)
@@ -222,8 +219,6 @@ class outlineGoalPercentageDelegate(QStyledItemDelegate):
             return
 
         p = toFloat(item.data(Outline.goalPercentage))
-
-        typ = item.data(Outline.type)
 
         level = item.level()
         if self.rootIndex and self.rootIndex.isValid():
@@ -321,7 +316,6 @@ class outlineLabelDelegate(QStyledItemDelegate):
         return s + QSize(18, 0)
 
     def createEditor(self, parent, option, index):
-        item = index.internalPointer()
         editor = QComboBox(parent)
         # editor.setAutoFillBackground(True)
         editor.setFrame(False)

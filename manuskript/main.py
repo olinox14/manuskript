@@ -7,7 +7,7 @@ import traceback
 
 from PyQt5.QtCore import QLocale, QTranslator, QSettings
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, qApp, QMessageBox
+from PyQt5.QtWidgets import QApplication, qApp
 from path import Path
 import yaml
 

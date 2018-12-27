@@ -17,10 +17,10 @@ except ImportError:
 
 
 class MDEditCompleter(MDEditView):
-    def __init__(self, parent=None, index=None, html=None, spellcheck=True, highlighting=False, dict="",
+    def __init__(self, parent=None, index=None, html=None, spellcheck=True, highlighting=False, dict_="",
                  autoResize=False):
         MDEditView.__init__(self, parent=parent, index=index, html=html, spellcheck=spellcheck, highlighting=True,
-                              dict=dict, autoResize=autoResize)
+                              dict_=dict_, autoResize=autoResize)
 
         self.completer = None
         self.setMouseTracking(True)
@@ -134,7 +134,7 @@ class MDEditCompleter(MDEditView):
             cursor = self.cursorForPosition(event.pos())
             ref = self.refUnderCursor(cursor)
             if ref:
-                Ref.open(ref)
+                Ref.open_(ref)
                 qApp.restoreOverrideCursor()
 
     def resizeEvent(self, event):

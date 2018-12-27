@@ -55,21 +55,21 @@ class abstractPlainText(markdown):
 
 
 class pandocSetting:
-    def __init__(self, arg, type, format, label, widget=None, default=None, min=None, max=None, vals=None, suffix=""):
+    def __init__(self, arg, type_, format_, label, widget=None, default=None, min_=None, max_=None, vals=None, suffix=""):
         self.arg = arg  # start with EXT for extensions
-        self.type = type
+        self.type = type_
         self.label = label
-        self.formats = format
+        self.formats = format_
         if "html" in self.formats:
             self.formats += " slidy dzslides revealjs slideous s5 html5"
         self.widget = widget
         self.default = default
-        self.min = min
-        self.max = max
+        self.min = min_
+        self.max = max_
         self.vals = vals.split("|") if vals else []
         self.suffix = suffix
 
-    def isValid(self, format):
+    def isValid(self, format_):
         """Return whether the specific setting is active with the given format."""
 
         # Empty formats means all
@@ -77,11 +77,11 @@ class pandocSetting:
             return True
 
         # "html" in "html markdown latex"
-        elif format in self.formats:
+        elif format_ in self.formats:
             return True
 
         # "markdown_strict" in "html markdown latex"
-        elif [f for f in self.formats.split(" ") if format in f]:
+        elif [f for f in self.formats.split(" ") if format_ in f]:
             return True
 
         return False
@@ -99,7 +99,7 @@ class pandocSettings(markdownSettings):
 
         "TOC-depth":    pandocSetting("--toc-depth=", "number", "",
                                       qApp.translate("Export", "Number of sections level to include in TOC: "),
-                                      default=3, min=1, max=6),
+                                      default=3, min_=1, max_=6),
         # pandoc v1 only
         "smart":        pandocSetting("--smart", "checkbox", "",
                                       qApp.translate("Export", "Typographically correct output")),
@@ -108,7 +108,7 @@ class pandocSettings(markdownSettings):
                                       qApp.translate("Export", "Normalize the document (cleaner)")),
         "base-header":  pandocSetting("--base-header-level=", "number", "",
                                       qApp.translate("Export", "Specify the base level for headers: "),
-                                      default=1, min=1),
+                                      default=1, min_=1),
         "disable-YAML": pandocSetting("EXT-yaml_metadata_block", "checkbox", "",
                                       qApp.translate("Export", "Disable YAML metadata block.\nUse that if you get YAML related error.")),
 
@@ -141,7 +141,7 @@ class pandocSettings(markdownSettings):
                                       vals="letter|A4|A5"),
         "latex-fs":     pandocSetting("--variable=fontsize:", "number", "pdf latex",  # FIXME: does not work with default template
                                       qApp.translate("Export", "Font size:"),
-                                      min=8, max=88, default=12, suffix="pt"),
+                                      min_=8, max_=88, default=12, suffix="pt"),
         "latex-class":  pandocSetting("--variable=documentclass:", "combo", "pdf latex",
                                      qApp.translate("Export", "Class:"),
                                      vals="article|report|book|memoir"),

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 import imp
-import os
 
 from PyQt5.QtCore import (pyqtSignal, QSignalMapper, QTimer, QSettings, Qt,
                           QRegExp, QSize, QModelIndex)
@@ -826,7 +825,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tabMain.currentChanged.connect(self.toolbar.setCurrentGroup)
         self.tabMain.currentChanged.connect(self.tabMainChanged)
 
-        qApp.focusChanged.connect(self.focusChanged)
+        qApp.focusChanged.connect(self.focusChanged)    #@UndefinedVariable
 
     def makeConnections(self):
 
@@ -1279,9 +1278,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for i in enchant.list_dicts():
             a = QAction(str(i[0]), self)
             a.setCheckable(True)
-            if settings.dict is None:
+            if settings.dict_ is None:
                 settings.dict = enchant.get_default_language()
-            if str(i[0]) == settings.dict:
+            if str(i[0]) == settings.dict_:
                 a.setChecked(True)
             a.triggered.connect(self.setDictionary, F.AUC)
             self.menuDictGroup.addAction(a)
@@ -1299,7 +1298,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # Find all textEditView from self, and toggle spellcheck
                 for w in self.findChildren(textEditView, QRegExp(".*"),
                                            Qt.FindChildrenRecursively):
-                    w.setDict(settings.dict)
+                    w.setDict(settings.dict_)
 
     def openPyEnchantWebPage(self):
         F.openURL("http://pythonhosted.org/pyenchant/")

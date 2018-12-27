@@ -4,7 +4,6 @@
 # Version 0 of file saving format.
 # Was used at the beginning and up until version XXX when
 # it was superseded by Version 1, which is more open and flexible
-import os
 import zipfile
 
 from PyQt5.QtCore import QModelIndex, Qt
@@ -192,14 +191,12 @@ def loadStandardItemModelXML(mdl, xml, fromString=False):
 
     if not fromString:
         try:
-            tree = ET.parse(xml)
+            _ = ET.parse(xml)
         except:
             print("Failed.")
             return
     else:
         root = ET.fromstring(xml)
-
-    # root = tree.getroot()
 
     # Header
     hLabels = []
@@ -208,11 +205,6 @@ def loadStandardItemModelXML(mdl, xml, fromString=False):
         hLabels.append(l.attrib["text"])
     for l in root.find("header").find("vertical").findall("label"):
         vLabels.append(l.attrib["text"])
-
-    # print(root.find("header").find("vertical").text)
-
-    # mdl.setVerticalHeaderLabels(vLabels)
-    # mdl.setHorizontalHeaderLabels(hLabels)
 
     # Populates with empty items
     for _ in enumerate(vLabels):

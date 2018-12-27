@@ -2,7 +2,6 @@
 # --!-- coding: utf8 --!--
 
 # Lots of stuff from here comes from the excellent focuswriter.
-import os
 import re
 
 from PyQt5.QtCore import QSettings, QRect, QSize, Qt, QPoint, QFile, QIODevice, QTextStream

@@ -153,10 +153,10 @@ class BasicHighlighter(QSyntaxHighlighter):
             for word_object in re.finditer(WORDS, textedText):
                 if (self.editor._dict
                         and not self.editor._dict.check(word_object.group(1))):
-                    format = self.format(word_object.start(1))
-                    format.setUnderlineColor(self._misspelledColor)
+                    format_ = self.format(word_object.start(1))
+                    format_.setUnderlineColor(self._misspelledColor)
                     # SpellCheckUnderline fails with some fonts
-                    format.setUnderlineStyle(QTextCharFormat.WaveUnderline)
+                    format_.setUnderlineStyle(QTextCharFormat.WaveUnderline)
                     self.setFormat(word_object.start(1),
                                    word_object.end(1) - word_object.start(1),
-                                   format)
+                                   format_)

@@ -97,7 +97,7 @@ def log(*args):
         print(" ".join(str(a) for a in args))
 
 
-def saveProject(zip=None):
+def saveProject(zip_=None):
     """
     Saves the project. If zip is False, the project is saved as a multitude of plain-text files for the most parts
     and some XML or zip? for settings and stuff.
@@ -107,10 +107,10 @@ def saveProject(zip=None):
     settings.
     @return: True if successful, False otherwise.
     """
-    if zip is None:
-        zip = settings.saveToZip
+    if zip_ is None:
+        zip_ = settings.saveToZip
 
-    log("\n\nSaving to:", "zip" if zip else "folder")
+    log("\n\nSaving to:", "zip" if zip_ else "folder")
 
     # List of files to be written
     files = []
@@ -308,7 +308,7 @@ def saveProject(zip=None):
     ####################################################################################################################
     # Save to zip
 
-    if zip:
+    if zip_:
         # project = os.path.join(
         #     os.path.dirname(project),
         #     "_" + os.path.basename(project)
@@ -330,7 +330,7 @@ def saveProject(zip=None):
         global cache
 
         # Project path
-        dir = project.parent
+        dir_ = project.parent
 
         # Folder containing file: name of the project file (without .msk extension)
         folder, _ = project.parent.splitext()
@@ -340,15 +340,15 @@ def saveProject(zip=None):
 
         # If cache is empty (meaning we haven't loaded from disk), we wipe folder, just to be sure.
         if not cache:
-            if Path(dir / folder).exists():
-                shutil.rmtree(dir / folder)
+            if Path(dir_ / folder).exists():
+                shutil.rmtree(dir_ / folder)
 
         # Moving files that have been renamed
         for old, new in moves:
 
             # Get full path
-            oldPath = dir / folder / old
-            newPath = dir / folder / new
+            oldPath = dir_ / folder / old
+            newPath = dir_ / folder / new
 
             # Move the old file to the new place
             try:
@@ -369,7 +369,7 @@ def saveProject(zip=None):
 
         # Writing files
         for path, content in files:
-            filename = dir / folder / path
+            filename = dir_ / folder / path
             filename.parent.makedirs_p()
 
             # Check if content is in cache, and write if necessary
@@ -387,7 +387,7 @@ def saveProject(zip=None):
 
         # Removing phantoms
         for path in [p for p in cache if p not in [p for p, c in files]]:
-            filename = dir / folder / path
+            filename = dir_ / folder / path
             log("* Removing", path)
 
             if filename.isdir():
@@ -399,9 +399,9 @@ def saveProject(zip=None):
             cache.pop(path, 0)
 
         # Removing empty directories
-        for root, dirs, files in Path(dir / folder / "outline").walk():
-            for dir in dirs:
-                newDir = root / dir
+        for root, dirs, files in Path(dir_ / folder / "outline").walk():
+            for d in dirs:
+                newDir = root / d
                 newDir.removedirs_p()
 
         # Write the project file's content
@@ -606,7 +606,7 @@ def outlineToMMD(item):
 # LOAD
 ########################################################################################################################
 
-def loadProject(project, zip=None):
+def loadProject(project, zip_=None):
     """
     Loads a project.
     @param project: the filename of the project to open.
@@ -621,28 +621,28 @@ def loadProject(project, zip=None):
     ####################################################################################################################
     # Read and store everything in a dict
 
-    log("\nLoading {} ({})".format(project, "ZIP" if zip else "not zip"))
-    if zip:
+    log("\nLoading {} ({})".format(project, "ZIP" if zip_ else "not zip"))
+    if zip_:
         files = loadFilesFromZip(project)
 
         # Decode files
         for f in files:
-            if f[-4:] not in [".xml", "opml"]:
+            if f.ext not in [".xml", ".opml"]:
                 files[f] = files[f].decode("utf-8")
 
     else:
         # Project path
-        dir = project.parent
+        dir_ = project.parent
 
         # Folder containing file: name of the project file (without .msk extension)
         folder, _ = project.parent.splitext()
 
         # The full path towards the folder containing files
-        path = dir / folder / ""
+        path_ = dir_ / folder / ""
 
         files = {}
-        for dirpath, _, filenames in path.walk():
-            p = dirpath.replace(path, "")       #TODO: Use a function like relpath instead of the replace
+        for dirpath, _, filenames in path_.walk():
+            p = dirpath.replace(path_, "")       #TODO: Use a function like relpath instead of the replace
             # Skip directories that begin with a period
             if p[:1] == ".":
                 continue
@@ -676,7 +676,7 @@ def loadProject(project, zip=None):
         errors.append("settings.txt")
 
     # Just to be sure
-    settings.saveToZip = zip
+    settings.saveToZip = zip_
     settings.defaultTextType = "md"
 
     ####################################################################################################################
@@ -930,8 +930,8 @@ def outlineFromMMD(text, parent):
 
     # Store metadata
     for k in md:
-        if k in Outline.__members__:
-            item.setData(Outline.__members__[k], str(md[k]))
+        if k in Outline.__members__:                              #@UndefinedVariable
+            item.setData(Outline.__members__[k], str(md[k]))            #@UndefinedVariable
 
     # Store body
     item.setData(Outline.text, str(body))

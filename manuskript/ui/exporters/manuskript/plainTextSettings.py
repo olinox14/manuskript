@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 import json
-import os
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QFontMetrics, QFont
@@ -296,23 +295,23 @@ class exporterSettings(QWidget, Ui_exporterSettings):
 
         return self.settings
 
-    def sepCmbChanged(self, index):
+    def sepCmbChanged(self, _):
         cmb = self.sender()
-        map = {
+        map_ = {
             self.cmbSepFF: self.txtSepFF,
             self.cmbSepTT: self.txtSepTT,
             self.cmbSepFT: self.txtSepFT,
             self.cmbSepTF: self.txtSepTF
         }
-        map[cmb].setEnabled(cmb.currentData() == "custom")
+        map_[cmb].setEnabled(cmb.currentData() == "custom")
 
     def transCmbChanged(self, index):
         cmb = self.sender()
-        map = {
+        map_ = {
             self.cmbTransDoubleQuotes: (self.txtTransDoubleQuotesA, self.lblTransDoubleQuotes, self.txtTransDoubleQuotesB),
             self.cmbTransSingleQuote:  (self.txtTransSingleQuoteA,  self.lblTransSingleQuote,  self.txtTransSingleQuoteB),
         }
-        for txt in map[cmb]:
+        for txt in map_[cmb]:
             txt.setVisible(cmb.currentData() == "custom")
 
     def contentUpdateTable(self):
