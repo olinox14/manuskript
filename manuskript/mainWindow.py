@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QMainWindow, QHeaderView, qApp, QMenu, QActionGroup,
 
 from manuskript import loadSave
 from manuskript import settings
+from manuskript.constants import DEBUG
 from manuskript.enums import Character, PlotStep, Plot, World, Outline
 from manuskript.functions import wordCount, findWidgetsOfClass
 import manuskript.functions as F
@@ -54,7 +55,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     TabRedac = 6
     TabDebug = 7
 
-    SHOW_DEBUG_TAB = False
+    SHOW_DEBUG_TAB = DEBUG
 
     def __init__(self):
         QMainWindow.__init__(self)
