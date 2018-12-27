@@ -7,7 +7,7 @@ from PyQt5.QtCore import QT_VERSION_STR
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget
 
-from manuskript.functions import appPath
+from manuskript.constants import ICONS_DIR
 from manuskript.ui.about_ui import Ui_about
 from manuskript.version import getVersion
 
@@ -21,10 +21,10 @@ class aboutDialog(QWidget, Ui_about):
 
     def populateFields(self):
         # Fill in all the fields in the About dialog
-        iconPic = appPath("icons/Manuskript/icon-64px.png")
+        iconPic = ICONS_DIR / "Manuskript/icon-64px.png"
         self.setWindowIcon(QIcon(iconPic))
 
-        logoPic = QPixmap(appPath("icons/Manuskript/logo-400x104.png"))
+        logoPic = QPixmap(ICONS_DIR / "Manuskript/logo-400x104.png")
         self.labelLogo.setPixmap(logoPic)
 
         self.labelManuskriptVersion.setText(

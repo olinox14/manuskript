@@ -5,6 +5,9 @@
 
 import pytest
 
+from manuskript.constants import MAIN_DIR
+
+
 @pytest.fixture
 def MW():
     """
@@ -51,11 +54,9 @@ def MWSampleProject(MW):
     Creates a MainWindow and load a copy of the Acts sample project.
     """
 
-    from manuskript import functions as F
-    import os
     # Get the path of the first sample project. We assume it is here.
-    spDir = F.appPath("sample-projects")
-    lst = os.listdir(spDir)
+    spDir = MAIN_DIR / "sample-projects"
+    lst = spDir.dirs()
     # We assume it's saved in folder, so there is a `name.msk` file and a
     # `name` folder.
     src = next((f for f in lst if f[-4:] == ".msk" and f[:-4] in lst))

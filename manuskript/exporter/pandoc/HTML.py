@@ -5,7 +5,6 @@ from PyQt5.QtCore import QUrl
 
 from manuskript.exporter.manuskript import HTML as MskHTML
 from manuskript.exporter.pandoc.abstractPlainText import abstractPlainText
-import os
 
 
 class HTML(abstractPlainText):

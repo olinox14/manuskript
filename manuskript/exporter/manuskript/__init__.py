@@ -7,7 +7,6 @@ from manuskript.exporter.basic import basicExporter, basicFormat
 from manuskript.exporter.manuskript.HTML import HTML
 from manuskript.exporter.manuskript.markdown import markdown
 from manuskript.exporter.manuskript.plainText import plainText
-from manuskript.functions import appPath
 
 
 class manuskriptExporter(basicExporter):

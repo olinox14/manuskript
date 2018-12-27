@@ -13,8 +13,9 @@ from path import Path
 
 from manuskript import loadSave
 from manuskript import settings
+from manuskript.constants import MAIN_DIR
 from manuskript.enums import Outline
-from manuskript.functions import mainWindow, iconFromColor, appPath
+from manuskript.functions import mainWindow, iconFromColor
 from manuskript.models import outlineItem, outlineModel
 from manuskript.models.characterModel import characterModel
 from manuskript.models.plotModel import plotModel
@@ -268,7 +269,7 @@ class welcome(QWidget, Ui_welcome):
             # Change button text
             self.btnCreate.setText("Open {}".format(name))
             # Load project
-            self.mw.loadProject(appPath("sample-projects/{}".format(name)))
+            self.mw.loadProject(MAIN_DIR / "sample-projects/{}".format(name))
 
     def updateTemplate(self):
         # Clear layout
@@ -406,7 +407,7 @@ class welcome(QWidget, Ui_welcome):
 
         # Add Demo project
         item = self.addTopLevelItem(self.tr("Demo projects"))
-        dir = QDir(appPath("sample-projects"))
+        dir = QDir(MAIN_DIR / "sample-projects")
         for f in dir.entryList(["*.msk"], filters=QDir.Files):
             sub = QTreeWidgetItem(item, [f[:-4]])
             sub.setData(0, Qt.UserRole, f)

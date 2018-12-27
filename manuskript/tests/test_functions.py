@@ -4,6 +4,8 @@
 """Tests for functions"""
 
 from manuskript import functions as F
+from manuskript.constants import MAIN_DIR
+
 
 def test_wordCount():
     assert F.wordCount("In the beginning was the word.") == 6
@@ -75,7 +77,7 @@ def test_outlineItemColors():
 
 def test_paths():
 
-    assert F.appPath() is not None
+    assert MAIN_DIR is not None
     assert F.writablePath is not None
     assert len(F.allPaths("suffix")) == 2
     assert F.tempFile("yop") is not None

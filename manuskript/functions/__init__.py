@@ -215,10 +215,6 @@ def colorifyPixmap(pixmap, color):
     return pixmap
 
 
-def appPath(suffix=None):
-    return MAIN_DIR / suffix if suffix else MAIN_DIR
-
-
 def writablePath(suffix=None):
     if hasattr(QStandardPaths, "AppLocalDataLocation"):
         p = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)
@@ -235,7 +231,7 @@ def writablePath(suffix=None):
 def allPaths(suffix=None):
     paths = []
     # src directory
-    paths.append(appPath(suffix))
+    paths.append(MAIN_DIR / suffix if suffix else MAIN_DIR)
     # user writable directory
     paths.append(writablePath(suffix))
     return paths

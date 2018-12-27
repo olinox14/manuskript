@@ -10,7 +10,8 @@ from PyQt5.QtGui import QPixmap, QPainter, QColor, QBrush, QImage, QTextBlockFor
 from PyQt5.QtWidgets import qApp, QFrame
 from path import Path
 
-from manuskript.functions import appPath, findBackground, findFirstFile
+from manuskript.constants import MAIN_DIR
+from manuskript.functions import findBackground, findFirstFile
 from manuskript.ui.views.MDEditView import MDEditView
 
 
@@ -276,7 +277,7 @@ def addThemePreviewText(pixmap, themeDatas, screenRect):
     previewText.setFrameStyle(QFrame.NoFrame)
     previewText.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
     previewText.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-    f = QFile(appPath("resources/themes/preview.txt"))
+    f = QFile(MAIN_DIR / "resources/themes/preview.txt")
     f.open(QIODevice.ReadOnly)
     previewText.setPlainText(QTextStream(f).readAll())
 

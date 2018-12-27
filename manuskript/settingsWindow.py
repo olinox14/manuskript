@@ -11,8 +11,9 @@ from PyQt5.QtWidgets import qApp
 from path import Path
 
 from manuskript import settings
+from manuskript.constants import MAIN_DIR
 from manuskript.enums import Outline
-from manuskript.functions import allPaths, iconColor, writablePath, appPath, findWidgetsOfClass
+from manuskript.functions import allPaths, iconColor, writablePath, findWidgetsOfClass
 from manuskript.functions import mainWindow, findBackground, themeIcon
 from manuskript.ui import style as S
 from manuskript.ui.editors.tabSplitter import tabSplitter
@@ -694,7 +695,7 @@ class settingsWindow(QWidget, Ui_Settings):
             lst = [f for f in p.files() if p.ext == ".theme"]
             for t in lst:
                 theme = p / t
-                editable = not appPath() in theme
+                editable = not MAIN_DIR in theme
                 n = getThemeName(theme)
 
                 item = QListWidgetItem(n)

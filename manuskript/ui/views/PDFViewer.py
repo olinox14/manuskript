@@ -2,9 +2,9 @@
 # --!-- coding: utf8 --!--
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QLabel
-from manuskript.ui.views.webView import  webEngine
 
-from manuskript.functions import appPath
+from manuskript.constants import MAIN_DIR
+from manuskript.ui.views.webView import  webEngine
 
 
 if webEngine == "QtWebKit":
@@ -14,7 +14,7 @@ if webEngine == "QtWebKit":
 
 
     class PDFViewer(QWebView):
-        pdf_viewer_page = "file://"+appPath('libs/pdf.js/web/viewer.html')
+        pdf_viewer_page = "file://"+ (MAIN_DIR / 'libs/pdf.js/web/viewer.html')
 
         def __init__(self, parent=None):
             QWebView.__init__(self, parent)
@@ -33,7 +33,7 @@ elif webEngine == "QtWebEngine":
 
 
     class PDFViewer(QWebEngineView):
-        pdf_viewer_page = "file://"+appPath('libs/pdf.js/web/viewer.html')
+        pdf_viewer_page = "file://"+ (MAIN_DIR / 'libs/pdf.js/web/viewer.html')
 
         def __init__(self, parent=None):
             QWebEngineView.__init__(self, parent)

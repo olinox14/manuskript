@@ -4,7 +4,8 @@ from PyQt5.QtCore import QModelIndex, QRect, Qt, QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, qApp
 
-from manuskript.functions import mainWindow, appPath
+from manuskript.constants import ICONS_DIR
+from manuskript.functions import mainWindow
 from manuskript.ui import style
 from manuskript.ui.editors.tabSplitter_ui import Ui_tabSplitter
 
@@ -132,7 +133,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
         self.updateTargetIcon(self.isTarget)
 
     def updateTargetIcon(self, val):
-        icon = QIcon.fromTheme("set-target", QIcon(appPath("icons/NumixMsk/256x256/actions/set-target.svg")))
+        icon = QIcon.fromTheme("set-target", QIcon(ICONS_DIR / "NumixMsk/256x256/actions/set-target.svg"))
         if not val:
             icon = QIcon(icon.pixmap(128, 128, icon.Disabled))
         self.btnTarget.setIcon(icon)
