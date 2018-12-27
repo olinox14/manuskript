@@ -2,16 +2,17 @@
 #--!-- coding: utf8 --!--
 
 import os
-import re
 from random import *
+import re
 
-from PyQt5.QtCore import Qt, QRect, QStandardPaths, QObject, QRegExp, QDir
 from PyQt5.QtCore import QUrl, QTimer
+from PyQt5.QtCore import Qt, QRect, QStandardPaths, QObject, QRegExp, QDir
 from PyQt5.QtGui import QBrush, QIcon, QPainter, QColor, QImage, QPixmap
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import qApp, QTextEdit
 
 from manuskript.enums import Outline
+
 
 # Used to detect multiple connections
 AUC = Qt.AutoConnection | Qt.UniqueConnection
@@ -389,7 +390,7 @@ def inspect():
     """
     Debugging tool. Call it to see a stack of calls up to that point.
     """
-    import inspect, os
+    import inspect
     print("-----------------------")
     for s in inspect.stack()[1:]:
         print(" * {}:{} // {}".format(

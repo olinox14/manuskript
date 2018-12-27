@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import QWidget, QGraphicsScene, QGraphicsSimpleTextItem, QM
     QGraphicsLineItem, QGraphicsEllipseItem
 
 from manuskript.enums import Outline
-from manuskript.models import references
 import manuskript.functions as F
+from manuskript.models import references
 from manuskript.ui.views.storylineView_ui import Ui_storylineView
 
 

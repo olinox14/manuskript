@@ -4,13 +4,11 @@ from PyQt5.QtCore import pyqtSignal, Qt, QTimer, QRect
 from PyQt5.QtGui import QBrush, QCursor, QPalette, QFontMetrics, QColor
 from PyQt5.QtWidgets import QWidget, QListWidgetItem, QToolTip, QStyledItemDelegate, QStyle
 
-from manuskript.enums import Character
 from manuskript.enums import Plot
 from manuskript.functions import mainWindow
+from manuskript.models import references as Ref
 from manuskript.ui import style as S
 from manuskript.ui.cheatSheet_ui import Ui_cheatSheet
-from manuskript.models import references as Ref
-from manuskript.ui.editors.completer import completer
 
 
 class cheatSheet(QWidget, Ui_cheatSheet):

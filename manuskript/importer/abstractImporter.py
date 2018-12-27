@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import os
-import shutil
-import subprocess
-
-from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QCheckBox, QHBoxLayout, \
                             QLabel, QSpinBox, QComboBox, QLineEdit
-from manuskript.ui.collapsibleGroupBox2 import collapsibleGroupBox2
+
 from manuskript.ui import style
+from manuskript.ui.collapsibleGroupBox2 import collapsibleGroupBox2
 
 
 class abstractImporter:
@@ -22,7 +18,7 @@ class abstractImporter:
     name = ""
     description = ""
     fileFormat = ""  # File format accepted. For example: "OPML Files (*.opml)"
-                     # For folder, use "<<folder>>"
+                    # For folder, use "<<folder>>"
     icon = ""
     engine = "Internal"
 

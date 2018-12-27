@@ -16,6 +16,7 @@ from manuskript import settings
 from manuskript.functions import iconColor, iconFromColorString, mainWindow
 from manuskript.models.characterModel import Character, CharacterInfo
 
+
 try:
     import zlib  # Used with zipfile for compression
 
@@ -213,9 +214,9 @@ def loadStandardItemModelXML(mdl, xml, fromString=False):
     # mdl.setHorizontalHeaderLabels(hLabels)
 
     # Populates with empty items
-    for i in enumerate(vLabels):
+    for _ in enumerate(vLabels):
         row = []
-        for r in enumerate(hLabels):
+        for _ in enumerate(hLabels):
             row.append(QStandardItem())
         mdl.appendRow(row)
 

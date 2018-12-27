@@ -151,7 +151,7 @@ class plotTreeView(QTreeWidget):
                     f.setBold(True)
                     item.setFont(0, f)
 
-                    for subID, name, summary in self._model.getSubPlotsByID(ID):
+                    for _, name, _ in self._model.getSubPlotsByID(ID):
                         sub = QTreeWidgetItem(item, [name])
                         # sub.setData(0, Qt.UserRole, "{}:{}".format(ID, subID))
                         sub.setData(0, Qt.UserRole, ID)
@@ -171,7 +171,6 @@ class plotTreeView(QTreeWidget):
 
     def mimeData(self, items):
         mimeData = QMimeData()
-        encodedData = ""
 
         root = ET.Element("outlineItems")
 

@@ -3,7 +3,7 @@
 
 import re
 
-from PyQt5.QtCore import QRegExp, Qt, QTimer, QRect, QPoint
+from PyQt5.QtCore import QRegExp, Qt, QRect, QPoint
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import qApp, QToolTip
 
@@ -11,7 +11,6 @@ from manuskript.ui.views.textEditView import textEditView
 from manuskript.ui.highlighters import MarkdownHighlighter
 from manuskript import settings
 from manuskript.ui.highlighters.markdownEnums import MarkdownState as MS
-from manuskript.ui.highlighters.markdownTokenizer import MarkdownTokenizer as MT
 from manuskript import functions as F
 
 
@@ -350,15 +349,15 @@ class MDEditView(textEditView):
             ("~~(.*?)~~", "\\1", None), # strike
             (r"\^(.*?)\^", "\\1", None), # superscript
             ("~(.*?)~", "\\1", None), # subscript
-            (r"<!--\s*(.*?)\s*-->", "\\1", re.S), # comments
+            (r"<!--\s*(.*?)\s*-->", "\\1", re.S), # comments    @UndefinedVariable
 
             # LINES OR BLOCKS
-            (r"^#*\s*(.+?)\s*", "\\1", re.M), # ATX
-            (r"^[=-]*$", "", re.M), # Setext
-            (r"^`*$", "", re.M), # Code block fenced
-            (r"^\s*[-+*]\s*(.*?)\s*$", "\\1", re.M), # Bullet List
-            (r"^\s*[0-9a-z](\.|\))\s*(.*?)\s*$", "\\2", re.M), # Bullet List
-            (r"\s*[>\s]*(.*?)\s*$", "\\1", re.M), # Code block and blockquote
+            (r"^#*\s*(.+?)\s*", "\\1", re.M), # ATX   @UndefinedVariable
+            (r"^[=-]*$", "", re.M), # Setext    @UndefinedVariable
+            (r"^`*$", "", re.M), # Code block fenced    @UndefinedVariable
+            (r"^\s*[-+*]\s*(.*?)\s*$", "\\1", re.M), # Bullet List    @UndefinedVariable
+            (r"^\s*[0-9a-z](\.|\))\s*(.*?)\s*$", "\\2", re.M), # Bullet List    @UndefinedVariable
+            (r"\s*[>\s]*(.*?)\s*$", "\\1", re.M), # Code block and blockquote    @UndefinedVariable
 
             ]:
             text = re.sub(reg, rep, text, flags if flags else 0)
@@ -368,7 +367,7 @@ class MDEditView(textEditView):
         # Remove stuff that musn't be counted
         # FIXME: clear also block formats
         for reg, rep, flags in [
-            ("<!--.*-->", "", re.S), # comments
+            ("<!--.*-->", "", re.S), # comments     @UndefinedVariable
             ]:
             text = re.sub(reg, rep, text, flags if flags else 0)
         return text
@@ -588,6 +587,7 @@ class imageTooltiper:
     manager = QNetworkAccessManager()
     data = {}
 
+    @staticmethod
     def fromUrl(url, pos, editor):
         cache = imageTooltiper.cache
         imageTooltiper.editor = editor
@@ -608,6 +608,7 @@ class imageTooltiper:
         imageTooltiper.data[QUrl(url)] = (pos, url)
         imageTooltiper.manager.get(request)
 
+    @staticmethod
     def finished(reply):
         cache = imageTooltiper.cache
         pos, url = imageTooltiper.data[reply.url()]
@@ -621,9 +622,11 @@ class imageTooltiper:
             cache[url] = (True, px)
             imageTooltiper.tooltip(px, pos)
 
+    @staticmethod
     def tooltipError(message, pos):
         imageTooltiper.editor.doTooltip(pos, message)
 
+    @staticmethod
     def tooltip(image, pos):
         px = image
         buffer = QBuffer()

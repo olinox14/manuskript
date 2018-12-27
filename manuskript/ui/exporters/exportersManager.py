@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import os
-from collections import OrderedDict
-
 from PyQt5.QtCore import QSize
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QListWidgetItem, QFileDialog
 
 from manuskript import exporter
-from manuskript.ui.exporters.exportersManager_ui import Ui_ExportersManager
 from manuskript.ui import style as S
+from manuskript.ui.exporters.exportersManager_ui import Ui_ExportersManager
 
 
 class exportersManager(QWidget, Ui_ExportersManager):

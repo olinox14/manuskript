@@ -8,7 +8,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QFrame, QWidget, QPushButton, qApp, QStyle, QComboBox, QLabel, QScrollBar, \
     QStyleOptionSlider, QHBoxLayout, QVBoxLayout, QMenu, QAction
 
-# Spell checker support
 from manuskript import settings
 from manuskript.enums import Outline
 from manuskript.functions import allPaths, drawProgress
@@ -17,6 +16,8 @@ from manuskript.ui.editors.themes import findThemePath, generateTheme, setThemeE
 from manuskript.ui.editors.themes import loadThemeDatas
 from manuskript.ui.views.MDEditView import MDEditView
 
+
+# Spell checker support
 try:
     import enchant
 except ImportError:
@@ -226,7 +227,7 @@ class fullScreenEditor(QWidget):
             QWidget.keyPressEvent(self, event)
 
     def mouseMoveEvent(self, event):
-        r = self.geometry()
+        _ = self.geometry()
 
         for w in [self.scrollBar, self.topPanel,
                   self.bottomPanel, self.leftPanel]:

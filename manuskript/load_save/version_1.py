@@ -6,25 +6,25 @@
 # (except for some elements), allowing collaborative work
 # versioning and third-party editing.
 
+from collections import OrderedDict
 import os
 import re
 import shutil
 import string
 import zipfile
-from collections import OrderedDict
 
 from PyQt5.QtCore import Qt, QModelIndex
 from PyQt5.QtGui import QColor, QStandardItem
-
-from manuskript import settings
-from manuskript.enums import Character, World, Plot, PlotStep, Outline
-from manuskript.functions import mainWindow, iconColor, iconFromColorString
-from manuskript.converters import HTML2PlainText
 from lxml import etree as ET
 
+from manuskript import settings
+from manuskript.converters import HTML2PlainText
+from manuskript.enums import Character, World, Plot, PlotStep, Outline
+from manuskript.functions import mainWindow, iconColor, iconFromColorString
 from manuskript.load_save.version_0 import loadFilesFromZip
-from manuskript.models.characterModel import CharacterInfo
 from manuskript.models import outlineItem
+from manuskript.models.characterModel import CharacterInfo
+
 
 try:
     import zlib  # Used with zipfile for compression
@@ -645,7 +645,7 @@ def loadProject(project, zip=None):
         path = os.path.join(dir, folder, "")
 
         files = {}
-        for dirpath, dirnames, filenames in os.walk(path):
+        for dirpath, _, filenames in os.walk(path):
             p = dirpath.replace(path, "")
             # Skip directories that begin with a period
             if p[:1] == ".":
@@ -1007,7 +1007,7 @@ def getStandardItemRowFromXMLEnum(item, enum):
     @return: list of QStandardItems
     """
     row = []
-    for i in range(len(enum)):
+    for _ in range(len(enum)):
         row.append(QStandardItem(""))
 
     for name in item.attrib:

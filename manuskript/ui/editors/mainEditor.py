@@ -10,10 +10,10 @@ from PyQt5.QtWidgets import QWidget, qApp
 from manuskript import settings
 from manuskript.enums import Outline
 from manuskript.functions import AUC, mainWindow, drawProgress, appPath
-from manuskript.ui import style
 from manuskript.ui.editors.editorWidget import editorWidget
 from manuskript.ui.editors.fullScreenEditor import fullScreenEditor
 from manuskript.ui.editors.mainEditor_ui import Ui_mainEditor
+
 
 try:
     locale.setlocale(locale.LC_ALL, '')

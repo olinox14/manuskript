@@ -53,7 +53,7 @@ class pandocExporter(basicExporter):
         if outputfile:
             args.append("--output={}".format(outputfile))
 
-        for name, col, var in [
+        for _, col, var in [
             ("Title", 0, "title"),
             ("Subtitle", 1, "subtitle"),
             ("Serie", 2, ""),

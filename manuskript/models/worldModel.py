@@ -134,7 +134,7 @@ class worldModel(QStandardItemModel):
             title = self.tr("New item")
         name = QStandardItem(title)
         _id = QStandardItem(self.getUniqueID())
-        row = [name, _id] + [QStandardItem() for i in range(2, len(World))]
+        row = [name, _id] + [QStandardItem() for _ in range(2, len(World))]
         parent.appendRow(row)
         return name
 

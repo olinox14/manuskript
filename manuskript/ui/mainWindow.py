@@ -8,6 +8,22 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from manuskript.ui.cheatSheet import cheatSheet
+from manuskript.ui.editors.mainEditor import mainEditor
+from manuskript.ui.search import search
+from manuskript.ui.views.MDEditCompleter import MDEditCompleter
+from manuskript.ui.views.basicItemView import basicItemView
+from manuskript.ui.views.characterTreeView import characterTreeView
+from manuskript.ui.views.lineEditView import lineEditView
+from manuskript.ui.views.metadataView import metadataView
+from manuskript.ui.views.outlineView import outlineView
+from manuskript.ui.views.plotTreeView import plotTreeView
+from manuskript.ui.views.sldImportance import sldImportance
+from manuskript.ui.views.storylineView import storylineView
+from manuskript.ui.views.treeView import treeView
+from manuskript.ui.welcome import welcome
+
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -1540,17 +1556,3 @@ class Ui_MainWindow(object):
         self.actFormatList.setText(_translate("MainWindow", "&Unordered list"))
         self.actFormatBlockquote.setText(_translate("MainWindow", "B&lockquote"))
 
-from manuskript.ui.cheatSheet import cheatSheet
-from manuskript.ui.editors.mainEditor import mainEditor
-from manuskript.ui.search import search
-from manuskript.ui.views.MDEditCompleter import MDEditCompleter
-from manuskript.ui.views.basicItemView import basicItemView
-from manuskript.ui.views.characterTreeView import characterTreeView
-from manuskript.ui.views.lineEditView import lineEditView
-from manuskript.ui.views.metadataView import metadataView
-from manuskript.ui.views.outlineView import outlineView
-from manuskript.ui.views.plotTreeView import plotTreeView
-from manuskript.ui.views.sldImportance import sldImportance
-from manuskript.ui.views.storylineView import storylineView
-from manuskript.ui.views.treeView import treeView
-from manuskript.ui.welcome import welcome

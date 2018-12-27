@@ -1,14 +1,16 @@
 # --!-- coding: utf8 --!--
 
+from platform import python_version
+
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import QT_VERSION_STR
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget
-from platform import python_version
 
 from manuskript.functions import appPath
 from manuskript.ui.about_ui import Ui_about
 from manuskript.version import getVersion
+
 
 class aboutDialog(QWidget, Ui_about):
     def __init__(self, parent=None, mw=None):

@@ -46,7 +46,7 @@ class sldImportance(QWidget, Ui_sldImportance):
             self.changed(int(v) if v else 0)
             self.lastValue = v
 
-    def setProperty():
+    def setProperty(self):
         pass
 
     # MODEL / VIEW

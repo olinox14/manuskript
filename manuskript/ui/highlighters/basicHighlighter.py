@@ -7,10 +7,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QTextCursor, QColor, QFont, QSyntaxHighlighter
 from PyQt5.QtGui import QTextBlockFormat, QTextCharFormat
 
+from manuskript import functions as F
+from manuskript import settings
 import manuskript.models.references as Ref
 import manuskript.ui.style as S
-from manuskript import settings
-from manuskript import functions as F
 
 
 class BasicHighlighter(QSyntaxHighlighter):

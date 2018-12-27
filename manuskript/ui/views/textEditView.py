@@ -7,12 +7,12 @@ from PyQt5.QtCore import QTimer, QModelIndex, Qt, QEvent, pyqtSignal, QRegExp, Q
 from PyQt5.QtGui import QTextBlockFormat, QTextCharFormat, QFont, QColor, QIcon, QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QWidget, QTextEdit, qApp, QAction, QMenu
 
-from manuskript import settings
-from manuskript.enums import Outline, World, Character, Plot
 from manuskript import functions as F
-from manuskript.models import outlineModel, outlineItem
+from manuskript import settings
+from manuskript.enums import Outline
+from manuskript.models import outlineModel
 from manuskript.ui.highlighters import BasicHighlighter
-from manuskript.ui import style as S
+
 
 try:
     import enchant

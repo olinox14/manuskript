@@ -4,37 +4,37 @@ import imp
 import os
 
 from PyQt5.QtCore import (pyqtSignal, QSignalMapper, QTimer, QSettings, Qt,
-                          QRegExp, QUrl, QSize, QModelIndex)
-from PyQt5.QtGui import QStandardItemModel, QIcon, QColor
+                          QRegExp, QSize, QModelIndex)
+from PyQt5.QtGui import QStandardItemModel, QIcon
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, qApp, QMenu, QActionGroup, QAction, QStyle, QListWidgetItem, \
-    QLabel, QDockWidget, QWidget
+    QWidget
 
+from manuskript import loadSave
 from manuskript import settings
 from manuskript.enums import Character, PlotStep, Plot, World, Outline
-from manuskript.functions import wordCount, appPath, findWidgetsOfClass
+from manuskript.functions import wordCount, findWidgetsOfClass
 import manuskript.functions as F
-from manuskript import loadSave
-from manuskript.models.characterModel import characterModel
 from manuskript.models import outlineModel
+from manuskript.models.characterModel import characterModel
 from manuskript.models.plotModel import plotModel
 from manuskript.models.worldModel import worldModel
 from manuskript.settingsWindow import settingsWindow
 from manuskript.ui import style
 from manuskript.ui.about import aboutDialog
 from manuskript.ui.collapsibleDockWidgets import collapsibleDockWidgets
-from manuskript.ui.importers.importer import importerDialog
 from manuskript.ui.exporters.exporter import exporterDialog
 from manuskript.ui.helpLabel import helpLabel
+from manuskript.ui.importers.importer import importerDialog
 from manuskript.ui.mainWindow import Ui_MainWindow
+from manuskript.ui.statusLabel import statusLabel
 from manuskript.ui.tools.frequencyAnalyzer import frequencyAnalyzer
+from manuskript.ui.views.MDEditView import MDEditView
 from manuskript.ui.views.outlineDelegates import outlineCharacterDelegate
 from manuskript.ui.views.plotDelegate import plotDelegate
-from manuskript.ui.views.MDEditView import MDEditView
-from manuskript.ui.statusLabel import statusLabel
-
-# Spellcheck support
 from manuskript.ui.views.textEditView import textEditView
 
+
+# Spellcheck support
 try:
     import enchant
 except ImportError:

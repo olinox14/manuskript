@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 
-import time
 import locale
+import time
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import qApp
 from lxml import etree as ET
-from manuskript.models.abstractItem import abstractItem
+
 from manuskript import enums
 from manuskript import functions as F
 from manuskript import settings
 from manuskript.converters import HTML2PlainText
+from manuskript.enums import Outline
+from manuskript.models.abstractItem import abstractItem
+
 
 try:
     locale.setlocale(locale.LC_ALL, '')

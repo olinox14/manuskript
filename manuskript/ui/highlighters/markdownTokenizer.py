@@ -2,21 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import re
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+
+from PyQt5.QtCore import QRegExp
 
 from manuskript.ui.highlighters import MarkdownState as MS
 from manuskript.ui.highlighters import MarkdownTokenType as MTT
 
+
 # This file is simply a python translation of GhostWriter's Tokenizer.
 # http://wereturtle.github.io/ghostwriter/
 # GPLV3+.
-
 # ==============================================================================
 #   TOKEN
 # ==============================================================================
-
 class Token:
     def __init__(self):
         self.type = -1
@@ -33,8 +31,9 @@ class HighlightTokenizer:
     def __init__(self):
         self.tokens = []
 
-    def tokenize(text, currentState, previousState, nextState):
+    def tokenize(self, text, currentState, previousState, nextState):
         # Subclass me
+        raise NotImplementedError()
         return 0
 
     def getTokens(self):

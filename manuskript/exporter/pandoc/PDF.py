@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import random
 import shutil
 
-from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import qApp
 
 from manuskript.exporter.pandoc.abstractOutput import abstractOutput
@@ -46,6 +44,6 @@ class PDF(abstractOutput):
         filename = tempFile("msk_pdfpreview.pdf")
 
         settingsWidget.writeSettings()
-        content = self.output(settingsWidget, outputfile=filename)
+        _ = self.output(settingsWidget, outputfile=filename)
 
         previewWidget.loadPDF(filename)

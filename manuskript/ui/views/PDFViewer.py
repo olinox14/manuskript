@@ -2,7 +2,7 @@
 # --!-- coding: utf8 --!--
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QLabel
-from manuskript.ui.views.webView import webView, webEngine
+from manuskript.ui.views.webView import  webEngine
 
 from manuskript.functions import appPath
 

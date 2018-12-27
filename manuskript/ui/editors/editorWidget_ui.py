@@ -6,7 +6,12 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
+from manuskript.ui.views.MDEditView import MDEditView
+from manuskript.ui.views.corkView import corkView
+from manuskript.ui.views.outlineView import outlineView
+
 
 class Ui_editorWidget_ui(object):
     def setupUi(self, editorWidget_ui):
@@ -74,6 +79,3 @@ class Ui_editorWidget_ui(object):
         _translate = QtCore.QCoreApplication.translate
         editorWidget_ui.setWindowTitle(_translate("editorWidget_ui", "Form"))
 
-from manuskript.ui.views.MDEditView import MDEditView
-from manuskript.ui.views.corkView import corkView
-from manuskript.ui.views.outlineView import outlineView

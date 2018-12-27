@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-from PyQt5.QtGui import QTextCharFormat, QFont
-from PyQt5.QtWidgets import QPlainTextEdit, QGroupBox, qApp, QVBoxLayout, QCheckBox
+from PyQt5.QtWidgets import QGroupBox, qApp, QVBoxLayout, QCheckBox
 
 from manuskript.exporter.manuskript.plainText import plainText
-from manuskript.functions import mainWindow
-from manuskript.ui.highlighters import MMDHighlighter
 from manuskript.ui.exporters.manuskript.plainTextSettings import exporterSettings
+from manuskript.ui.highlighters import MMDHighlighter
 
 
 class markdown(plainText):

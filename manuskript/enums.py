@@ -4,6 +4,7 @@
 
 from enum import IntEnum
 
+
 class Character(IntEnum):
     name = 0
     ID = 1
@@ -56,7 +57,7 @@ class Outline(IntEnum):
     goal = 12
     goalPercentage = 13
     setGoal = 14 # The goal set by the user, if any. Can be different from goal which can be computed
-                 # (sum of all sub-items' goals)
+                # (sum of all sub-items' goals)
     textFormat = 15
     revisions = 16
     customIcon = 17

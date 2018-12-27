@@ -27,7 +27,7 @@ def test_convert():
 
 def test_several():
 
-    from PyQt5.QtGui import QPainter, QPixmap, QIcon, QColor
+    from PyQt5.QtGui import QPainter, QPixmap, QColor
     from PyQt5.QtCore import QRect
 
     # drawProgress

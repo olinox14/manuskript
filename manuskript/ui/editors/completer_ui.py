@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_completer(object):
     def setupUi(self, completer):
         completer.setObjectName("completer")

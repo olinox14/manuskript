@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import json
-import os
+from PyQt5.QtCore import QSortFilterProxyModel, QModelIndex
+from PyQt5.QtWidgets import QWidget
 
-from PyQt5.QtCore import Qt, QSize, QSortFilterProxyModel, QModelIndex
-from PyQt5.QtGui import QIcon, QFontMetrics, QFont
-from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QListWidgetItem, QTreeView
-
-from manuskript.functions import mainWindow, writablePath
-from manuskript.ui.importers.generalSettings_ui import Ui_generalSettings
 from manuskript.enums import Outline
+from manuskript.functions import mainWindow
 from manuskript.ui import style
+from manuskript.ui.importers.generalSettings_ui import Ui_generalSettings
 
 
 class generalSettings(QWidget, Ui_generalSettings):

@@ -3,7 +3,7 @@
 from PyQt5.QtCore import pyqtSignal, QModelIndex
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QWidget, QFrame, QSpacerItem, QSizePolicy
-from PyQt5.QtWidgets import QVBoxLayout, qApp, QStyle
+from PyQt5.QtWidgets import QVBoxLayout
 
 from manuskript import settings
 from manuskript.functions import AUC, mainWindow

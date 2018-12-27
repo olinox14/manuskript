@@ -56,4 +56,4 @@ class corkView(QListView, dndView, outlineBasics):
             MW.openIndex(parent)
             #self.setRootIndex(parent)
         else:
-            r = QListView.mouseDoubleClickEvent(self, event)
+            _ = QListView.mouseDoubleClickEvent(self, event)

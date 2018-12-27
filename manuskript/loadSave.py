@@ -3,7 +3,6 @@
 
 # The loadSave file calls the proper functions to load and save file
 # trying to detect the proper file format if it comes from an older version
-import os
 import zipfile
 
 import manuskript.load_save.version_0 as v0

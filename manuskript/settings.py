@@ -8,9 +8,9 @@ from PyQt5.QtWidgets import qApp
 
 from manuskript.enums import Outline
 
+
 # TODO: move some/all of those settings to application settings and not project settings
 #       in order to allow a shared project between several writers
-
 viewSettings = {
     "Tree": {
         "Icon": "Nothing",
@@ -161,7 +161,7 @@ def save(filename=None, protocol=None):
             # because of unorderable types.
             return json.dumps(json.loads(json.dumps(allSettings)), indent=4, sort_keys=True)
         else:
-           return pickle.dumps(allSettings)
+            return pickle.dumps(allSettings)
 
 
 def load(string, fromString=False, protocol=None):

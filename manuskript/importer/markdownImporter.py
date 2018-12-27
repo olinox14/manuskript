@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 
+import re
+
+from PyQt5.QtWidgets import qApp
+
+from manuskript.enums import Outline
 from manuskript.importer.abstractImporter import abstractImporter
 from manuskript.models import outlineItem
-from manuskript.enums import Outline
-from PyQt5.QtWidgets import qApp
-import re, os
 
 
 class markdownImporter(abstractImporter):
@@ -88,8 +90,8 @@ class markdownImporter(abstractImporter):
             return child
 
         ATXHeader = re.compile(r"(\#+)\s*(.+?)\s*\#*$")
-        setextHeader1 = re.compile(r"([^\#-=].+)\n(===+)$", re.MULTILINE)
-        setextHeader2 = re.compile(r"([^\#-=].+)\n(---+)$", re.MULTILINE)
+        setextHeader1 = re.compile(r"([^\#-=].+)\n(===+)$", re.MULTILINE)    #@UndefinedVariable
+        setextHeader2 = re.compile(r"([^\#-=].+)\n(---+)$", re.MULTILINE)    #@UndefinedVariable
 
         # We store the level of each item in a temporary var
         parent.__miLevel = 0  # markdown importer header level

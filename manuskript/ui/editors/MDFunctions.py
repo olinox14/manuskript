@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re
-
-from PyQt5.QtCore import QRegExp
-from PyQt5.QtGui import QTextCursor
 
 
 def MDFormatSelection(editor, style):

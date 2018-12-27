@@ -12,11 +12,11 @@ def test_autoLoad(MWNoProject):
 
     # Testing when no autoLoad
     QSettings().remove("autoLoad")
-    autoLoad, path = MW.welcome.getAutoLoadValues()
+    autoLoad, _ = MW.welcome.getAutoLoadValues()
     assert type(autoLoad) == bool
     assert autoLoad == False
 
     for v in [True, False, 42, "42", None, True]:
         MW.welcome.setAutoLoad(v)
-        autoLoad, path = MW.welcome.getAutoLoadValues()
+        autoLoad, _ = MW.welcome.getAutoLoadValues()
         assert type(autoLoad) == bool

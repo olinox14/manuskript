@@ -9,8 +9,9 @@ from PyQt5.QtCore import QSettings, QRect, QSize, Qt, QPoint, QFile, QIODevice, 
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QBrush, QImage, QTextBlockFormat, QTextCharFormat, QFont, qGray
 from PyQt5.QtWidgets import qApp, QFrame
 
-from manuskript.functions import allPaths, appPath, findBackground, findFirstFile
+from manuskript.functions import appPath, findBackground, findFirstFile
 from manuskript.ui.views.MDEditView import MDEditView
+
 
 _thumbCache = {}
 

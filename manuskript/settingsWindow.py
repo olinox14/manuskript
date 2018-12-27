@@ -1,20 +1,19 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import os
 from collections import OrderedDict
+import os
 
-from PyQt5.QtCore import QSize, QSettings, QRegExp, QTranslator, QObject
+from PyQt5.QtCore import QSize, QSettings, QRegExp
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIntValidator, QIcon, QFont, QColor, QPixmap, QStandardItem, QPainter
-from PyQt5.QtGui import QStyleHints
-from PyQt5.QtWidgets import QStyleFactory, QWidget, QStyle, QColorDialog, QListWidgetItem, QMessageBox
+from PyQt5.QtWidgets import QStyleFactory, QWidget, QStyle, QColorDialog, QListWidgetItem
 from PyQt5.QtWidgets import qApp
 
-# Spell checker support
 from manuskript import settings
 from manuskript.enums import Outline
 from manuskript.functions import allPaths, iconColor, writablePath, appPath, findWidgetsOfClass
 from manuskript.functions import mainWindow, findBackground, themeIcon
+from manuskript.ui import style as S
 from manuskript.ui.editors.tabSplitter import tabSplitter
 from manuskript.ui.editors.themes import createThemePreview
 from manuskript.ui.editors.themes import getThemeName
@@ -22,9 +21,9 @@ from manuskript.ui.editors.themes import loadThemeDatas
 from manuskript.ui.settings_ui import Ui_Settings
 from manuskript.ui.views.outlineView import outlineView
 from manuskript.ui.views.textEditView import textEditView
-from manuskript.ui.welcome import welcome
-from manuskript.ui import style as S
 
+
+# Spell checker support
 try:
     import enchant
 except ImportError:
@@ -120,7 +119,7 @@ class settingsWindow(QWidget, Ui_Settings):
         self.chkSaveToZip.stateChanged.connect(self.saveSettingsChanged)
         self.txtAutoSave.textEdited.connect(self.saveSettingsChanged)
         self.txtAutoSaveNoChanges.textEdited.connect(self.saveSettingsChanged)
-        autoLoad, last = self.mw.welcome.getAutoLoadValues()
+        autoLoad, _ = self.mw.welcome.getAutoLoadValues()
         self.chkAutoLoad.setChecked(autoLoad)
         self.chkAutoLoad.stateChanged.connect(self.saveSettingsChanged)
 

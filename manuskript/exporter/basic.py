@@ -7,7 +7,6 @@ import subprocess
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QWidget
 
-from manuskript.models import outlineItem
 from manuskript.functions import mainWindow
 
 

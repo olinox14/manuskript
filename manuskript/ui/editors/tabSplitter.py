@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import locale
-
-from PyQt5.QtCore import QModelIndex, QRect, QPoint, Qt, QObject, QSize
-from PyQt5.QtGui import QIcon, QPalette
+from PyQt5.QtCore import QModelIndex, QRect, Qt, QSize
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, qApp
 
 from manuskript.functions import mainWindow, appPath

@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 #--!-- coding: utf8 --!--
 
-from manuskript import enums
+from PyQt5.Qt import Qt
+from PyQt5.QtCore import QSortFilterProxyModel, pyqtSignal, QModelIndex
+from PyQt5.QtGui import QStandardItem, QBrush, QColor, QFont
+
+from manuskript.enums import Character
 from manuskript.ui import style as S
 
 
@@ -66,7 +70,7 @@ class persosProxyModel(QSortFilterProxyModel):
         self.mapModel()
 
     def mapModelMaybe(self, topLeft, bottomRight):
-        if topLeft.column() <= Perso.importance.value <= bottomRight.column():
+        if topLeft.column() <= Character.importance.value <= bottomRight.column():
             self.mapModel()
 
     def mapModel(self):
@@ -79,7 +83,7 @@ class persosProxyModel(QSortFilterProxyModel):
             self._map.append(cat)
 
             for p in range(src.rowCount()):
-                item = src.item(p, Perso.importance.value)
+                item = src.item(p, Character.importance.value)
 
                 if item and item.text():
                     imp = int(item.text())

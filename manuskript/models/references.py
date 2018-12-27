@@ -1,25 +1,25 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 
+
 import re
 
-###############################################################################
-# SHORT REFERENCES
-###############################################################################
-
-# A regex used to match references
-from PyQt5.QtWidgets import qApp
-from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import qApp
 
-from manuskript.enums import Outline
 from manuskript.enums import Character
+from manuskript.enums import Outline
 from manuskript.enums import Plot
 from manuskript.enums import PlotStep
 from manuskript.functions import mainWindow, mixColors
 from manuskript.ui import style as S
 
 
+###############################################################################
+# SHORT REFERENCES
+###############################################################################
+# A regex used to match references
 RegEx = r"{(\w):(\d+):?.*?}"
 # A non-capturing regex used to identify references
 RegExNonCapturing = r"{\w:\d+:?.*?}"

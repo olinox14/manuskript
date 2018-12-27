@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import json
 import os
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QColor, QIcon
-from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QStyle
+from PyQt5.QtWidgets import QWidget, QFileDialog, QStyle
 
-from manuskript.functions import writablePath, appPath, openURL, statusMessage
+from manuskript.functions import openURL, statusMessage
 from manuskript.ui.importers.importer_ui import Ui_importer
 from manuskript.ui.importers.generalSettings import generalSettings
 from manuskript.ui import style

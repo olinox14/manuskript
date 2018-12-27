@@ -3,8 +3,6 @@
 
 """Tests for settingsWindow"""
 
-from manuskript import functions as F
-
 def test_general(MWSampleProject):
     MW = MWSampleProject
 

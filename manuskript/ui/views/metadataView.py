@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-from PyQt5.QtWidgets import QWidget, QAbstractItemView
 from PyQt5.QtCore import QModelIndex
+from PyQt5.QtWidgets import QWidget, QAbstractItemView
 
 from manuskript.enums import Outline
-from manuskript.ui.views.metadataView_ui import Ui_metadataView
 from manuskript.ui import style
+from manuskript.ui.views.metadataView_ui import Ui_metadataView
+
 
 class metadataView(QWidget, Ui_metadataView):
     def __init__(self, parent=None):

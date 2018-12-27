@@ -8,15 +8,12 @@ from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import QSize
 from PyQt5.QtCore import QVariant
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QTextEdit, qApp
-
-from manuskript import settings
 from lxml import etree as ET
 
 from manuskript.enums import Outline
-from manuskript.functions import mainWindow, toInt, wordCount
+from manuskript.functions import mainWindow
 from manuskript.models import outlineItem
+
 
 try:
     locale.setlocale(locale.LC_ALL, '')
@@ -24,7 +21,6 @@ except:
     # Invalid locale, but not really a big deal because it's used only for
     # number formatting
     pass
-import time, os
 
 
 class abstractModel(QAbstractItemModel):
@@ -242,7 +238,6 @@ class abstractModel(QAbstractItemModel):
 
     def mimeData(self, indexes):
         mimeData = QMimeData()
-        encodedData = ""
 
         root = ET.Element("outlineItems")
 
@@ -296,7 +291,7 @@ class abstractModel(QAbstractItemModel):
         for item in items:
             # Get parentItem's parents IDs in a list
             path = parentItem.pathID()  # path to item in the form [(ID, title), ...]
-            path = [ID for ID, title in path]
+            path = [ID for ID, _ in path]
             # Is item in the path? It would mean that it tries to get dropped
             # as a children of himself.
             if item.ID() in path:
@@ -496,9 +491,9 @@ class abstractModel(QAbstractItemModel):
             parentItem = parent.internalPointer()
 
         self._removingRows = True  # Views that are updating can easily know
-                                   # if this is due to row removal.
+                                    # if this is due to row removal.
         self.beginRemoveRows(parent, row, row + count - 1)
-        for i in range(count):
+        for _ in range(count):
             item = parentItem.removeChild(row)
             self.removed.append(item)
 

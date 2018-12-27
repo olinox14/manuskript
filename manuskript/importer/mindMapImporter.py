@@ -2,12 +2,13 @@
 # --!-- coding: utf8 --!--
 
 from PyQt5.QtWidgets import qApp, QMessageBox
-from manuskript.models import outlineItem
-from manuskript.enums import Outline
 from lxml import etree as ET
-from manuskript.functions import mainWindow
-from manuskript.importer.abstractImporter import abstractImporter
+
 from manuskript.converters import HTML2MD, HTML2PlainText
+from manuskript.enums import Outline
+from manuskript.importer.abstractImporter import abstractImporter
+from manuskript.models import outlineItem
+
 
 class mindMapImporter(abstractImporter):
 
@@ -95,7 +96,6 @@ class mindMapImporter(abstractImporter):
         url = underElement.get('LINK', None)
 
         # Rich text content
-        content = ""
         content = underElement.find("richcontent")
         if content is not None:
             # In Freemind, can be note or node

@@ -3,8 +3,8 @@
 from PyQt5.QtCore import QModelIndex, Qt, QAbstractItemModel, QVariant
 from PyQt5.QtGui import QIcon, QPixmap, QColor
 
-from manuskript.functions import randomColor, iconColor, mainWindow
 from manuskript.enums import Character as C
+from manuskript.functions import randomColor, iconColor, mainWindow
 
 
 class characterModel(QAbstractItemModel):

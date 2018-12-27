@@ -3,12 +3,12 @@
 
 
 # default window color (linux):
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import qApp
 
-from manuskript import settings
 from manuskript import functions as F
+from manuskript import settings
+
 
 # Loading palette colors.
 # Manuskript as to restart to reload

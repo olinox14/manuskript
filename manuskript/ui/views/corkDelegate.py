@@ -10,7 +10,6 @@ from manuskript.functions import colorifyPixmap
 from manuskript.functions import mainWindow
 from manuskript.functions import mixColors
 from manuskript.functions import outlineItemColors
-from manuskript.ui import style as S
 
 
 class corkDelegate(QStyledItemDelegate):

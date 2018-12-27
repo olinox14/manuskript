@@ -2,7 +2,6 @@
 
 import faulthandler
 import logging.config
-import os
 import sys
 import traceback
 
@@ -13,7 +12,6 @@ from path import Path
 import yaml
 
 from manuskript.constants import MAIN_DIR
-import manuskript.ui.views.webView
 from manuskript.version import getVersion
 
 

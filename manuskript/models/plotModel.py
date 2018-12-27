@@ -111,7 +111,6 @@ class plotModel(QStandardItemModel):
 
     def getUniqueID(self, parent=QModelIndex()):
         """Returns an unused ID"""
-        parentItem = self.itemFromIndex(parent)
         vals = []
         for i in range(self.rowCount(parent)):
             index = self.index(i, Plot.ID, parent)

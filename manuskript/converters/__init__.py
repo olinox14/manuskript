@@ -7,11 +7,12 @@ one format to another. It is responsible to check what external library are
 present, and do the job as best as possible with what we have in hand.
 """
 
+
 from manuskript.converters.abstractConverter import abstractConverter
 from manuskript.converters.pandocConverter import pandocConverter
+
+
 #from manuskript.converters.markdownConverter import markdownConverter
-
-
 def HTML2MD(html):
 
     # Convert using pandoc
@@ -31,6 +32,7 @@ def HTML2PlainText(html):
         return pandocConverter.convert(html, _from="html", to="plain")
 
     # Last resort: probably resource inefficient
+    from PyQt5.QtWidgets import QTextEdit
     e = QTextEdit()
     e.setHtml(html)
     return e.toPlainText()

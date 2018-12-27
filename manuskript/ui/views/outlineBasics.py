@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-from PyQt5.QtCore import Qt, QSignalMapper, QSize
+from PyQt5.QtCore import Qt, QSignalMapper
 from PyQt5.QtGui import QIcon, QCursor
 from PyQt5.QtWidgets import QAbstractItemView, qApp, QMenu, QAction, \
                             QListWidget, QWidgetAction, QListWidgetItem, \
-                            QLineEdit, QInputDialog, QMessageBox, QCheckBox
+                            QLineEdit,  QMessageBox, QCheckBox
 
 from manuskript import settings
 from manuskript.enums import Outline
@@ -38,7 +38,6 @@ class outlineBasics(QAbstractItemView):
         # call their respective mother class.
 
     def makePopupMenu(self):
-        index = self.currentIndex()
         sel = self.getSelection()
         clipboard = qApp.clipboard()
 

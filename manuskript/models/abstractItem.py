@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 
-from PyQt5.QtCore import QAbstractItemModel, QMimeData
 from PyQt5.QtCore import QModelIndex
-from PyQt5.QtCore import QSize
 from PyQt5.QtCore import QVariant
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QTextEdit, qApp
 from lxml import etree as ET
 
 from manuskript import enums
@@ -29,8 +25,8 @@ class abstractItem():
         self._model = model
 
         self.IDs = ["0"]  # used by root item to store unique IDs
-        self._lastPath = ""  # used by loadSave version_1 to remember which files the items comes from,
-                             # in case it is renamed / removed
+        self._lastPath = "" # used by loadSave version_1 to remember which files the items comes from,
+                            # in case it is renamed / removed
 
         self._data[self.enum.title] = title
         self._data[self.enum.type] = _type

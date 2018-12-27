@@ -6,10 +6,9 @@ A QSyntaxHighlighter for markdown, using tokenizer. More accurate than simple
 regexp, but not yet perfect.
 """
 
-import re
-from PyQt5.QtCore import Qt, pyqtSignal, qWarning, QRegExp
-from PyQt5.QtGui import (QSyntaxHighlighter, QTextBlock, QColor, QFont,
-                         QTextCharFormat, QBrush, QPalette)
+from PyQt5.QtCore import Qt, pyqtSignal, qWarning
+from PyQt5.QtGui import (QTextBlock, QColor, QFont,
+                         QTextCharFormat, QBrush)
 from PyQt5.QtWidgets import qApp, QStyle
 
 from manuskript.ui.highlighters import BasicHighlighter

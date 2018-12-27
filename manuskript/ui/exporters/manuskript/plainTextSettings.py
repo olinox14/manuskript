@@ -8,8 +8,8 @@ from PyQt5.QtGui import QIcon, QFontMetrics, QFont
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QListWidgetItem, QTreeView
 
 from manuskript.functions import mainWindow, writablePath
-from manuskript.ui.exporters.manuskript.plainTextSettings_ui import Ui_exporterSettings
 from manuskript.ui import style as S
+from manuskript.ui.exporters.manuskript.plainTextSettings_ui import Ui_exporterSettings
 
 
 class exporterSettings(QWidget, Ui_exporterSettings):

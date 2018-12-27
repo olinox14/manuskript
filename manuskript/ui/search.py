@@ -6,9 +6,9 @@ from PyQt5.QtWidgets import QWidget, QMenu, QAction, qApp, QListWidgetItem, QSty
 
 from manuskript.enums import Outline
 from manuskript.functions import mainWindow
+from manuskript.models import references as Ref
 from manuskript.ui import style
 from manuskript.ui.search_ui import Ui_search
-from manuskript.models import references as Ref
 
 
 class search(QWidget, Ui_search):

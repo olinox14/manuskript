@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-from PyQt5.QtCore import Qt, QUrl
+import os
+
+from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QPlainTextEdit, qApp, QTabWidget, QFrame, QTextEdit
 
 from manuskript.exporter.manuskript.markdown import markdown, markdownSettings
 from manuskript.ui.views.webView import webView
-from manuskript.ui.exporters.manuskript.plainTextSettings import exporterSettings
-import os
+
 
 try:
     import markdown as MD

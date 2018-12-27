@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt, QRect, QRectF
 from PyQt5.QtGui import QColor, QBrush, QRegion, QTextOption, QFont
 from PyQt5.QtWidgets import QSizePolicy, QGroupBox, QWidget, QStylePainter, QStyleOptionGroupBox, qApp, QVBoxLayout, \
     QStyle, QStyleOptionFrame, QStyleOptionFocusRect
+
 from manuskript.ui import style as S
 
 

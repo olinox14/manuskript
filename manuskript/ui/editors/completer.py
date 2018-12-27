@@ -5,9 +5,9 @@ from PyQt5.QtGui import QBrush, QFontMetrics, QPalette, QColor
 from PyQt5.QtWidgets import QWidget, QListWidgetItem, QStyledItemDelegate, QStyle
 
 from manuskript.functions import mainWindow
-from manuskript.ui.editors.completer_ui import Ui_completer
 from manuskript.models import references as Ref
 from manuskript.ui import style as S
+from manuskript.ui.editors.completer_ui import Ui_completer
 
 
 class completer(QWidget, Ui_completer):

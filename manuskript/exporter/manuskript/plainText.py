@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 import re
+
 from PyQt5.QtGui import QFont, QTextCharFormat
 from PyQt5.QtWidgets import QPlainTextEdit, qApp, QFrame, QFileDialog
 
@@ -8,7 +9,7 @@ from manuskript.exporter.basic import basicFormat
 from manuskript.functions import mainWindow
 from manuskript.models import outlineItem
 from manuskript.ui.exporters.manuskript.plainTextSettings import exporterSettings
-import codecs
+
 
 class plainText(basicFormat):
     name = qApp.translate("Export", "Plain text")

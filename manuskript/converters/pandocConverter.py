@@ -4,9 +4,9 @@ import os
 import shutil
 import subprocess
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import qApp, QMessageBox
+from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QCursor
+from PyQt5.QtWidgets import qApp, QMessageBox
 
 from manuskript.converters import abstractConverter
 from manuskript.functions import mainWindow

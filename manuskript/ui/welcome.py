@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 
-import locale
 import imp
+import locale
 import os
 
 from PyQt5.QtCore import QSettings, QRegExp, Qt, QDir
@@ -14,12 +14,13 @@ from manuskript import loadSave
 from manuskript import settings
 from manuskript.enums import Outline
 from manuskript.functions import mainWindow, iconFromColor, appPath
-from manuskript.models.characterModel import characterModel
 from manuskript.models import outlineItem, outlineModel
+from manuskript.models.characterModel import characterModel
 from manuskript.models.plotModel import plotModel
 from manuskript.models.worldModel import worldModel
-from manuskript.ui.welcome_ui import Ui_welcome
 from manuskript.ui import style as S
+from manuskript.ui.welcome_ui import Ui_welcome
+
 
 try:
     locale.setlocale(locale.LC_ALL, '')
@@ -47,7 +48,7 @@ class welcome(QWidget, Ui_welcome):
 
     def updateValues(self):
         # Auto load
-        autoLoad, last = self.getAutoLoadValues()
+        autoLoad, _ = self.getAutoLoadValues()
         self.chkLoadLastProject.setChecked(autoLoad)
 
         # Recent Files

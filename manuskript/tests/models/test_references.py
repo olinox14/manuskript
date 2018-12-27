@@ -3,8 +3,6 @@
 
 """Tests for references.py"""
 
-import pytest
-
 def test_references(MWSampleProject):
     """
     Tests references using sample project.

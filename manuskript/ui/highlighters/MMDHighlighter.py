@@ -3,7 +3,7 @@
 import re
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextCharFormat, QFont, QTextCursor, QFontMetrics
+from PyQt5.QtGui import QTextCharFormat, QFont
 
 from manuskript.ui.highlighters import BasicHighlighter
 

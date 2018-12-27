@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
 
-from manuskript.importer.abstractImporter import abstractImporter
-from manuskript.exporter.pandoc import pandocExporter
-from manuskript.importer.opmlImporter import opmlImporter
-from manuskript.importer.markdownImporter import markdownImporter
 from PyQt5.QtWidgets import qApp
+
+from manuskript.exporter.pandoc import pandocExporter
+from manuskript.importer.abstractImporter import abstractImporter
+from manuskript.importer.markdownImporter import markdownImporter
+from manuskript.importer.opmlImporter import opmlImporter
 
 
 class pandocImporter(abstractImporter):

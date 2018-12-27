@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 # --!-- coding: utf8 --!--
-import json
-import os
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QColor, QIcon
 from PyQt5.QtWidgets import QWidget, QStyle
 
 from manuskript import exporter
-from manuskript.functions import writablePath, openURL
+from manuskript.functions import  openURL
+from manuskript.ui import style as S
 from manuskript.ui.exporters.exporter_ui import Ui_exporter
 from manuskript.ui.exporters.exportersManager import exportersManager
-from manuskript.ui import style as S
 
 
 class exporterDialog(QWidget, Ui_exporter):

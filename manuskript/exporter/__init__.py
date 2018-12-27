@@ -4,6 +4,7 @@
 from manuskript.exporter.manuskript import manuskriptExporter
 from manuskript.exporter.pandoc import pandocExporter
 
+
 exporters = [
     manuskriptExporter(),
     pandocExporter()
