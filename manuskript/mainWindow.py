@@ -61,9 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
-        self.setupUi(self)
 
-        # Var
         self.currentProject = None
         self._lastFocus = None
         self._lastMDEditView = None
@@ -71,10 +69,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                             # value. In manuskript.main.
         self._autoLoadProject = None  # Used to load a command line project
 
+        self.createWidgets()
+
+
+    def createWidgets(self):
+        
+        self.setupUi(self)
+
         self.readSettings()
 
         # UI
         self.setupMoreUi()
+        
         self.statusLabel = statusLabel(parent=self)
         self.statusLabel.setAutoFillBackground(True)
         self.statusLabel.hide()
