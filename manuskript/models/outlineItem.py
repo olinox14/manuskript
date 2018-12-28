@@ -132,7 +132,10 @@ class outlineItem(abstractItem):
             return
 
         if column == E.goal:
-            self._data[E.setGoal] = F.toInt(data) if F.toInt(data) > 0 else ""
+            try:
+                self._data[E.setGoal] = int(data)
+            except ValueError:
+                self._data[E.setGoal] = ""
 
         # Checking if we will have to recount words
         updateWordCount = False
@@ -182,23 +185,23 @@ class outlineItem(abstractItem):
         """Update word count for item and parents.
         If emit is False, no signal is emitted (sometimes cause segfault)"""
         if not self.isFolder():
-            setGoal = F.toInt(self.data(self.enum.setGoal))
-            goal = F.toInt(self.data(self.enum.goal))
+            setGoal = int(self.data(self.enum.setGoal))
+            goal = int(self.data(self.enum.goal))
 
             if goal != setGoal:
                 self._data[self.enum.goal] = setGoal
             if setGoal:
-                wc = F.toInt(self.data(self.enum.wordCount))
+                wc = int(self.data(self.enum.wordCount))
                 self.setData(self.enum.goalPercentage, wc / float(setGoal))
 
         else:
             wc = 0
             for c in self.children():
-                wc += F.toInt(c.data(self.enum.wordCount))
+                wc += int(c.data(self.enum.wordCount))
             self._data[self.enum.wordCount] = wc
 
-            setGoal = F.toInt(self.data(self.enum.setGoal))
-            goal = F.toInt(self.data(self.enum.goal))
+            setGoal = int(self.data(self.enum.setGoal))
+            goal = int(self.data(self.enum.goal))
 
             if setGoal:
                 if goal != setGoal:
@@ -207,7 +210,7 @@ class outlineItem(abstractItem):
             else:
                 goal = 0
                 for c in self.children():
-                    goal += F.toInt(c.data(self.enum.goal))
+                    goal += int(c.data(self.enum.goal))
                 self._data[self.enum.goal] = goal
 
             if goal:
@@ -371,10 +374,10 @@ class outlineItem(abstractItem):
                     logger.error("Character POV not found: %s", self.POV())
 
             elif c == self.enum.status:
-                searchIn = mainWindow.mdlStatus.item(F.toInt(self.status()), 0).text()
+                searchIn = mainWindow.mdlStatus.item(int(self.status()), 0).text()
 
             elif c == self.enum.label:
-                searchIn = mainWindow.mdlLabels.item(F.toInt(self.label()), 0).text()
+                searchIn = mainWindow.mdlLabels.item(int(self.label()), 0).text()
 
             else:
                 searchIn = self.data(c)

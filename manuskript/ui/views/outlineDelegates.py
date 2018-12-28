@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import qApp
 
 from manuskript import settings
 from manuskript.enums import Character, Outline
-from manuskript.functions import outlineItemColors, mixColors, colorifyPixmap, toInt, toFloat, drawProgress
+from manuskript.functions import outlineItemColors, mixColors, colorifyPixmap, drawProgress
 from manuskript.ui import style as S
 
 
@@ -145,7 +145,7 @@ class outlineCharacterDelegate(QStyledItemDelegate):
             item = editor.model().item(editor.count() - 1)
             item.setFlags(Qt.ItemIsEnabled)
             for i in range(self.mdlCharacter.rowCount()):
-                imp = toInt(self.mdlCharacter.importance(i))
+                imp = int(self.mdlCharacter.importance(i))
                 if not 2 - imp == importance: continue
 
                 # try:
@@ -218,7 +218,7 @@ class outlineGoalPercentageDelegate(QStyledItemDelegate):
         if not item.data(Outline.goal):
             return
 
-        p = toFloat(item.data(Outline.goalPercentage))
+        p = float(item.data(Outline.goalPercentage))
 
         level = item.level()
         if self.rootIndex and self.rootIndex.isValid():

@@ -8,7 +8,6 @@ from manuskript import settings
 from manuskript.enums import Outline
 from manuskript.functions import mixColors, colorifyPixmap
 from manuskript.functions import outlineItemColors
-from manuskript.functions import toFloat
 from manuskript.ui import style as S
 
 
@@ -112,7 +111,7 @@ class treeTitleDelegate(QStyledItemDelegate):
                     extraText = item.wordCount()
                     extraText = " ({})".format(extraText)
                 elif settings.viewSettings["Tree"]["InfoFolder"] == "Progress":
-                    extraText = int(toFloat(item.data(Outline.goalPercentage)) * 100)
+                    extraText = int((item.data(Outline.goalPercentage)) * 100)
                     if extraText:
                         extraText = " ({}%)".format(extraText)
                 elif settings.viewSettings["Tree"]["InfoFolder"] == "Summary":
@@ -125,7 +124,7 @@ class treeTitleDelegate(QStyledItemDelegate):
                     extraText = item.wordCount()
                     extraText = " ({})".format(extraText)
                 elif settings.viewSettings["Tree"]["InfoText"] == "Progress":
-                    extraText = int(toFloat(item.data(Outline.goalPercentage)) * 100)
+                    extraText = int((item.data(Outline.goalPercentage)) * 100)
                     if extraText:
                         extraText = " ({}%)".format(extraText)
                 elif settings.viewSettings["Tree"]["InfoText"] == "Summary":

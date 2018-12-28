@@ -29,10 +29,10 @@ from manuskript.models.characterModel import CharacterInfo
 
 
 try:
-    import zlib  # Used with zipfile for compression
+    import zlib  # Used with zipfile for compression @UnusedImport
 
     compression = zipfile.ZIP_DEFLATED
-except:
+except ImportError:
     compression = zipfile.ZIP_STORED
 
 cache = {}
@@ -52,9 +52,6 @@ characterMap = OrderedDict([
     (Character.summaryFull, "Full Summary"),
     (Character.notes, "Notes"),
 ])
-
-# If true, logs infos while saving and loading.
-LOG = False
 
 def formatMetaData(name, value, tabLength=10):
 

@@ -63,7 +63,7 @@ fullScreenTheme = "spacedreams"
 textEditor = {
     "background": "",
     "fontColor": "",
-    "font": qApp.font().toString(),
+    "font": str(qApp.font() or ""),
     "misspelled": "#F00",
     "lineSpacing": 100,
     "tabWidth": 20,

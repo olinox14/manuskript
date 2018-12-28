@@ -6,26 +6,9 @@
 from manuskript import functions as F
 from manuskript.constants import MAIN_DIR
 
-
 def test_wordCount():
     assert F.wordCount("In the beginning was the word.") == 6
     assert F.wordCount("") == 0
-
-def test_convert():
-
-    # toInt
-    assert F.toInt("9") == 9
-    assert F.toInt("a") == 0
-    assert F.toInt("") == 0
-
-    # toFloat
-    assert F.toFloat("9.4") == 9.4
-    assert F.toFloat("") == 0.
-
-    # toString
-    assert F.toString(None) == ""
-    assert F.toString("None") == ""
-    assert F.toString("Joy") == "Joy"
 
 def test_several():
 

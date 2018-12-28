@@ -290,7 +290,7 @@ class exporterSettings(QWidget, Ui_exporterSettings):
         s = self.settings.get("Preview", {})
         f = self.cmbPreviewFont.currentFont()
         f.setPointSize(self.spnPreviewSize.value())
-        s["PreviewFont"] = f.toString()
+        s["PreviewFont"] = str(f or "")
         self.settings["Preview"] = s
 
         return self.settings

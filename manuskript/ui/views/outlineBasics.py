@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QAbstractItemView, qApp, QMenu, QAction, \
 from manuskript import settings
 from manuskript.enums import Outline
 from manuskript.functions import mainWindow, statusMessage
-from manuskript.functions import toInt, customIcons
+from manuskript.functions import customIcons
 from manuskript.models import outlineItem
 from manuskript.ui.tools.splitDialog import splitDialog
 
@@ -151,7 +151,7 @@ class outlineBasics(QAbstractItemView):
             a.triggered.connect(mpr.map)
             mpr.setMapping(a, int(mw.mdlCharacter.ID(i)))
 
-            imp = toInt(mw.mdlCharacter.importance(i))
+            imp = int(mw.mdlCharacter.importance(i))
 
             menus[2 - imp].addAction(a)
 

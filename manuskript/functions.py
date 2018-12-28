@@ -27,20 +27,6 @@ MW = None
 def wordCount(text):
     return len(text.split())
 
-def toInt(text):
-    try:
-        return int(text or 0)
-    except ValueError:
-        return 0
-
-def toFloat(text):
-    return float(text or 0.)
-
-def toString(text):
-    if text is None:
-        return ''
-    return str(text)
-
 def drawProgress(painter, rect, progress, radius=0):
     from manuskript.ui import style as S
     painter.setPen(Qt.NoPen)
@@ -54,7 +40,7 @@ def drawProgress(painter, rect, progress, radius=0):
     painter.drawRoundedRect(r2, radius, radius)
 
 def colorFromProgress(progress):
-    progress = toFloat(progress)
+    progress = float(progress or 0.)
     if progress < 0.3:
         return QColor(Qt.red)
     elif progress < 0.8:
@@ -130,14 +116,14 @@ def outlineItemColors(item):
     
     mw = mainWindow()
     POV = item.data(Outline.POV)
-    lbl = item.data(Outline.label)
+    lbl = int(item.data(Outline.label))
     pg = item.data(Outline.goalPercentage)
     
     colors["POV"] = next((iconColor(mw.mdlCharacter.icon(i)) \
                           for i in range(mw.mdlCharacter.rowCount()) \
                           if mw.mdlCharacter.ID(i) == POV)) if POV else QColor(Qt.transparent)
 
-    colors["Label"] = iconColor(mw.mdlLabels.item(toInt(lbl)).icon()) if lbl else QColor(Qt.transparent)
+    colors["Label"] = iconColor(mw.mdlLabels.item(lbl).icon()) if lbl else QColor(Qt.transparent)
 
     colors["Progress"] = colorFromProgress(pg)
 

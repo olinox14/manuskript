@@ -3,7 +3,6 @@
 from PyQt5.QtWidgets import QLineEdit
 
 from manuskript.enums import Outline
-from manuskript.functions import toString
 
 
 class lineEditView(QLineEdit):
@@ -82,9 +81,7 @@ class lineEditView(QLineEdit):
 
     def updateText(self):
         if self._index:
-            # item = self._index.internalPointer()
-            # txt = toString(item.data(self._column))
-            txt = toString(self._model.data(self._index))
+            txt = str(self._model.data(self._index) or "")
             if self.text() != txt:
                 self.setText(txt)
 
@@ -92,9 +89,7 @@ class lineEditView(QLineEdit):
             t = []
             same = True
             for i in self._indexes:
-                # item = i.internalPointer()
-                # t.append(toString(item.data(self._column)))
-                t.append(toString(self._model.data(i)))
+                t.append(str(self._model.data(i) or ""))
 
             for t2 in t[1:]:
                 if t2 != t[0]:

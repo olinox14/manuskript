@@ -3,7 +3,6 @@
 from PyQt5.QtCore import pyqtSignal, pyqtProperty
 from PyQt5.QtWidgets import QWidget
 
-from manuskript.functions import toInt
 from manuskript.ui._uic.sldImportance_ui import Ui_sldImportance
 
 
@@ -77,7 +76,7 @@ class sldImportance(QWidget, Ui_sldImportance):
 
     def updateValue(self):
         if self._index:
-            val = toInt(self._model.data(self._index))
+            val = int(self._model.data(self._index))
             if self.sld.value() != val:
                 self._updating = True
                 self.setValue(val)

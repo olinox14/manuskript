@@ -295,9 +295,8 @@ class textEditView(QTextEdit):
         self._updating = True
         if self._index:
             self.disconnectDocument()
-            if self.toPlainText() != F.toString(self._index.data()):
-                # print("    Updating plaintext")
-                self.document().setPlainText(F.toString(self._index.data()))
+            if self.toPlainText() != str(self._index.data()):
+                self.document().setPlainText(str(self._index.data()))
             self.reconnectDocument()
 
         elif self._indexes:
@@ -306,7 +305,7 @@ class textEditView(QTextEdit):
             same = True
             for i in self._indexes:
                 item = i.internalPointer()
-                t.append(F.toString(item.data(self._column)))
+                t.append(str(item.data(self._column)))
 
             for t2 in t[1:]:
                 if t2 != t[0]:
@@ -343,7 +342,7 @@ class textEditView(QTextEdit):
             self._updating = True
             for i in self._indexes:
                 item = i.internalPointer()
-                if self.toPlainText() != F.toString(item.data(self._column)):
+                if self.toPlainText() != str(item.data(self._column)):
                     logger.debug("Submitting many indexes")
                     self._model.setData(i, self.toPlainText())
             self._updating = False
@@ -428,7 +427,7 @@ class textEditView(QTextEdit):
             f = QFont()
             f.fromString(settings.textEditor["font"])
             f.setPointSizeF(f.pointSizeF() + d)
-            settings.textEditor["font"] = f.toString()
+            settings.textEditor["font"] = str(f or "")
 
             # Update font to all textEditView. Drastically.
             for w in F.mainWindow().findChildren(textEditView, QRegExp(".*")):

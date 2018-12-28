@@ -5,7 +5,6 @@ from PyQt5.QtGui import QIcon, QBrush, QColor
 from PyQt5.QtWidgets import QComboBox
 
 from manuskript.enums import Outline
-from manuskript.functions import toInt
 from manuskript.ui import style as S
 
 
@@ -42,7 +41,7 @@ class cmbOutlineCharacterChoser(QComboBox):
             item = self.model().item(self.count() - 1)
             item.setFlags(Qt.ItemIsEnabled)
             for i in range(self.mdlCharacters.rowCount()):
-                imp = toInt(self.mdlCharacters.importance(i))
+                imp = int(self.mdlCharacters.importance(i))
 
                 if not 2 - imp == importance:
                     continue

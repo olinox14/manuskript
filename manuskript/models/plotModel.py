@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QAction, QMenu
 
 from manuskript.enums import Plot
 from manuskript.enums import PlotStep
-from manuskript.functions import toInt, mainWindow
+from manuskript.functions import mainWindow
 
 
 class plotModel(QStandardItemModel):
@@ -28,9 +28,9 @@ class plotModel(QStandardItemModel):
     def getPlotsByImportance(self):
         plots = [[], [], []]
         for i in range(self.rowCount()):
-            importance = self.item(i, Plot.importance).text()
+            importance = int(self.item(i, Plot.importance).text())
             ID = self.item(i, Plot.ID).text()
-            plots[2 - toInt(importance)].append(ID)
+            plots[2 - importance].append(ID)
         return plots
 
     def getSubPlotsByID(self, ID):
@@ -63,7 +63,7 @@ class plotModel(QStandardItemModel):
     def getPlotNameByID(self, ID):
         for i in range(self.rowCount()):
             _ID = self.item(i, Plot.ID).text()
-            if _ID == ID or toInt(_ID) == ID:
+            if _ID == ID or int(_ID) == ID:
                 name = self.item(i, Plot.name).text()
                 return name
         return None
@@ -87,7 +87,7 @@ class plotModel(QStandardItemModel):
     def getIndexFromID(self, ID):
         for i in range(self.rowCount()):
             _ID = self.item(i, Plot.ID).text()
-            if _ID == ID or toInt(_ID) == ID:
+            if _ID == ID or int(_ID) == ID:
                 return self.index(i, 0)
         return QModelIndex()
 
@@ -250,7 +250,7 @@ class plotModel(QStandardItemModel):
             a.triggered.connect(mpr.map)
             mpr.setMapping(a, int(self.mw.mdlCharacter.ID(i)))
 
-            imp = toInt(self.mw.mdlCharacter.importance(i))
+            imp = int(self.mw.mdlCharacter.importance(i))
 
             menus[2 - imp].addAction(a)
 

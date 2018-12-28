@@ -504,7 +504,7 @@ class settingsWindow(QWidget, Ui_Settings):
         # Font
         f = self.cmbEditorFontFamily.currentFont()
         f.setPointSize(self.spnEditorFontSize.value())
-        settings.textEditor["font"] = f.toString()
+        settings.textEditor["font"] = str(f or "")
 
         # Cursor
         settings.textEditor["cursorWidth"] = \
@@ -851,7 +851,7 @@ class settingsWindow(QWidget, Ui_Settings):
         if s:
             f.setPointSize(int(s))
 
-        self._themeData["Text/Font"] = f.toString()
+        self._themeData["Text/Font"] = str(f or "")
         self.timerUpdateFSPreview.start()
 
     def updateLineSpacing(self, i):

@@ -39,7 +39,7 @@ def loadThemeDatas(themeFile):
 
     # Text Options
     loadThemeSetting(_themeData, settings, "Text/Color", "#ffffff")
-    loadThemeSetting(_themeData, settings, "Text/Font", qApp.font().toString())
+    loadThemeSetting(_themeData, settings, "Text/Font", str(qApp.font() or ""))
     loadThemeSetting(_themeData, settings, "Text/Misspelled", "#ff0000")
 
     # Paragraph Options
