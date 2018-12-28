@@ -19,6 +19,6 @@ ICONS_DIR = MAIN_DIR / "icons"
 
 LOGGING_CONF_FILE = MS_DIR / 'logging.yaml'
 
-USER_DATA_DIR = Path(user_data_dir(APP_NAME, roaming=True))
+USER_DATA_DIR = Path(user_data_dir(roaming=True))
 
 SEARCHABLE_PATHS = [MAIN_DIR, USER_DATA_DIR]

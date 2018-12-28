@@ -51,7 +51,6 @@ def colorFromProgress(progress):
         return QColor(Qt.darkGreen)
 
 def mainWindow():
-    # TODO: replace by a singleton in the MainWindow class
     global MW
     if not MW:
         for i in qApp.topLevelWidgets():
@@ -93,7 +92,7 @@ THEME_ICONS = {
 
 def themeIcon(name):
     "Returns an icon for the given name."
-    return QIcon.fromTheme(THEME_ICONS.get(name, ""), fallback=QIcon())
+    return QIcon.fromTheme(THEME_ICONS.get(name, ""), QIcon())
 
 def randomColor(mix=QColor(0,0,0,255)):
     """Generates a random color. If mix (QColor) is given, mixes the random color and mix."""
@@ -116,7 +115,7 @@ def outlineItemColors(item):
     
     mw = mainWindow()
     POV = item.data(Outline.POV)
-    lbl = int(item.data(Outline.label))
+    lbl = int(item.data(Outline.label) or 0)
     pg = item.data(Outline.goalPercentage)
     
     colors["POV"] = next((iconColor(mw.mdlCharacter.icon(i)) \

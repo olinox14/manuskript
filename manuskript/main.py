@@ -89,6 +89,9 @@ def prepare():
         f.setPointSize(qsettings.value("appFontSize", type=int))
         app.setFont(f)
 
+    # creates app directories
+    constants.USER_DATA_DIR.mkdir_p()
+
     # Main window
     from manuskript.mainWindow import MainWindow
 

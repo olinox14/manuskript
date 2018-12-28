@@ -186,22 +186,22 @@ class outlineItem(abstractItem):
         If emit is False, no signal is emitted (sometimes cause segfault)"""
         if not self.isFolder():
             setGoal = int(self.data(self.enum.setGoal))
-            goal = int(self.data(self.enum.goal))
+            goal = int(self.data(self.enum.goal) or 0)
 
             if goal != setGoal:
                 self._data[self.enum.goal] = setGoal
             if setGoal:
-                wc = int(self.data(self.enum.wordCount))
+                wc = int(self.data(self.enum.wordCount) or 0)
                 self.setData(self.enum.goalPercentage, wc / float(setGoal))
 
         else:
             wc = 0
             for c in self.children():
-                wc += int(c.data(self.enum.wordCount))
+                wc += int(c.data(self.enum.wordCount) or 0)
             self._data[self.enum.wordCount] = wc
 
-            setGoal = int(self.data(self.enum.setGoal))
-            goal = int(self.data(self.enum.goal))
+            setGoal = int(self.data(self.enum.setGoal) or 0)
+            goal = int(self.data(self.enum.goal) or 0)
 
             if setGoal:
                 if goal != setGoal:
@@ -210,7 +210,7 @@ class outlineItem(abstractItem):
             else:
                 goal = 0
                 for c in self.children():
-                    goal += int(c.data(self.enum.goal))
+                    goal += int(c.data(self.enum.goal) or 0)
                 self._data[self.enum.goal] = goal
 
             if goal:
