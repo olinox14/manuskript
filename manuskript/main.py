@@ -55,9 +55,9 @@ def prepare():
     app.setStyle("Fusion")
 
     # Load style from QSettings
-    settings = QSettings(app.organizationName(), app.applicationName())
-    if settings.contains("applicationStyle"):
-        style = settings.value("applicationStyle")
+    qsettings = QSettings(app.organizationName(), app.applicationName())
+    if qsettings.contains("applicationStyle"):
+        style = qsettings.value("applicationStyle")
         app.setStyle(style)
 
     # Translation process
@@ -67,8 +67,8 @@ def prepare():
 
     # Load translation from settings
     translation_file = ""
-    if settings.contains("applicationTranslation"):
-        translation_file = settings.value("applicationTranslation")
+    if qsettings.contains("applicationTranslation"):
+        translation_file = qsettings.value("applicationTranslation")
         logger.info("Found translation in settings:", translation_file)
     else:
         translation_file = "manuskript_{}.qm".format(locale)
@@ -80,14 +80,13 @@ def prepare():
     else:
         logger.warning(app.tr("No translator found or loaded for locale %s", locale))
 
-
     QIcon.setThemeSearchPaths(QIcon.themeSearchPaths() + [constants.ICONS_DIR])
     QIcon.setThemeName("NumixMsk")
 
     # Font siue
-    if settings.contains("appFontSize"):
+    if qsettings.contains("appFontSize"):
         f = qApp.font()
-        f.setPointSize(settings.value("appFontSize", type=int))
+        f.setPointSize(qsettings.value("appFontSize", type=int))
         app.setFont(f)
 
     # Main window
