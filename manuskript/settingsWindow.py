@@ -16,11 +16,11 @@ from manuskript.enums import Outline
 from manuskript.functions import allPaths, iconColor, writablePath, findWidgetsOfClass
 from manuskript.functions import mainWindow, findBackground, themeIcon
 from manuskript.ui import style as S
+from manuskript.ui._uic.settings_ui import Ui_Settings
 from manuskript.ui.editors.tabSplitter import tabSplitter
 from manuskript.ui.editors.themes import createThemePreview
 from manuskript.ui.editors.themes import getThemeName
 from manuskript.ui.editors.themes import loadThemeDatas
-from manuskript.ui.settings_ui import Ui_Settings
 from manuskript.ui.views.outlineView import outlineView
 from manuskript.ui.views.textEditView import textEditView
 
@@ -155,7 +155,7 @@ class settingsWindow(QWidget, Ui_Settings):
             chk.setChecked(col in settings.outlineViewColumns)
             chk.stateChanged.connect(self.outlineColumnsChanged)
 
-        self.chkOutlinePOV.setVisible(settings.viewMode != "simple") #  Hides checkbox if non-fiction view mode
+        self.chkOutlinePOV.setVisible(settings.viewMode != "simple")  #  Hides checkbox if non-fiction view mode
 
         for item, what, value in [
             (self.rdoTreeItemCount, "InfoFolder", "Count"),

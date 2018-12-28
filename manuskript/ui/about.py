@@ -8,8 +8,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget
 
 from manuskript.constants import ICONS_DIR, VERSION
-from manuskript.ui.about_ui import Ui_about
-
+from manuskript.ui._uic.about_ui import Ui_about
 
 class aboutDialog(QWidget, Ui_about):
     def __init__(self, parent=None, mw=None):
@@ -45,9 +44,9 @@ class aboutDialog(QWidget, Ui_about):
             + "&nbsp;"*5 + "PyQt " + PYQT_VERSION_STR + "<br>"
             + "&nbsp;"*5 + "Qt " + QT_VERSION_STR
             )
-        #self.labelPythonVersion.setText()
-        #self.labelPyQtVersion.setText()
-        #self.labelQtVersion.setText()
+        # self.labelPythonVersion.setText()
+        # self.labelPyQtVersion.setText()
+        # self.labelQtVersion.setText()
 
     def accept(self):
         self.close()

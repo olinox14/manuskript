@@ -3,7 +3,7 @@
 from PyQt5.QtCore import pyqtSignal, QTimer
 from PyQt5.QtWidgets import QWidget, qApp
 
-from manuskript.ui.editors.locker_ui import Ui_locker
+from manuskript.ui._uic.locker_ui import Ui_locker
 
 
 class locker(QWidget, Ui_locker):

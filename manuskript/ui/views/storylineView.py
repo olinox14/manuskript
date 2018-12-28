@@ -8,14 +8,14 @@ from PyQt5.QtWidgets import QWidget, QGraphicsScene, QGraphicsSimpleTextItem, QM
 from manuskript.enums import Outline
 import manuskript.functions as F
 from manuskript.models import references
-from manuskript.ui.views.storylineView_ui import Ui_storylineView
+from manuskript.ui._uic.storylineView_ui import Ui_storylineView
 
 
 class storylineView(QWidget, Ui_storylineView):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.setupUi(self)
-        
+
         self._mdlPlots = None
         self.scene = QGraphicsScene()
         self.view.setScene(self.scene)
@@ -130,7 +130,7 @@ class storylineView(QWidget, Ui_storylineView):
         if self.actCharacters.isChecked():
             trackedItems += self.charactersReferences()
 
-        ROWS_HEIGHT = len(trackedItems) * (LINE_HEIGHT + SPACING )
+        ROWS_HEIGHT = len(trackedItems) * (LINE_HEIGHT + SPACING)
 
         fm = QFontMetrics(s.font())
         max_name = 0
@@ -145,12 +145,12 @@ class storylineView(QWidget, Ui_storylineView):
         s.addItem(outline)
         outline.setPos(TITLE_WIDTH + SPACING, 0)
 
-        refCircles = [] # a list of all references, to be added later on the lines
+        refCircles = []  # a list of all references, to be added later on the lines
 
         # A Function to add a rect with centered elided text
         def addRectText(x, w, parent, text="", level=0, tooltip=""):
             deltaH = LEVEL_HEIGHT if level else 0
-            r = OutlineRect(0, 0, w, parent.rect().height()-deltaH, parent, title=text)
+            r = OutlineRect(0, 0, w, parent.rect().height() - deltaH, parent, title=text)
             r.setPos(x, deltaH)
 
             txt = QGraphicsSimpleTextItem(text, r)
@@ -187,7 +187,7 @@ class storylineView(QWidget, Ui_storylineView):
                 else:
                     rectChild = addRectText(delta, TEXT_WIDTH, rect, "", level, tooltip=child.title())
                     rectChild.setToolTip(references.tooltip(references.textReference(child.ID())))
-                    
+
                     # Find tracked references in that scene (or parent folders)
                     for ref in trackedItems:
 
@@ -212,10 +212,10 @@ class storylineView(QWidget, Ui_storylineView):
 
                         if result:
                             ref2 = result[0]
-                            
+
                             # Create a RefCircle with the reference
-                            c = RefCircle(TEXT_WIDTH / 2, - CIRCLE_WIDTH / 2, CIRCLE_WIDTH, ID=ref2, important=scenePOV)
-                            
+                            c = RefCircle(TEXT_WIDTH / 2, -CIRCLE_WIDTH / 2, CIRCLE_WIDTH, ID=ref2, important=scenePOV)
+
                             # Store it, with the position of that item, to display it on the line later on
                             refCircles.append((ref, c, rect.mapToItem(outline, rectChild.pos())))
 

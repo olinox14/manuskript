@@ -1,5 +1,5 @@
 PyQt5
 PyEnchant
 lxml
-yaml
+pyyaml
 path.py

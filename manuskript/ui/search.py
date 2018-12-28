@@ -8,7 +8,7 @@ from manuskript.enums import Outline
 from manuskript.functions import mainWindow
 from manuskript.models import references as Ref
 from manuskript.ui import style
-from manuskript.ui.search_ui import Ui_search
+from manuskript.ui._uic.search_ui import Ui_search
 
 
 class search(QWidget, Ui_search):

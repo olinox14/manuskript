@@ -12,9 +12,9 @@ from manuskript import settings
 from manuskript.constants import MAIN_DIR
 from manuskript.enums import Outline
 from manuskript.functions import AUC, mainWindow, drawProgress
+from manuskript.ui._uic.mainEditor_ui import Ui_mainEditor
 from manuskript.ui.editors.editorWidget import editorWidget
 from manuskript.ui.editors.fullScreenEditor import fullScreenEditor
-from manuskript.ui.editors.mainEditor_ui import Ui_mainEditor
 
 
 try:
@@ -99,7 +99,7 @@ class mainEditor(QWidget, Ui_mainEditor):
         self.btnRedacFolderOutline.setIcon(QIcon.fromTheme("view-outline",
                                            QIcon(MAIN_DIR / "icons/NumixMsk/256x256/actions/view-outline.svg")))
         self.btnRedacFolderText.setIcon(QIcon.fromTheme("view-text",
-                                        QIcon(MAIN_DIR /"icons/NumixMsk/256x256/actions/view-text.svg")))
+                                        QIcon(MAIN_DIR / "icons/NumixMsk/256x256/actions/view-text.svg")))
 
         for btn in [self.btnRedacFolderCork, self.btnRedacFolderText, self.btnRedacFolderOutline]:
             btn.setToolTip(btn.text())
@@ -230,7 +230,7 @@ class mainEditor(QWidget, Ui_mainEditor):
             tabWidget.setCurrentIndex(tabWidget.count() - 1)
         else:
             self.currentEditor(tabWidget).setCurrentModelIndex(index)
-            #tabWidget.setTabText(tabWidget.currentIndex(), title)
+            # tabWidget.setTabText(tabWidget.currentIndex(), title)
 
     def updateTargets(self):
         """Updates all tabSplitter that are targets. This is called from editorWidget."""

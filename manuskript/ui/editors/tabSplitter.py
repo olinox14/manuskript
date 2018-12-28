@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, qApp
 from manuskript.constants import ICONS_DIR
 from manuskript.functions import mainWindow
 from manuskript.ui import style
-from manuskript.ui.editors.tabSplitter_ui import Ui_tabSplitter
+from manuskript.ui._uic.tabSplitter_ui import Ui_tabSplitter
 
 
 class tabSplitter(QWidget, Ui_tabSplitter):
@@ -75,7 +75,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
 
         self.tab.tabCloseRequested.connect(self.closeTab)
         self.tab.currentChanged.connect(self.mainEditor.tabChanged)
-        qApp.focusChanged.connect(self.focusChanged)           #@UndefinedVariable
+        qApp.focusChanged.connect(self.focusChanged)  # @UndefinedVariable
 
     def updateStyleSheet(self):
         self.setStyleSheet(style.mainEditorTabSS())
@@ -190,7 +190,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
 
         for st in reversed(l):
             st.setParent(None)
-            qApp.focusChanged.disconnect(st.focusChanged)            #@UndefinedVariable
+            qApp.focusChanged.disconnect(st.focusChanged)  # @UndefinedVariable
             st.deleteLater()
 
         self.focusTab = 1

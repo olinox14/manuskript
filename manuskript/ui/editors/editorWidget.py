@@ -2,14 +2,14 @@
 # --!-- coding: utf8 --!--
 from PyQt5.QtCore import pyqtSignal, QModelIndex
 from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QWidget, QFrame, QSpacerItem, QSizePolicy
 from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QFrame, QSpacerItem, QSizePolicy
 
 from manuskript import settings
 from manuskript.functions import AUC, mainWindow
-from manuskript.ui.editors.editorWidget_ui import Ui_editorWidget_ui
-from manuskript.ui.views.MDEditView import MDEditView
+from manuskript.ui._uic.editorWidget_ui import Ui_editorWidget_ui
 from manuskript.ui.tools.splitDialog import splitDialog
+from manuskript.ui.views.MDEditView import MDEditView
 
 
 class editorWidget(QWidget, Ui_editorWidget_ui):
@@ -295,7 +295,7 @@ class editorWidget(QWidget, Ui_editorWidget_ui):
             self._model.dataChanged.connect(self.modelDataChanged, AUC)
             self._model.rowsInserted.connect(self.updateIndexFromID, AUC)
             self._model.rowsRemoved.connect(self.updateIndexFromID, AUC)
-            #self.mw.mdlOutline.rowsAboutToBeRemoved.connect(self.rowsAboutToBeRemoved, AUC)
+            # self.mw.mdlOutline.rowsAboutToBeRemoved.connect(self.rowsAboutToBeRemoved, AUC)
         except TypeError:
             pass
 
@@ -344,12 +344,12 @@ class editorWidget(QWidget, Ui_editorWidget_ui):
         if topLeft.row() <= self.currentIndex.row() <= bottomRight.row():
             self.updateStatusBar()
 
-    #def rowsAboutToBeRemoved(self, parent, first, last):
-        #if self.currentIndex:
-            #if self.currentIndex.parent() == parent and \
-                                    #first <= self.currentIndex.row() <= last:
-                ## Item deleted, close tab
-                #self.mw.mainEditor.tab.removeTab(self.mw.mainEditor.tab.indexOf(self))
+    # def rowsAboutToBeRemoved(self, parent, first, last):
+        # if self.currentIndex:
+            # if self.currentIndex.parent() == parent and \
+                                    # first <= self.currentIndex.row() <= last:
+                # # Item deleted, close tab
+                # self.mw.mainEditor.tab.removeTab(self.mw.mainEditor.tab.indexOf(self))
 
     def updateStatusBar(self):
         # Update progress

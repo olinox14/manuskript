@@ -3,7 +3,7 @@
 from PyQt5.QtWidgets import QWidget, QAbstractItemView
 
 from manuskript.enums import Outline
-from manuskript.ui.views.basicItemView_ui import Ui_basicItemView
+from manuskript.ui._uic.basicItemView_ui import Ui_basicItemView
 
 
 class basicItemView(QWidget, Ui_basicItemView):

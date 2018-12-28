@@ -11,8 +11,8 @@ from manuskript.exporter.pandoc import pandocExporter
 from manuskript.functions import openURL, statusMessage
 from manuskript.models import outlineModel, outlineItem
 from manuskript.ui import style
+from manuskript.ui._uic.importer_ui import Ui_importer
 from manuskript.ui.importers.generalSettings import generalSettings
-from manuskript.ui.importers.importer_ui import Ui_importer
 
 
 class importerDialog(QWidget, Ui_importer):
@@ -196,7 +196,7 @@ class importerDialog(QWidget, Ui_importer):
         self.grpPreview.setEnabled(True)
 
         self.settingsWidget = generalSettings()
-        #TODO: custom format widget
+        # TODO: custom format widget
         # self.settingsWidget = F.settingsWidget(self.settingsWidget)
 
         # Set the settings widget in place
@@ -258,8 +258,8 @@ class importerDialog(QWidget, Ui_importer):
 
         # I'm getting segfault over this message sometimes...
         # Using status bar message instead...
-        #QMessageBox.information(self, self.tr("Import status"),
-                                #self.tr("Import Complete."))
+        # QMessageBox.information(self, self.tr("Import status"),
+                                # self.tr("Import Complete."))
         statusMessage("Import complete!", 5000)
 
         self.close()

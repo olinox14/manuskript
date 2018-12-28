@@ -8,7 +8,7 @@ from manuskript.enums import Plot
 from manuskript.functions import mainWindow
 from manuskript.models import references as Ref
 from manuskript.ui import style as S
-from manuskript.ui.cheatSheet_ui import Ui_cheatSheet
+from manuskript.ui._uic.cheatSheet_ui import Ui_cheatSheet
 
 
 class cheatSheet(QWidget, Ui_cheatSheet):

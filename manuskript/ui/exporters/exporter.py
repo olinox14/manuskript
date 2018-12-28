@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QStyle
 from manuskript import exporter
 from manuskript.functions import  openURL
 from manuskript.ui import style as S
-from manuskript.ui.exporters.exporter_ui import Ui_exporter
+from manuskript.ui._uic.exporter_ui import Ui_exporter
 from manuskript.ui.exporters.exportersManager import exportersManager
 
 
@@ -32,7 +32,7 @@ class exporterDialog(QWidget, Ui_exporter):
         self.btnPreview.clicked.connect(self.preview)
         self.btnExport.clicked.connect(self.export)
 
-        #FIXME: load last export format
+        # FIXME: load last export format
 
     def populateExportList(self):
 
