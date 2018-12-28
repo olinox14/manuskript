@@ -14,24 +14,24 @@ if 'QT_WEB' in os.environ:
     features[os.environ['QT_WEB']] = True
 else:
     try:
-        import PyQt5.QtWebKitWidgets
+        import PyQt5.QtWebKitWidgets   #@UnresolvedImport
         features['qtwebkit'] = True
     except:
         features['qtwebkit'] = False
 
     try:
-        import PyQt5.QtWebEngineWidgets
+        import PyQt5.QtWebEngineWidgets   #@UnresolvedImport
         features['qtwebengine'] = True
     except:
         features['qtwebengine'] = False
 
 if features['qtwebkit']:
-    from PyQt5.QtWebKitWidgets import QWebView
+    from PyQt5.QtWebKitWidgets import QWebView   #@UnresolvedImport
     logger.debug("Web rendering engine used: QWebView")
     webEngine = "QtWebKit"
     webView = QWebView
 elif features['qtwebengine']:
-    from PyQt5 import QtWebEngineWidgets
+    from PyQt5 import QtWebEngineWidgets   #@UnresolvedImport
     logger.debug("Web rendering engine used: QWebEngineView")
     webEngine = "QtWebEngine"
     webView = QtWebEngineWidgets.QWebEngineView

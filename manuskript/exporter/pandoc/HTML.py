@@ -21,7 +21,7 @@ class HTML(abstractPlainText):
     }
 
     def previewWidget(self):
-        return MskHTML.previewWidget(self)
+        return MskHTML.previewWidget(self)     #@UndefinedVariable
 
     def preview(self, settingsWidget, previewWidget):
         settings = settingsWidget.getSettings()

@@ -2,7 +2,9 @@
 
 @author: olivier.massot, 2018
 '''
+from appdirs import user_data_dir
 from path import Path
+
 
 DEBUG = False
 
@@ -16,3 +18,7 @@ MS_DIR = MAIN_DIR / 'manuskript'
 ICONS_DIR = MAIN_DIR / "icons"
 
 LOGGING_CONF_FILE = MS_DIR / 'logging.yaml'
+
+USER_DATA_DIR = Path(user_data_dir(APP_NAME, roaming=True))
+
+SEARCHABLE_PATHS = [MAIN_DIR, USER_DATA_DIR]

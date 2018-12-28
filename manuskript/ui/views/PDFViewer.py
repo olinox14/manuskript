@@ -9,8 +9,8 @@ from manuskript.ui.views.webView import  webEngine
 
 if webEngine == "QtWebKit":
 
-    from PyQt5.QtWebKit import QWebSettings
-    from PyQt5.QtWebKitWidgets import QWebView
+    from PyQt5.QtWebKit import QWebSettings   #@UnresolvedImport
+    from PyQt5.QtWebKitWidgets import QWebView   #@UnresolvedImport
 
 
     class PDFViewer(QWebView):
@@ -29,7 +29,7 @@ if webEngine == "QtWebKit":
 
 elif webEngine == "QtWebEngine":
 
-    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineSettings
+    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineSettings   #@UnresolvedImport
 
 
     class PDFViewer(QWebEngineView):
