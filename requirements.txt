@@ -3,3 +3,4 @@ PyEnchant
 lxml
 pyyaml
 path.py
+appdirs
