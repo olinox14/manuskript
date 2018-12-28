@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QMainWindow, QHeaderView, qApp, QMenu, QActionGroup,
     QWidget
 from path import Path
 
-from manuskript import loadSave
+from manuskript import loadSave, constants
 from manuskript import settings
 from manuskript.constants import DEBUG
 from manuskript.enums import Character, PlotStep, Plot, World, Outline
@@ -76,10 +76,130 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.setupUi(self)
 
-        self.readSettings()
+        style.styleMainWindow(self)
 
-        # UI
-        self.setupMoreUi()
+        # Tool bar on the right
+        self.toolbar = collapsibleDockWidgets(Qt.RightDockWidgetArea, self)
+        self.toolbar.addCustomWidget(self.tr("Book summary"), self.grpPlotSummary, self.TabPlots, False)
+        self.toolbar.addCustomWidget(self.tr("Project tree"), self.treeRedacWidget, self.TabRedac, True)
+        self.toolbar.addCustomWidget(self.tr("Metadata"), self.redacMetadata, self.TabRedac, False)
+        self.toolbar.addCustomWidget(self.tr("Story line"), self.storylineView, self.TabRedac, False)
+            
+        # restore QSettings
+        self.restoreSettings()
+
+        # Hides navigation dock title bar
+        self.dckNavigation.setTitleBarWidget(QWidget(None))
+
+        # Custom "tab" bar on the left
+        self.lstTabs.setIconSize(QSize(48, 48))
+        icons = [
+                    QIcon.fromTheme("stock_view-details"),  # info
+                    QIcon.fromTheme("application-text-template"),  # applications-publishing
+                    QIcon.fromTheme(constants.THEME_ICONS.get("characters", ""), QIcon()),
+                    QIcon.fromTheme(constants.THEME_ICONS.get("plots", ""), QIcon()),
+                    QIcon.fromTheme(constants.THEME_ICONS.get("world", ""), QIcon()),
+                    QIcon.fromTheme(constants.THEME_ICONS.get("outline", ""), QIcon()),
+                    QIcon.fromTheme("gtk-edit"),
+                    QIcon.fromTheme("applications-debugging")
+                 ]
+        for i in range(self.tabMain.count()):
+            self.tabMain.setTabIcon(i, icons[i])
+            item = QListWidgetItem(self.tabMain.tabIcon(i), self.tabMain.tabText(i))
+            item.setSizeHint(QSize(item.sizeHint().width(), 64))
+            item.setToolTip(self.tabMain.tabText(i))
+            item.setTextAlignment(Qt.AlignCenter)
+            self.lstTabs.addItem(item)
+            
+        self.tabMain.tabBar().hide()
+        self.lstTabs.currentRowChanged.connect(self.tabMain.setCurrentIndex)
+        self.lstTabs.item(self.TabDebug).setHidden(not self.SHOW_DEBUG_TAB)
+        self.tabMain.setTabEnabled(self.TabDebug, self.SHOW_DEBUG_TAB)
+        self.tabMain.currentChanged.connect(self.lstTabs.setCurrentRow)
+
+        # Splitters
+        self.splitterPersos.setStretchFactor(0, 25)
+        self.splitterPersos.setStretchFactor(1, 75)
+
+        self.splitterPlot.setStretchFactor(0, 20)
+        self.splitterPlot.setStretchFactor(1, 60)
+        self.splitterPlot.setStretchFactor(2, 30)
+
+        self.splitterWorld.setStretchFactor(0, 25)
+        self.splitterWorld.setStretchFactor(1, 75)
+
+        self.splitterOutlineH.setStretchFactor(0, 25)
+        self.splitterOutlineH.setStretchFactor(1, 75)
+        self.splitterOutlineV.setStretchFactor(0, 75)
+        self.splitterOutlineV.setStretchFactor(1, 25)
+
+        self.splitterRedacV.setStretchFactor(0, 75)
+        self.splitterRedacV.setStretchFactor(1, 25)
+
+        self.splitterRedacH.setStretchFactor(0, 30)
+        self.splitterRedacH.setStretchFactor(1, 40)
+        self.splitterRedacH.setStretchFactor(2, 30)
+
+        # QFormLayout stretch
+        for w in [self.txtWorldDescription, self.txtWorldPassion, self.txtWorldConflict]:
+            s = w.sizePolicy()
+            s.setVerticalStretch(1)
+            w.setSizePolicy(s)
+
+        # Help box
+        references = [
+                (self.lytTabOverview, 0,
+                 self.tr("Enter information about your book, and yourself.")),
+                (self.lytSituation, 1,
+                 self.tr(
+                         """The basic situation, in the form of a 'What if...?' question. Ex: 'What if the most dangerous
+                         evil wizard wasn't able to kill a baby?' (Harry Potter)""")),
+                (self.lytSummary, 1,
+                 self.tr(
+                         """Take time to think about a one sentence (~50 words) summary of your book. Then expand it to
+                         a paragraph, then to a page, then to a full summary.""")),
+                (self.lytTabPersos, 0,
+                 self.tr("Create your characters.")),
+                (self.lytTabPlot, 0,
+                 self.tr("Develop plots.")),
+                (self.lytTabContext, 0,
+                 self.tr("Build worlds.  Create hierarchy of broad categories down to specific details.")),
+                (self.lytTabOutline, 0,
+                 self.tr("Create the outline of your masterpiece.")),
+                (self.lytTabRedac, 0,
+                 self.tr("Write.")),
+                (self.lytTabDebug, 0,
+                 self.tr("Debug info. Sometimes useful."))
+            ]
+
+        for widget, pos, text in references:
+            label = helpLabel(text, self)
+            self.actShowHelp.toggled.connect(label.setVisible, F.AUC)
+            widget.layout().insertWidget(pos, label)
+
+        self.actShowHelp.setChecked(False)
+
+        # Spellcheck
+        if enchant:
+            self.menuDict = QMenu(self.tr("Dictionary"))
+            self.menuDictGroup = QActionGroup(self)
+            
+            self.updateMenuDict()
+            
+            self.menuTools.addMenu(self.menuDict)
+
+            self.actSpellcheck.toggled.connect(self.toggleSpellcheck, F.AUC)
+            self.dictChanged.connect(self.mainEditor.setDict, F.AUC)
+            self.dictChanged.connect(self.redacMetadata.setDict, F.AUC)
+            self.dictChanged.connect(self.outlineItemEditor.setDict, F.AUC)
+
+        else:
+            # No Spell check support
+            self.actSpellcheck.setVisible(False)
+            a = QAction(self.tr("Install PyEnchant to use spellcheck"), self)
+            a.setIcon(self.style().standardIcon(QStyle.SP_MessageBoxWarning))
+            a.triggered.connect(self.openPyEnchantWebPage, F.AUC)
+            self.menuTools.addAction(a)
         
         self.statusLabel = statusLabel(parent=self)
         self.statusLabel.setAutoFillBackground(True)
@@ -91,41 +211,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Word count
         self.mprWordCount = QSignalMapper(self)
-        for t, i in [
-            (self.txtSummarySentence, 0),
-            (self.txtSummaryPara, 1),
-            (self.txtSummaryPage, 2),
-            (self.txtSummaryFull, 3)
-        ]:
+        for i, t in enumerate([self.txtSummarySentence, 
+                                 self.txtSummaryPara,
+                                 self.txtSummaryPage,
+                                 self.txtSummaryFull]):
             t.textChanged.connect(self.mprWordCount.map)
             self.mprWordCount.setMapping(t, i)
         self.mprWordCount.mapped.connect(self.wordCount)
 
         # Snowflake Method Cycle
         self.mapperCycle = QSignalMapper(self)
-        for t, i in [
-            (self.btnStepTwo, 0),
-            (self.btnStepThree, 1),
-            (self.btnStepFour, 2),
-            (self.btnStepFive, 3),
-            (self.btnStepSix, 4),
-            (self.btnStepSeven, 5),
-            (self.btnStepEight, 6)
-        ]:
+        for i, t in enumerate([
+                                self.btnStepTwo,
+                                self.btnStepThree,
+                                self.btnStepFour,
+                                self.btnStepFive,
+                                self.btnStepSix,
+                                self.btnStepSeven,
+                                self.btnStepEight
+                            ]):
             t.clicked.connect(self.mapperCycle.map)
             self.mapperCycle.setMapping(t, i)
-
         self.mapperCycle.mapped.connect(self.clickCycle)
+        
+        # summary
         self.cmbSummary.currentIndexChanged.connect(self.summaryPageChanged)
         self.cmbSummary.setCurrentIndex(0)
         self.cmbSummary.currentIndexChanged.emit(0)
 
         # Main Menu
-        for i in [self.actSave, self.actSaveAs, self.actCloseProject,
+        for w in [self.actSave, self.actSaveAs, self.actCloseProject,
                   self.menuEdit, self.menuView, self.menuOrganize,
                   self.menuTools, self.menuHelp, self.actImport,
                   self.actCompile, self.actSettings]:
-            i.setEnabled(False)
+            w.setEnabled(False)
+
+        # default dock visibility
+        self._defaultDockVisibility = { self.dckNavigation.objectName() : True,
+                                        self.dckCheatSheet.objectName() : False,
+                                        self.dckSearch.objectName() : False,
+                                       }
 
         # Main Menu:: File
         self.actOpen.triggered.connect(self.welcome.openFile)
@@ -190,6 +315,44 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.makeUIConnections()
 
+    def restoreSettings(self):
+        """ restore settings from QSettings """
+        # Load State and geometry and try to restore them
+        qsettings = QSettings(qApp.organizationName(), qApp.applicationName())
+        
+        if qsettings.contains("geometry"):
+            self.restoreGeometry(qsettings.value("geometry"))
+        if qsettings.contains("windowState"):
+            self.restoreState(qsettings.value("windowState"))
+
+        if qsettings.contains("docks"):
+            values = qsettings.value("docks")
+            self._dckVisibility = {name: values[name] for name in values}
+            
+        self._dckVisibility["LOCK"] = True  # prevent overriding loaded values   # FIXME: could be nicer
+
+        if qsettings.contains("metadataState"):
+            self.redacMetadata.restoreState([(v != "false") for v in qsettings.value("metadataState")])
+            
+        if qsettings.contains("revisionsState"):
+            self.redacMetadata.revisions.restoreState([(v != "false") for v in qsettings.value("revisionsState")])
+            
+        if qsettings.contains("splitterRedacH"):
+            self.splitterRedacH.restoreState(qsettings.value("splitterRedacH"))
+            
+        if qsettings.contains("splitterRedacV"):
+            self.splitterRedacV.restoreState(qsettings.value("splitterRedacV"))
+            
+        if qsettings.contains("toolbar"):
+            self.toolbar.restoreState(qsettings.value("toolbar"))
+
+    @property
+    def dockVisibility(self):
+        try:
+            return self._dockVisibility
+        except AttributeError:
+            return self._defaultDockVisibility
+
     def updateDockVisibility(self, restore=False):
         """
         Saves the state of the docks visibility. Or if `restore` is True,
@@ -206,7 +369,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.dckNavigation,
             self.dckSearch,
         ]
-
+        # FIXME: should separate the save and the restore methods, and avoid the use of LOCK
+        
         for d in docks:
             if not restore:
                 # We store the values, but only if "LOCK" is not present
@@ -253,34 +417,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         "Called when main tab changes."
         tabIsEditor = self.tabMain.currentIndex() == self.TabRedac
         self.menuOrganize.menuAction().setEnabled(tabIsEditor)
-        for i in [self.actCut,
+        for act in [self.actCut,
                   self.actCopy,
                   self.actPaste,
                   self.actDelete,
                   self.actRename]:
-            i.setEnabled(tabIsEditor)
+            act.setEnabled(tabIsEditor)
 
     def focusChanged(self, old, new):
         """
         We get notified by qApp when focus changes, from old to new widget.
         """
-
         # If new is a MDEditView, we keep it in memory
-        if issubclass(type(new), MDEditView):
-            self._lastMDEditView = new
-        else:
-            self._lastMDEditView = None
+        self._lastMDEditView = new if issubclass(type(new), MDEditView) else None
 
         # Determine which view had focus last, to send the keyboard shortcuts
         # to the right place
-
-        targets = [
-            self.treeRedacOutline,
-            self.mainEditor
-            ]
-
-        while new is not None:
-            if new in targets:
+        while new:
+            if new in [self.treeRedacOutline, self.mainEditor]:
                 self._lastFocus = new
                 break
             new = new.parent()
@@ -296,8 +450,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.btnStepFive,
             self.btnStepSeven,
         ]
-        for b in fractalButtons:
-            b.setVisible(fractalButtons.index(b) == index)
+        for i, b in enumerate(fractalButtons):
+            b.setVisible(i == index)
 
     ###############################################################################
     # OUTLINE
@@ -315,7 +469,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def changeCurrentCharacter(self, trash=None):
         """
-
         @return:
         """
         c = self.lstCharacters.currentCharacter()
@@ -327,24 +480,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         index = c.index()
 
         for w in [
-            self.txtPersoName,
-            self.sldPersoImportance,
-            self.txtPersoMotivation,
-            self.txtPersoGoal,
-            self.txtPersoConflict,
-            self.txtPersoEpiphany,
-            self.txtPersoSummarySentence,
-            self.txtPersoSummaryPara,
-            self.txtPersoSummaryFull,
-            self.txtPersoNotes,
-        ]:
+                    self.txtPersoName,
+                    self.sldPersoImportance,
+                    self.txtPersoMotivation,
+                    self.txtPersoGoal,
+                    self.txtPersoConflict,
+                    self.txtPersoEpiphany,
+                    self.txtPersoSummarySentence,
+                    self.txtPersoSummaryPara,
+                    self.txtPersoSummaryFull,
+                    self.txtPersoNotes,
+                ]:
             w.setCurrentModelIndex(index)
 
         # Button color
-        self.updateCharacterColor(c.ID())
-
+        self.btnPersoColor.setStyleSheet("background:{};".format(c.color().name()))
+        
         # Slider importance
-        self.updateCharacterImportance(c.ID())
+        self.sldPersoImportance.setValue(int(c.importance()))
 
         # Character Infos
         self.tblPersoInfos.setRootIndex(index)
@@ -357,14 +510,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tblPersoInfos.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.tblPersoInfos.verticalHeader().hide()
 
-    def updateCharacterColor(self, ID):
-        c = self.mdlCharacter.getCharacterByID(ID)
-        color = c.color().name()
-        self.btnPersoColor.setStyleSheet("background:{};".format(color))
-
-    def updateCharacterImportance(self, ID):
-        c = self.mdlCharacter.getCharacterByID(ID)
-        self.sldPersoImportance.setValue(int(c.importance()))
+    def updateCharacterColor(self, character):
+        self.btnPersoColor.setStyleSheet("background:{};".format(character.color().name()))
 
     ###############################################################################
     # PLOTS
@@ -382,12 +529,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txtPlotDescription.setCurrentModelIndex(index)
         self.txtPlotResult.setCurrentModelIndex(index)
         self.sldPlotImportance.setCurrentModelIndex(index)
-        self.lstPlotPerso.setRootIndex(index.sibling(index.row(),
-                                                     Plot.characters))
+        self.lstPlotPerso.setRootIndex(index.sibling(index.row(), Plot.characters))
 
         # Slider importance
-        self.updatePlotImportance(index.row())
-
+        imp = self.mdlPlots.getPlotImportanceByRow(index.row())
+        self.sldPlotImportance.setValue(int(imp))
+        
         subplotindex = index.sibling(index.row(), Plot.steps)
         self.lstSubPlots.setRootIndex(subplotindex)
         if self.mdlPlots.rowCount(subplotindex):
@@ -421,10 +568,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lstSubPlots.horizontalHeader().setSectionResizeMode(
                 PlotStep.meta, QHeaderView.ResizeToContents)
         self.lstSubPlots.verticalHeader().hide()
-
-    def updatePlotImportance(self, row):
-        imp = self.mdlPlots.getPlotImportanceByRow(row)
-        self.sldPlotImportance.setValue(int(imp))
 
     def changeCurrentSubPlot(self, index):
         index = index.sibling(index.row(), PlotStep.summary)
@@ -461,7 +604,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.treeRedacOutline.setCurrentIndex(index)
 
     def openIndexes(self, indexes, newTab=True):
-        self.mainEditor.openIndexes(indexes, newTab=True)
+        self.mainEditor.openIndexes(indexes, newTab)
 
     # Menu #############################################################
 
@@ -470,25 +613,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # mainEditor). So we just pass along the signal.
 
     # Edit
-
+    # TODO: add a decorator 'if self._lastFocus'
+    
     def documentsCopy(self):
         "Copy selected item(s)."
-        if self._lastFocus: self._lastFocus.copy()
+        if self._lastFocus: 
+            self._lastFocus.copy()
+            
     def documentsCut(self):
         "Cut selected item(s)."
-        if self._lastFocus: self._lastFocus.cut()
+        if self._lastFocus: 
+            self._lastFocus.cut()
+            
     def documentsPaste(self):
         "Paste clipboard item(s) into selected item."
-        if self._lastFocus: self._lastFocus.paste()
+        if self._lastFocus: 
+            self._lastFocus.paste()
+            
     def documentsRename(self):
         "Rename selected item."
-        if self._lastFocus: self._lastFocus.rename()
+        if self._lastFocus: 
+            self._lastFocus.rename()
+            
     def documentsDuplicate(self):
         "Duplicate selected item(s)."
-        if self._lastFocus: self._lastFocus.duplicate()
+        if self._lastFocus: 
+            self._lastFocus.duplicate()
+            
     def documentsDelete(self):
         "Delete selected item(s)."
-        if self._lastFocus: self._lastFocus.delete()
+        if self._lastFocus: 
+            self._lastFocus.delete()
 
     # Formats
     def callLastMDEditView(self, functionName, param=[]):
@@ -498,6 +653,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self._lastMDEditView:
             function = getattr(self._lastMDEditView, functionName)
             function(*param)
+            
     def formatSetext1(self): self.callLastMDEditView("titleSetext", [1])
     def formatSetext2(self): self.callLastMDEditView("titleSetext", [2])
     def formatAtx1(self): self.callLastMDEditView("titleATX", [1])
@@ -523,16 +679,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def documentsMoveUp(self):
         "Move up selected item(s)."
-        if self._lastFocus: self._lastFocus.moveUp()
+        if self._lastFocus: 
+            self._lastFocus.moveUp()
+        
     def documentsMoveDown(self):
         "Move Down selected item(s)."
-        if self._lastFocus: self._lastFocus.moveDown()
+        if self._lastFocus: 
+            self._lastFocus.moveDown()
 
     def documentsSplitDialog(self):
         "Opens a dialog to split selected items."
-        if self._lastFocus: self._lastFocus.splitDialog()
+        if self._lastFocus: 
+            self._lastFocus.splitDialog()
         # current items or selected items?
-        pass
         # use outlineBasics, to do that on all selected items.
         # use editorWidget to do that on selected text.
 
@@ -543,9 +702,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if self._lastFocus and self._lastFocus == self.mainEditor:
             self.mainEditor.splitCursor()
+            
     def documentsMerge(self):
         "Merges selected item(s)."
-        if self._lastFocus: self._lastFocus.merge()
+        if self._lastFocus: 
+            self._lastFocus.merge()
 
     ###############################################################################
     # LOAD AND SAVE
@@ -558,9 +719,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         It assumes that the datas have been populated in a different way."""
         project = Path(project)
         if loadFromFile and not project.exists():
-            logger.info(self.tr("The file {} does not exist. Has it been moved or deleted?").format(project))
+            logger.error(self.tr("The file {} does not exist. Has it been moved or deleted?").format(project))
             F.statusMessage(
-                    self.tr("The file {} does not exist. Has it been moved or deleted?").format(project), importance=3)
+                    self.tr("The file {} does not exist. Has it been moved or deleted?").format(project), importance=3)   
+            # FIXME: better raise a FileNotFoundError?
+            # FIXME: replace the statusMessage() method by a QSignal
             return
 
         if loadFromFile:
@@ -572,7 +735,178 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.loadEmptyDatas()
             self.loadDatas(project)
 
-        self.makeConnections()
+        # TODO: separate following by a open_project() method
+        # TODO: 20181228 to the future myself: stopped reviewing here
+        
+        # Make connections
+        # Flat datas (Summary and general infos)
+        for widget, col in [
+                                (self.txtSummarySituation, 0),
+                                (self.txtSummarySentence, 1),
+                                (self.txtSummarySentence_2, 1),
+                                (self.txtSummaryPara, 2),
+                                (self.txtSummaryPara_2, 2),
+                                (self.txtPlotSummaryPara, 2),
+                                (self.txtSummaryPage, 3),
+                                (self.txtSummaryPage_2, 3),
+                                (self.txtPlotSummaryPage, 3),
+                                (self.txtSummaryFull, 4),
+                                (self.txtPlotSummaryFull, 4),
+                            ]:
+            widget.setModel(self.mdlFlatData)
+            widget.setColumn(col)
+            widget.setCurrentModelIndex(self.mdlFlatData.index(1, col))
+
+        for widget, col in [
+                                (self.txtGeneralTitle, 0),
+                                (self.txtGeneralSubtitle, 1),
+                                (self.txtGeneralSerie, 2),
+                                (self.txtGeneralVolume, 3),
+                                (self.txtGeneralGenre, 4),
+                                (self.txtGeneralLicense, 5),
+                                (self.txtGeneralAuthor, 6),
+                                (self.txtGeneralEmail, 7),
+                            ]:
+            widget.setModel(self.mdlFlatData)
+            widget.setColumn(col)
+            widget.setCurrentModelIndex(self.mdlFlatData.index(0, col))
+
+        # Characters
+        self.lstCharacters.setCharactersModel(self.mdlCharacter)
+        self.tblPersoInfos.setModel(self.mdlCharacter)
+
+        self.btnAddPerso.clicked.connect(self.mdlCharacter.addCharacter, F.AUC)
+        try:
+            self.btnRmPerso.clicked.connect(self.lstCharacters.removeCharacter, F.AUC)
+            self.btnPersoColor.clicked.connect(self.lstCharacters.choseCharacterColor, F.AUC)
+            self.btnPersoAddInfo.clicked.connect(self.lstCharacters.addCharacterInfo, F.AUC)
+            self.btnPersoRmInfo.clicked.connect(self.lstCharacters.removeCharacterInfo, F.AUC)
+        except TypeError:
+            # Connection has already been made
+            pass
+
+        for w, c in [
+                        (self.txtPersoName, Character.name),
+                        (self.sldPersoImportance, Character.importance),
+                        (self.txtPersoMotivation, Character.motivation),
+                        (self.txtPersoGoal, Character.goal),
+                        (self.txtPersoConflict, Character.conflict),
+                        (self.txtPersoEpiphany, Character.epiphany),
+                        (self.txtPersoSummarySentence, Character.summarySentence),
+                        (self.txtPersoSummaryPara, Character.summaryPara),
+                        (self.txtPersoSummaryFull, Character.summaryFull),
+                        (self.txtPersoNotes, Character.notes)
+                    ]:
+            w.setModel(self.mdlCharacter)
+            w.setColumn(c)
+        self.tabPersos.setEnabled(False)
+
+        # Plots
+        self.lstSubPlots.setModel(self.mdlPlots)
+        self.lstPlotPerso.setModel(self.mdlPlots)
+        self.lstPlots.setPlotModel(self.mdlPlots)
+        self._updatingSubPlot = False
+        self.btnAddPlot.clicked.connect(self.mdlPlots.addPlot, F.AUC)
+        self.btnRmPlot.clicked.connect(lambda:
+                                       self.mdlPlots.removePlot(self.lstPlots.currentPlotIndex()), F.AUC)
+        self.btnAddSubPlot.clicked.connect(self.mdlPlots.addSubPlot, F.AUC)
+        self.btnAddSubPlot.clicked.connect(self.updateSubPlotView, F.AUC)
+        self.btnRmSubPlot.clicked.connect(self.mdlPlots.removeSubPlot, F.AUC)
+        self.lstPlotPerso.selectionModel().selectionChanged.connect(self.plotPersoSelectionChanged)
+        self.btnRmPlotPerso.clicked.connect(self.mdlPlots.removePlotPerso, F.AUC)
+        self.lstSubPlots.selectionModel().currentRowChanged.connect(self.changeCurrentSubPlot, F.AUC)
+
+        for w, c in [
+            (self.txtPlotName, Plot.name),
+            (self.txtPlotDescription, Plot.description),
+            (self.txtPlotResult, Plot.result),
+            (self.sldPlotImportance, Plot.importance),
+        ]:
+            w.setModel(self.mdlPlots)
+            w.setColumn(c)
+
+        self.tabPlot.setEnabled(False)
+        self.mdlPlots.updatePlotPersoButton()
+        self.mdlCharacter.dataChanged.connect(self.mdlPlots.updatePlotPersoButton)
+        self.lstOutlinePlots.setPlotModel(self.mdlPlots)
+        self.lstOutlinePlots.setShowSubPlot(True)
+        self.plotCharacterDelegate = outlineCharacterDelegate(self.mdlCharacter, self)
+        self.lstPlotPerso.setItemDelegate(self.plotCharacterDelegate)
+        self.plotDelegate = plotDelegate(self)
+        self.lstSubPlots.setItemDelegateForColumn(PlotStep.meta, self.plotDelegate)
+
+        # World
+        self.treeWorld.setModel(self.mdlWorld)
+        for i in range(self.mdlWorld.columnCount()):
+            self.treeWorld.hideColumn(i)
+        self.treeWorld.showColumn(0)
+        self.btnWorldEmptyData.setMenu(self.mdlWorld.emptyDataMenu())
+        self.treeWorld.selectionModel().selectionChanged.connect(self.changeCurrentWorld, F.AUC)
+        self.btnAddWorld.clicked.connect(self.mdlWorld.addItem, F.AUC)
+        self.btnRmWorld.clicked.connect(self.mdlWorld.removeItem, F.AUC)
+        for w, c in [
+            (self.txtWorldName, World.name),
+            (self.txtWorldDescription, World.description),
+            (self.txtWorldPassion, World.passion),
+            (self.txtWorldConflict, World.conflict),
+        ]:
+            w.setModel(self.mdlWorld)
+            w.setColumn(c)
+        self.tabWorld.setEnabled(False)
+        self.treeWorld.expandAll()
+
+        # Outline
+        self.treeRedacOutline.setModel(self.mdlOutline)
+        self.treeOutlineOutline.setModelCharacters(self.mdlCharacter)
+        self.treeOutlineOutline.setModelLabels(self.mdlLabels)
+        self.treeOutlineOutline.setModelStatus(self.mdlStatus)
+
+        self.redacMetadata.setModels(self.mdlOutline, self.mdlCharacter,
+                                     self.mdlLabels, self.mdlStatus)
+        self.outlineItemEditor.setModels(self.mdlOutline, self.mdlCharacter,
+                                         self.mdlLabels, self.mdlStatus)
+
+        self.treeOutlineOutline.setModel(self.mdlOutline)
+        # self.redacEditor.setModel(self.mdlOutline)
+        self.storylineView.setModels(self.mdlOutline, self.mdlCharacter, self.mdlPlots)
+
+        self.treeOutlineOutline.selectionModel().selectionChanged.connect(self.outlineItemEditor.selectionChanged, F.AUC)
+        self.treeOutlineOutline.clicked.connect(self.outlineItemEditor.selectionChanged, F.AUC)
+
+        # Sync selection
+        self.treeRedacOutline.selectionModel().selectionChanged.connect(self.redacMetadata.selectionChanged, F.AUC)
+        self.treeRedacOutline.clicked.connect(self.redacMetadata.selectionChanged, F.AUC)
+
+        self.treeRedacOutline.selectionModel().selectionChanged.connect(self.mainEditor.selectionChanged, F.AUC)
+
+        # Cheat Sheet
+        self.cheatSheet.setModels()
+
+        # Debug
+        self.mdlFlatData.setVerticalHeaderLabels(["General info", "Summary"])
+        self.tblDebugFlatData.setModel(self.mdlFlatData)
+        self.tblDebugPersos.setModel(self.mdlCharacter)
+        self.tblDebugPersosInfos.setModel(self.mdlCharacter)
+        self.tblDebugPersos.selectionModel().currentChanged.connect(
+                lambda: self.tblDebugPersosInfos.setRootIndex(self.mdlCharacter.index(
+                        self.tblDebugPersos.selectionModel().currentIndex().row(),
+                        Character.name)), F.AUC)
+
+        self.tblDebugPlots.setModel(self.mdlPlots)
+        self.tblDebugPlotsPersos.setModel(self.mdlPlots)
+        self.tblDebugSubPlots.setModel(self.mdlPlots)
+        self.tblDebugPlots.selectionModel().currentChanged.connect(
+                lambda: self.tblDebugPlotsPersos.setRootIndex(self.mdlPlots.index(
+                        self.tblDebugPlots.selectionModel().currentIndex().row(),
+                        Plot.characters)), F.AUC)
+        self.tblDebugPlots.selectionModel().currentChanged.connect(
+                lambda: self.tblDebugSubPlots.setRootIndex(self.mdlPlots.index(
+                        self.tblDebugPlots.selectionModel().currentIndex().row(),
+                        Plot.steps)), F.AUC)
+        self.treeDebugWorld.setModel(self.mdlWorld)
+        self.treeDebugOutline.setModel(self.mdlOutline)
+        self.lstDebugLabels.setModel(self.mdlLabels)
+        self.lstDebugStatus.setModel(self.mdlStatus)
 
         # Load settings
         if settings.openIndexes and settings.openIndexes != [""]:
@@ -685,43 +1019,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Show welcome dialog
         self.switchToWelcome()
 
-    def readSettings(self):
-        # Load State and geometry
-        sttgns = QSettings(qApp.organizationName(), qApp.applicationName())
-        if sttgns.contains("geometry"):
-            self.restoreGeometry(sttgns.value("geometry"))
-        if sttgns.contains("windowState"):
-            self.restoreState(sttgns.value("windowState"))
 
-        if sttgns.contains("docks"):
-            self._dckVisibility = {}
-            vals = sttgns.value("docks")
-            for name in vals:
-                self._dckVisibility[name] = vals[name]
-        else:
-            # Create default settings
-            self._dckVisibility = {
-                self.dckNavigation.objectName() : True,
-                self.dckCheatSheet.objectName() : False,
-                self.dckSearch.objectName() : False,
-            }
-        self._dckVisibility["LOCK"] = True  # prevent overriding loaded values
-
-        if sttgns.contains("metadataState"):
-            state = [False if v == "false" else True for v in sttgns.value("metadataState")]
-            self.redacMetadata.restoreState(state)
-        if sttgns.contains("revisionsState"):
-            state = [False if v == "false" else True for v in sttgns.value("revisionsState")]
-            self.redacMetadata.revisions.restoreState(state)
-        if sttgns.contains("splitterRedacH"):
-            self.splitterRedacH.restoreState(sttgns.value("splitterRedacH"))
-        if sttgns.contains("splitterRedacV"):
-            self.splitterRedacV.restoreState(sttgns.value("splitterRedacV"))
-        if sttgns.contains("toolbar"):
-            # self.toolbar is not initialized yet, so we just store value
-            self._toolbarState = sttgns.value("toolbar")
-        else:
-            self._toolbarState = ""
 
     def closeEvent(self, event):
         # Save State and geometry and other things
@@ -834,177 +1132,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tabMain.currentChanged.connect(self.tabMainChanged)
 
         qApp.focusChanged.connect(self.focusChanged)  # @UndefinedVariable
-
-    def makeConnections(self):
-
-        # Flat datas (Summary and general infos)
-        for widget, col in [
-            (self.txtSummarySituation, 0),
-            (self.txtSummarySentence, 1),
-            (self.txtSummarySentence_2, 1),
-            (self.txtSummaryPara, 2),
-            (self.txtSummaryPara_2, 2),
-            (self.txtPlotSummaryPara, 2),
-            (self.txtSummaryPage, 3),
-            (self.txtSummaryPage_2, 3),
-            (self.txtPlotSummaryPage, 3),
-            (self.txtSummaryFull, 4),
-            (self.txtPlotSummaryFull, 4),
-        ]:
-            widget.setModel(self.mdlFlatData)
-            widget.setColumn(col)
-            widget.setCurrentModelIndex(self.mdlFlatData.index(1, col))
-
-        for widget, col in [
-            (self.txtGeneralTitle, 0),
-            (self.txtGeneralSubtitle, 1),
-            (self.txtGeneralSerie, 2),
-            (self.txtGeneralVolume, 3),
-            (self.txtGeneralGenre, 4),
-            (self.txtGeneralLicense, 5),
-            (self.txtGeneralAuthor, 6),
-            (self.txtGeneralEmail, 7),
-        ]:
-            widget.setModel(self.mdlFlatData)
-            widget.setColumn(col)
-            widget.setCurrentModelIndex(self.mdlFlatData.index(0, col))
-
-        # Characters
-        self.lstCharacters.setCharactersModel(self.mdlCharacter)
-        self.tblPersoInfos.setModel(self.mdlCharacter)
-
-        self.btnAddPerso.clicked.connect(self.mdlCharacter.addCharacter, F.AUC)
-        try:
-            self.btnRmPerso.clicked.connect(self.lstCharacters.removeCharacter, F.AUC)
-            self.btnPersoColor.clicked.connect(self.lstCharacters.choseCharacterColor, F.AUC)
-            self.btnPersoAddInfo.clicked.connect(self.lstCharacters.addCharacterInfo, F.AUC)
-            self.btnPersoRmInfo.clicked.connect(self.lstCharacters.removeCharacterInfo, F.AUC)
-        except TypeError:
-            # Connection has already been made
-            pass
-
-        for w, c in [
-            (self.txtPersoName, Character.name),
-            (self.sldPersoImportance, Character.importance),
-            (self.txtPersoMotivation, Character.motivation),
-            (self.txtPersoGoal, Character.goal),
-            (self.txtPersoConflict, Character.conflict),
-            (self.txtPersoEpiphany, Character.epiphany),
-            (self.txtPersoSummarySentence, Character.summarySentence),
-            (self.txtPersoSummaryPara, Character.summaryPara),
-            (self.txtPersoSummaryFull, Character.summaryFull),
-            (self.txtPersoNotes, Character.notes)
-        ]:
-            w.setModel(self.mdlCharacter)
-            w.setColumn(c)
-        self.tabPersos.setEnabled(False)
-
-        # Plots
-        self.lstSubPlots.setModel(self.mdlPlots)
-        self.lstPlotPerso.setModel(self.mdlPlots)
-        self.lstPlots.setPlotModel(self.mdlPlots)
-        self._updatingSubPlot = False
-        self.btnAddPlot.clicked.connect(self.mdlPlots.addPlot, F.AUC)
-        self.btnRmPlot.clicked.connect(lambda:
-                                       self.mdlPlots.removePlot(self.lstPlots.currentPlotIndex()), F.AUC)
-        self.btnAddSubPlot.clicked.connect(self.mdlPlots.addSubPlot, F.AUC)
-        self.btnAddSubPlot.clicked.connect(self.updateSubPlotView, F.AUC)
-        self.btnRmSubPlot.clicked.connect(self.mdlPlots.removeSubPlot, F.AUC)
-        self.lstPlotPerso.selectionModel().selectionChanged.connect(self.plotPersoSelectionChanged)
-        self.btnRmPlotPerso.clicked.connect(self.mdlPlots.removePlotPerso, F.AUC)
-        self.lstSubPlots.selectionModel().currentRowChanged.connect(self.changeCurrentSubPlot, F.AUC)
-
-        for w, c in [
-            (self.txtPlotName, Plot.name),
-            (self.txtPlotDescription, Plot.description),
-            (self.txtPlotResult, Plot.result),
-            (self.sldPlotImportance, Plot.importance),
-        ]:
-            w.setModel(self.mdlPlots)
-            w.setColumn(c)
-
-        self.tabPlot.setEnabled(False)
-        self.mdlPlots.updatePlotPersoButton()
-        self.mdlCharacter.dataChanged.connect(self.mdlPlots.updatePlotPersoButton)
-        self.lstOutlinePlots.setPlotModel(self.mdlPlots)
-        self.lstOutlinePlots.setShowSubPlot(True)
-        self.plotCharacterDelegate = outlineCharacterDelegate(self.mdlCharacter, self)
-        self.lstPlotPerso.setItemDelegate(self.plotCharacterDelegate)
-        self.plotDelegate = plotDelegate(self)
-        self.lstSubPlots.setItemDelegateForColumn(PlotStep.meta, self.plotDelegate)
-
-        # World
-        self.treeWorld.setModel(self.mdlWorld)
-        for i in range(self.mdlWorld.columnCount()):
-            self.treeWorld.hideColumn(i)
-        self.treeWorld.showColumn(0)
-        self.btnWorldEmptyData.setMenu(self.mdlWorld.emptyDataMenu())
-        self.treeWorld.selectionModel().selectionChanged.connect(self.changeCurrentWorld, F.AUC)
-        self.btnAddWorld.clicked.connect(self.mdlWorld.addItem, F.AUC)
-        self.btnRmWorld.clicked.connect(self.mdlWorld.removeItem, F.AUC)
-        for w, c in [
-            (self.txtWorldName, World.name),
-            (self.txtWorldDescription, World.description),
-            (self.txtWorldPassion, World.passion),
-            (self.txtWorldConflict, World.conflict),
-        ]:
-            w.setModel(self.mdlWorld)
-            w.setColumn(c)
-        self.tabWorld.setEnabled(False)
-        self.treeWorld.expandAll()
-
-        # Outline
-        self.treeRedacOutline.setModel(self.mdlOutline)
-        self.treeOutlineOutline.setModelCharacters(self.mdlCharacter)
-        self.treeOutlineOutline.setModelLabels(self.mdlLabels)
-        self.treeOutlineOutline.setModelStatus(self.mdlStatus)
-
-        self.redacMetadata.setModels(self.mdlOutline, self.mdlCharacter,
-                                     self.mdlLabels, self.mdlStatus)
-        self.outlineItemEditor.setModels(self.mdlOutline, self.mdlCharacter,
-                                         self.mdlLabels, self.mdlStatus)
-
-        self.treeOutlineOutline.setModel(self.mdlOutline)
-        # self.redacEditor.setModel(self.mdlOutline)
-        self.storylineView.setModels(self.mdlOutline, self.mdlCharacter, self.mdlPlots)
-
-        self.treeOutlineOutline.selectionModel().selectionChanged.connect(self.outlineItemEditor.selectionChanged, F.AUC)
-        self.treeOutlineOutline.clicked.connect(self.outlineItemEditor.selectionChanged, F.AUC)
-
-        # Sync selection
-        self.treeRedacOutline.selectionModel().selectionChanged.connect(self.redacMetadata.selectionChanged, F.AUC)
-        self.treeRedacOutline.clicked.connect(self.redacMetadata.selectionChanged, F.AUC)
-
-        self.treeRedacOutline.selectionModel().selectionChanged.connect(self.mainEditor.selectionChanged, F.AUC)
-
-        # Cheat Sheet
-        self.cheatSheet.setModels()
-
-        # Debug
-        self.mdlFlatData.setVerticalHeaderLabels(["General info", "Summary"])
-        self.tblDebugFlatData.setModel(self.mdlFlatData)
-        self.tblDebugPersos.setModel(self.mdlCharacter)
-        self.tblDebugPersosInfos.setModel(self.mdlCharacter)
-        self.tblDebugPersos.selectionModel().currentChanged.connect(
-                lambda: self.tblDebugPersosInfos.setRootIndex(self.mdlCharacter.index(
-                        self.tblDebugPersos.selectionModel().currentIndex().row(),
-                        Character.name)), F.AUC)
-
-        self.tblDebugPlots.setModel(self.mdlPlots)
-        self.tblDebugPlotsPersos.setModel(self.mdlPlots)
-        self.tblDebugSubPlots.setModel(self.mdlPlots)
-        self.tblDebugPlots.selectionModel().currentChanged.connect(
-                lambda: self.tblDebugPlotsPersos.setRootIndex(self.mdlPlots.index(
-                        self.tblDebugPlots.selectionModel().currentIndex().row(),
-                        Plot.characters)), F.AUC)
-        self.tblDebugPlots.selectionModel().currentChanged.connect(
-                lambda: self.tblDebugSubPlots.setRootIndex(self.mdlPlots.index(
-                        self.tblDebugPlots.selectionModel().currentIndex().row(),
-                        Plot.steps)), F.AUC)
-        self.treeDebugWorld.setModel(self.mdlWorld)
-        self.treeDebugOutline.setModel(self.mdlOutline)
-        self.lstDebugLabels.setModel(self.mdlLabels)
-        self.lstDebugStatus.setModel(self.mdlStatus)
 
     def disconnectAll(self, signal, oldHandler=None):
         # Disconnect all "oldHandler" slot connections for a signal
@@ -1138,140 +1265,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             pages = ""
         lbl.setText(self.tr("Words: {}{}").format(wc, pages))
-
-    def setupMoreUi(self):
-
-        style.styleMainWindow(self)
-
-        # Tool bar on the right
-        self.toolbar = collapsibleDockWidgets(Qt.RightDockWidgetArea, self)
-        self.toolbar.addCustomWidget(self.tr("Book summary"), self.grpPlotSummary, self.TabPlots, False)
-        self.toolbar.addCustomWidget(self.tr("Project tree"), self.treeRedacWidget, self.TabRedac, True)
-        self.toolbar.addCustomWidget(self.tr("Metadata"), self.redacMetadata, self.TabRedac, False)
-        self.toolbar.addCustomWidget(self.tr("Story line"), self.storylineView, self.TabRedac, False)
-        if self._toolbarState:
-            self.toolbar.restoreState(self._toolbarState)
-
-        # Hides navigation dock title bar
-        self.dckNavigation.setTitleBarWidget(QWidget(None))
-
-        # Custom "tab" bar on the left
-        self.lstTabs.setIconSize(QSize(48, 48))
-        for i in range(self.tabMain.count()):
-
-            icons = [QIcon.fromTheme("stock_view-details"),  # info
-                     QIcon.fromTheme("application-text-template"),  # applications-publishing
-                     F.themeIcon("characters"),
-                     F.themeIcon("plots"),
-                     F.themeIcon("world"),
-                     F.themeIcon("outline"),
-                     QIcon.fromTheme("gtk-edit"),
-                     QIcon.fromTheme("applications-debugging")
-            ]
-            self.tabMain.setTabIcon(i, icons[i])
-
-            item = QListWidgetItem(self.tabMain.tabIcon(i),
-                                   self.tabMain.tabText(i))
-            item.setSizeHint(QSize(item.sizeHint().width(), 64))
-            item.setToolTip(self.tabMain.tabText(i))
-            item.setTextAlignment(Qt.AlignCenter)
-            self.lstTabs.addItem(item)
-        self.tabMain.tabBar().hide()
-        self.lstTabs.currentRowChanged.connect(self.tabMain.setCurrentIndex)
-        self.lstTabs.item(self.TabDebug).setHidden(not self.SHOW_DEBUG_TAB)
-        self.tabMain.setTabEnabled(self.TabDebug, self.SHOW_DEBUG_TAB)
-        self.tabMain.currentChanged.connect(self.lstTabs.setCurrentRow)
-
-        # Splitters
-        self.splitterPersos.setStretchFactor(0, 25)
-        self.splitterPersos.setStretchFactor(1, 75)
-
-        self.splitterPlot.setStretchFactor(0, 20)
-        self.splitterPlot.setStretchFactor(1, 60)
-        self.splitterPlot.setStretchFactor(2, 30)
-
-        self.splitterWorld.setStretchFactor(0, 25)
-        self.splitterWorld.setStretchFactor(1, 75)
-
-        self.splitterOutlineH.setStretchFactor(0, 25)
-        self.splitterOutlineH.setStretchFactor(1, 75)
-        self.splitterOutlineV.setStretchFactor(0, 75)
-        self.splitterOutlineV.setStretchFactor(1, 25)
-
-        self.splitterRedacV.setStretchFactor(0, 75)
-        self.splitterRedacV.setStretchFactor(1, 25)
-
-        self.splitterRedacH.setStretchFactor(0, 30)
-        self.splitterRedacH.setStretchFactor(1, 40)
-        self.splitterRedacH.setStretchFactor(2, 30)
-
-        # QFormLayout stretch
-        for w in [self.txtWorldDescription, self.txtWorldPassion, self.txtWorldConflict]:
-            s = w.sizePolicy()
-            s.setVerticalStretch(1)
-            w.setSizePolicy(s)
-
-        # Help box
-        references = [
-            (self.lytTabOverview,
-             self.tr("Enter information about your book, and yourself."),
-             0),
-            (self.lytSituation,
-             self.tr(
-                     """The basic situation, in the form of a 'What if...?' question. Ex: 'What if the most dangerous
-                     evil wizard wasn't able to kill a baby?' (Harry Potter)"""),
-             1),
-            (self.lytSummary,
-             self.tr(
-                     """Take time to think about a one sentence (~50 words) summary of your book. Then expand it to
-                     a paragraph, then to a page, then to a full summary."""),
-             1),
-            (self.lytTabPersos,
-             self.tr("Create your characters."),
-             0),
-            (self.lytTabPlot,
-             self.tr("Develop plots."),
-             0),
-            (self.lytTabContext,
-             self.tr("Build worlds.  Create hierarchy of broad categories down to specific details."),
-             0),
-            (self.lytTabOutline,
-             self.tr("Create the outline of your masterpiece."),
-             0),
-            (self.lytTabRedac,
-             self.tr("Write."),
-             0),
-            (self.lytTabDebug,
-             self.tr("Debug info. Sometimes useful."),
-             0)
-        ]
-
-        for widget, text, pos in references:
-            label = helpLabel(text, self)
-            self.actShowHelp.toggled.connect(label.setVisible, F.AUC)
-            widget.layout().insertWidget(pos, label)
-
-        self.actShowHelp.setChecked(False)
-
-        # Spellcheck
-        if enchant:
-            self.menuDict = QMenu(self.tr("Dictionary"))
-            self.menuDictGroup = QActionGroup(self)
-            self.updateMenuDict()
-            self.menuTools.addMenu(self.menuDict)
-
-            self.actSpellcheck.toggled.connect(self.toggleSpellcheck, F.AUC)
-            self.dictChanged.connect(self.mainEditor.setDict, F.AUC)
-            self.dictChanged.connect(self.redacMetadata.setDict, F.AUC)
-            self.dictChanged.connect(self.outlineItemEditor.setDict, F.AUC)
-
-        else:
-            # No Spell check support
-            self.actSpellcheck.setVisible(False)
-            a = QAction(self.tr("Install PyEnchant to use spellcheck"), self)
-            a.setIcon(self.style().standardIcon(QStyle.SP_MessageBoxWarning))
-            a.triggered.connect(self.openPyEnchantWebPage, F.AUC)
-            self.menuTools.addAction(a)
 
     ###############################################################################
     # SPELLCHECK

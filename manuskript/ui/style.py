@@ -11,7 +11,7 @@ from manuskript import settings
 
 
 # Loading palette colors.
-# Manuskript as to restart to reload
+# Manuskript has to restart to reload
 p = qApp.palette()
 # window = "#d6d2d0" #"#eee" / #eff0f1
 window = p.color(QPalette.Window).name()            # General background

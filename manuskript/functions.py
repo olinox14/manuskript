@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import qApp
 from path import Path
 
 from manuskript import constants
+from manuskript.constants import THEME_ICONS
 from manuskript.enums import Outline
 
 
@@ -73,22 +74,6 @@ def iconFromColor(color):
 
 def iconFromColorString(string):
     return iconFromColor(string)
-
-THEME_ICONS = {
-                "character":    "stock_people",
-                "characters":   "stock_people",
-                "plot":         "stock_shuffle",
-                "plots":        "stock_shuffle",
-                "world":        "emblem-web", #stock_timezone applications-internet
-                "outline":      "gtk-index", #applications-versioncontrol
-                "label":        "folder_color_picker",
-                "status":       "applications-development",
-                "text":         "view-text",
-                "card":         "view-card",
-                "outline":      "view-outline",
-                "tree":         "view-list-tree",
-                "spelling":     "tools-check-spelling"
-            }
 
 def themeIcon(name):
     "Returns an icon for the given name."

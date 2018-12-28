@@ -138,7 +138,7 @@ class characterTreeView(QTreeWidget):
         color = self.colorDialog.getColor(color)
         if color.isValid():
             c.setColor(color)
-            mainWindow().updateCharacterColor(ID)
+            mainWindow().updateCharacterColor(c)  # FIXME: would replace by a signal
 
     def addCharacterInfo(self):
         self._model.addCharacterInfo(self.currentCharacterID())

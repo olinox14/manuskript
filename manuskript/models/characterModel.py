@@ -200,7 +200,7 @@ class characterModel(QAbstractItemModel):
         c.infos.append(CharacterInfo(c, description="Description", value="Value"))
         self.endInsertRows()
 
-        mainWindow().updatePersoInfoView()
+        mainWindow().updatePersoInfoView()  # FIXME: would replace by a signal
 
     def removeCharacterInfo(self, ID):
         c = self.getCharacterByID(ID)

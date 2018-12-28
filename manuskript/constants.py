@@ -22,3 +22,21 @@ LOGGING_CONF_FILE = MS_DIR / 'logging.yaml'
 USER_DATA_DIR = Path(user_data_dir(roaming=True))
 
 SEARCHABLE_PATHS = [MAIN_DIR, USER_DATA_DIR]
+
+
+
+THEME_ICONS = {
+                "character":    "stock_people",
+                "characters":   "stock_people",
+                "plot":         "stock_shuffle",
+                "plots":        "stock_shuffle",
+                "world":        "emblem-web", #stock_timezone applications-internet
+                "outline":      "gtk-index", #applications-versioncontrol
+                "label":        "folder_color_picker",
+                "status":       "applications-development",
+                "text":         "view-text",
+                "card":         "view-card",
+                "outline":      "view-outline",
+                "tree":         "view-list-tree",
+                "spelling":     "tools-check-spelling"
+            }
