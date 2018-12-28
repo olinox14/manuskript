@@ -92,27 +92,27 @@ def prepare():
     # Main window
     from manuskript.mainWindow import MainWindow
 
-    MW = MainWindow()
+    mw = MainWindow()
     
     # We store the system default cursor flash time to be able to restore it
     # later if necessary
-    MW._defaultCursorFlashTime = qApp.cursorFlashTime()
+    mw._defaultCursorFlashTime = qApp.cursorFlashTime()
 
     # Parse sys args
     args = sys.argv[1:]
     if args:
         project_path = Path(args[0])
         if project_path.ext == ".msk" and project_path.exists():
-            MW._autoLoadProject = project_path.abspath()
+            mw._autoLoadProject = project_path.abspath()
 
-    return app, MW
+    return app, mw
 
-def launch(MW = None):
-    if MW is None:
+def launch(mw = None):
+    if mw is None:
         from manuskript.functions import mainWindow
-        MW = mainWindow()
+        mw = mainWindow()
 
-    MW.show()
+    mw.show()
 
     qApp.exec_()
     qApp.deleteLater()
@@ -124,10 +124,10 @@ def run():
     2. So that prepare can be used in tests, without running the whole thing
     """
     # Need to return and keep `app` otherwise it gets deleted.
-    app, MW = prepare()     #@UnusedVariable
+    app, mw = prepare()     #@UnusedVariable
     # Separating launch to avoid segfault, so it seem.
     # Cf. http://stackoverflow.com/questions/12433491/is-this-pyqt-4-python-bug-or-wrongly-behaving-code
-    launch(MW)
+    launch(mw)
 
 if __name__ == "__main__":
     run()
