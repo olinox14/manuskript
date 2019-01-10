@@ -61,9 +61,6 @@ def test_outlineItemColors():
 def test_paths():
 
     assert MAIN_DIR is not None
-    assert F.writablePath is not None
-    assert len(F.allPaths("suffix")) == 2
-    assert F.tempFile("yop") is not None
     f = F.findBackground("spacedreams.jpg")
     assert "resources/backgrounds/spacedreams.jpg" in f
     assert len(F.customIcons()) > 1

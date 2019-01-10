@@ -6,7 +6,8 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QFontMetrics, QFont
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QListWidgetItem, QTreeView
 
-from manuskript.functions import mainWindow, writablePath
+from manuskript import constants
+from manuskript.functions import mainWindow
 from manuskript.ui import style as S
 from manuskript.ui._uic.plainTextSettings_ui import Ui_exporterSettings
 
@@ -142,7 +143,7 @@ class exporterSettings(QWidget, Ui_exporterSettings):
             json.dump(self.settings, f, indent=4, sort_keys=True)
 
     def getSettingsPath(self):
-        return writablePath() / "exporter.ini"
+        return constants.USER_DATA_DIR / "exporter.ini"
 
     def updateFromSettings(self):
         settings = self.settings

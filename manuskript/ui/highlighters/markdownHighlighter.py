@@ -532,7 +532,7 @@ class MarkdownHighlighter(BasicHighlighter):
         # Markup
         if theme.get("formatMarkup"):
             c = markupFormat.foreground()
-            markupFormat = QTextCharFormat(format)
+            markupFormat = QTextCharFormat(format_)
             markupFormat.setForeground(c)
         if theme.get("markupBold"):
             markupFormat.setFontWeight(QFont.Bold)

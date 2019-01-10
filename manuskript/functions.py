@@ -122,18 +122,6 @@ def colorifyPixmap(pixmap, color):
     p.fillRect(pixmap.rect(), color)
     return pixmap
 
-def writablePath():
-    p = constants.USER_DATA_DIR
-    p.mkdir_p()
-    return p
-
-def allPaths():
-    return [constants.MAIN_DIR, writablePath()]
-
-def tempFile(name):
-    # FIXME: better use the native TemporaryFile object from tempfile lib
-    return Path(tempfile.gettempdir()) / name
-
 def totalObjects():
     return len(mainWindow().findChildren(QObject))
 
@@ -159,7 +147,9 @@ def findFirstFile(regex, subpath="resources"):
     Returns full path of first file matching regular expression regex within folder path
     """
     try:
-        return next((f for dir_ in allPaths() for f in Path(dir_ / subpath).walkfiles() if re.match(regex, f) or re.match(regex, f.name)))
+        return next((f for dir_ in [constants.MAIN_DIR, constants.USER_DATA_DIR] 
+                     for f in Path(dir_ / subpath).walkfiles() 
+                     if re.match(regex, f) or re.match(regex, f.name)))
     except StopIteration:
         raise FileNotFoundError(r"No file matches the regex '{}'".format(regex))
 

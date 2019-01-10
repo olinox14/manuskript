@@ -10,10 +10,10 @@ from PyQt5.QtWidgets import QStyleFactory, QWidget, QStyle, QColorDialog, QListW
 from PyQt5.QtWidgets import qApp
 from path import Path
 
-from manuskript import settings
+from manuskript import settings, constants
 from manuskript.constants import MAIN_DIR
 from manuskript.enums import Outline
-from manuskript.functions import allPaths, iconColor, writablePath, findWidgetsOfClass
+from manuskript.functions import iconColor, findWidgetsOfClass
 from manuskript.functions import mainWindow, findBackground, themeIcon
 from manuskript.ui import style as S
 from manuskript.ui._uic.settings_ui import Ui_Settings
@@ -472,10 +472,12 @@ class settingsWindow(QWidget, Ui_Settings):
         # self.cmbDelegate = cmbPixmapDelegate()
         # self.cmbCorkImage.setItemDelegate(self.cmbDelegate)
 
-        paths = allPaths("resources/backgrounds")
+        
         cmb.clear()
         cmb.addItem(QIcon.fromTheme("list-remove"), "", "")
-        for p in paths:
+        
+        for dir_ in [constants.MAIN_DIR, constants.USER_DATA_DIR]:
+            p = dir_ / "resources" / "backgrounds"
             for l in p.dirs():
                 if l.lower()[-4:] in [".jpg", ".png"] or l.lower()[-5:] in [".jpeg"]:
                     px = QPixmap(p / l).scaled(128, 64, Qt.KeepAspectRatio)
@@ -658,7 +660,7 @@ class settingsWindow(QWidget, Ui_Settings):
             self.btnThemeRemove.setEnabled(False)
 
     def newTheme(self):
-        path = writablePath("resources/themes")
+        path = constants.USER_DATA_DIR / "resources" / "themes"
         name = self.tr("newtheme")
         if Path(path / "{}.theme".format(name)).exists():
             i = 1
@@ -687,11 +689,11 @@ class settingsWindow(QWidget, Ui_Settings):
         self.populatesThemesList()
 
     def populatesThemesList(self):
-        paths = allPaths("resources/themes")
         current = settings.fullScreenTheme
         self.lstThemes.clear()
 
-        for p in paths:
+        for dir_ in [constants.MAIN_DIR, constants.USER_DATA_DIR]:
+            p = dir_ / "resources" / "themes"
             lst = [f for f in p.files() if p.ext == ".theme"]
             for t in lst:
                 theme = p / t

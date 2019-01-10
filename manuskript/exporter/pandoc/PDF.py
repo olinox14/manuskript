@@ -4,8 +4,8 @@ import shutil
 
 from PyQt5.QtWidgets import qApp
 
+from manuskript import constants
 from manuskript.exporter.pandoc.abstractOutput import abstractOutput
-from manuskript.functions import tempFile
 from manuskript.ui.views.PDFViewer import PDFViewer
 
 
@@ -41,7 +41,7 @@ class PDF(abstractOutput):
         return PDFViewer()
 
     def preview(self, settingsWidget, previewWidget):
-        filename = tempFile("msk_pdfpreview.pdf")
+        filename = constants.TEMP_DIR / "msk_pdfpreview.pdf"
 
         settingsWidget.writeSettings()
         _ = self.output(settingsWidget, outputfile=filename)

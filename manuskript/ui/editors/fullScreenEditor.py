@@ -6,9 +6,9 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QFrame, QWidget, QPushButton, qApp, QStyle, QComboBox, QLabel, QScrollBar, \
     QStyleOptionSlider, QHBoxLayout, QVBoxLayout, QMenu, QAction
 
-from manuskript import settings
+from manuskript import settings, constants
 from manuskript.enums import Outline
-from manuskript.functions import allPaths, drawProgress
+from manuskript.functions import drawProgress
 from manuskript.ui.editors.locker import locker
 from manuskript.ui.editors.themes import findThemePath, generateTheme, setThemeEditorDatas
 from manuskript.ui.editors.themes import loadThemeDatas
@@ -37,7 +37,7 @@ class fullScreenEditor(QWidget):
                                 index=index,
                                 spellcheck=settings.spellcheck,
                                 highlighting=True,
-                                dict=settings.dict_)
+                                dict_=settings.dict_)
         self.editor.setFrameStyle(QFrame.NoFrame)
         self.editor.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.editor.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -83,8 +83,10 @@ class fullScreenEditor(QWidget):
         self.bottomPanel.layout().addSpacing(24)
         self.lstThemes = QComboBox(self)
         self.lstThemes.setAttribute(Qt.WA_TranslucentBackground)
-        paths = allPaths("resources/themes")
-        for p in paths:
+        for dir_ in [constants.MAIN_DIR, constants.USER_DATA_DIR]:
+            p = dir_ / "resources" / "themes"
+            if not p.exists():
+                continue
             lst = [f for f in p.files() if f.ext == ".theme"]
             for t in lst:
                 themeIni = p / t

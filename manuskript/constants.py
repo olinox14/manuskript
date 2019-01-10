@@ -2,6 +2,8 @@
 
 @author: olivier.massot, 2018
 '''
+import tempfile
+
 from appdirs import user_data_dir
 from path import Path
 
@@ -20,6 +22,8 @@ ICONS_DIR = MAIN_DIR / "icons"
 LOGGING_CONF_FILE = MS_DIR / 'logging.yaml'
 
 USER_DATA_DIR = Path(user_data_dir(roaming=True))
+
+TEMP_DIR = Path(tempfile.gettempdir())
 
 SEARCHABLE_PATHS = [MAIN_DIR, USER_DATA_DIR]
 
