@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import faulthandler
 import logging.config
 import sys
@@ -13,12 +12,10 @@ import yaml
 
 from manuskript import constants
 
-
 faulthandler.enable()
 
-
 # load logging configuration from 'logging.yaml'
-with open(Path(__file__).parent / 'logging.yaml', 'rt') as f:
+with open(Path(__file__).parent / 'manuskript' / 'logging.yaml', 'rt') as f:
     logging.config.dictConfig(yaml.load(f))
 
 logger = logging.getLogger('manuskript')
@@ -34,6 +31,9 @@ sys.excepthook = _excepthook
 __VERSION__ = constants.VERSION
 
 def prepare():
+    """
+        Instantiate the QApplication, load settings, translations and theme, create the user data directory
+    """
     
     logger.info("Running manuskript version {}.".format(constants.VERSION))
     
@@ -87,19 +87,29 @@ def prepare():
     if qsettings.contains("appFontSize"):
         f = qApp.font()
         f.setPointSize(qsettings.value("appFontSize", type=int))
-        app.setFont(f)
+        qApp.setFont(f)
 
     # creates app directories
     constants.USER_DATA_DIR.mkdir_p()
 
-    # Main window
-    from manuskript.mainWindow import MainWindow
+    return app
 
+def run():
+    """
+        Run Manuskript
+    """
+    
+#     Run separates prepare and launch for two reasons:
+#     1. I've read somewhere it helps with potential segfault (see comment below)
+#     2. So that prepare can be used in tests, without running the whole thing
+    app = prepare()
+
+    from manuskript.mainWindow import MainWindow
     mw = MainWindow()
     
     # We store the system default cursor flash time to be able to restore it
     # later if necessary
-    mw._defaultCursorFlashTime = qApp.cursorFlashTime()
+    mw._defaultCursorFlashTime = app.cursorFlashTime()
 
     # Parse sys args
     args = sys.argv[1:]
@@ -108,29 +118,12 @@ def prepare():
         if project_path.ext == ".msk" and project_path.exists():
             mw._autoLoadProject = project_path.abspath()
 
-    return app, mw
-
-def launch(mw = None):
-    if mw is None:
-        from manuskript.functions import mainWindow
-        mw = mainWindow()
-
     mw.show()
 
-    qApp.exec_()
-    qApp.deleteLater()
-
-def run():
-    """
-    Run separates prepare and launch for two reasons:
-    1. I've read somewhere it helps with potential segfault (see comment below)
-    2. So that prepare can be used in tests, without running the whole thing
-    """
-    # Need to return and keep `app` otherwise it gets deleted.
-    app, mw = prepare()     #@UnusedVariable
-    # Separating launch to avoid segfault, so it seem.
-    # Cf. http://stackoverflow.com/questions/12433491/is-this-pyqt-4-python-bug-or-wrongly-behaving-code
-    launch(mw)
+    r = app.exec_()
+    
+    logger.info("-- manuskript exited with code %s --", r)
+    sys.exit(r)
 
 if __name__ == "__main__":
     run()
