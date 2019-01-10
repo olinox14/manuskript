@@ -4,7 +4,6 @@
 import logging
 from random import randint
 import re
-import tempfile
 import webbrowser
 
 from PyQt5.QtCore import QTimer
@@ -146,12 +145,16 @@ def findFirstFile(regex, subpath="resources"):
     """
     Returns full path of first file matching regular expression regex within folder path
     """
-    try:
-        return next((f for dir_ in [constants.MAIN_DIR, constants.USER_DATA_DIR] 
-                     for f in Path(dir_ / subpath).walkfiles() 
-                     if re.match(regex, f) or re.match(regex, f.name)))
-    except StopIteration:
-        raise FileNotFoundError(r"No file matches the regex '{}'".format(regex))
+    for dir_ in [constants.MAIN_DIR, constants.USER_DATA_DIR]:
+        p = dir_ / subpath
+        if not p.exists():
+            continue
+        for f in p.walkfiles():
+            f = f.normpath()
+            if re.match(regex, f) or re.match(regex, f.name):
+                return f
+    raise FileNotFoundError(r"No file matches the regex '{}'".format(regex))
+    
 
 CUSTOM_ICONS_CANDIDATES = [
                             "text-plain",

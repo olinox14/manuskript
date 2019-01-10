@@ -478,6 +478,8 @@ class settingsWindow(QWidget, Ui_Settings):
         
         for dir_ in [constants.MAIN_DIR, constants.USER_DATA_DIR]:
             p = dir_ / "resources" / "backgrounds"
+            if not p.exists():
+                continue
             for l in p.dirs():
                 if l.lower()[-4:] in [".jpg", ".png"] or l.lower()[-5:] in [".jpeg"]:
                     px = QPixmap(p / l).scaled(128, 64, Qt.KeepAspectRatio)
@@ -694,6 +696,9 @@ class settingsWindow(QWidget, Ui_Settings):
 
         for dir_ in [constants.MAIN_DIR, constants.USER_DATA_DIR]:
             p = dir_ / "resources" / "themes"
+            if not p.exists():
+                continue
+            
             lst = [f for f in p.files() if p.ext == ".theme"]
             for t in lst:
                 theme = p / t
