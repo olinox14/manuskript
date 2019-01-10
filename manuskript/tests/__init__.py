@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication
 QApplication([])
 
 # Create app and mainWindow
-from manuskript import main
+import main
 app, MW = main.prepare(tests=True)
 
 # FIXME: Again, don't know why, but when closing a project and then reopening

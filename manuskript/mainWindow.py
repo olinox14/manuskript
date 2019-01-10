@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QMainWindow, QHeaderView, qApp, QMenu, QActionGroup,
     QWidget
 from path import Path
 
-from manuskript import loadSave, constants
+from manuskript import constants
 from manuskript import settings
 from manuskript.constants import DEBUG
 from manuskript.enums import Character, PlotStep, Plot, World, Outline
@@ -20,6 +20,7 @@ from manuskript.models import outlineModel
 from manuskript.models.characterModel import characterModel
 from manuskript.models.plotModel import plotModel
 from manuskript.models.worldModel import worldModel
+from manuskript.project import Project
 from manuskript.settingsWindow import settingsWindow
 from manuskript.ui import style
 from manuskript.ui._uic.mainWindow import Ui_MainWindow
@@ -59,17 +60,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     SHOW_DEBUG_TAB = DEBUG
 
-    def __init__(self):
+    def __init__(self, filename="", defaultCursorFlashTime=1000):
         QMainWindow.__init__(self)
 
-        self.currentProject = None
         self._lastFocus = None
         self._lastMDEditView = None
-        self._defaultCursorFlashTime = 1000  # Overriden at startup with system
+        self._defaultCursorFlashTime = defaultCursorFlashTime  # Overriden at startup with system
                                             # value. In manuskript.main.
-        self._autoLoadProject = None  # Used to load a command line project
-
+        self._autoLoadProject = filename  # Used to load a command line project
+        
+        self.currentProject = Project()
+        
         self.createWidgets()
+        
+        
 
 
     def createWidgets(self):
@@ -313,7 +317,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actToolFrequency.triggered.connect(self.frequencyAnalyzer)
         self.actAbout.triggered.connect(self.about)
 
-        self.makeUIConnections()
+        self.lstCharacters.currentItemChanged.connect(self.changeCurrentCharacter, F.AUC)
+
+        self.txtPlotFilter.textChanged.connect(self.lstPlots.setFilter, F.AUC)
+        self.lstPlots.currentItemChanged.connect(self.changeCurrentPlot, F.AUC)
+        self.lstSubPlots.clicked.connect(self.changeCurrentSubPlot, F.AUC)
+
+        self.btnRedacAddFolder.clicked.connect(self.treeRedacOutline.addFolder, F.AUC)
+        self.btnOutlineAddFolder.clicked.connect(self.treeOutlineOutline.addFolder, F.AUC)
+        self.btnRedacAddText.clicked.connect(self.treeRedacOutline.addText, F.AUC)
+        self.btnOutlineAddText.clicked.connect(self.treeOutlineOutline.addText, F.AUC)
+        self.btnRedacRemoveItem.clicked.connect(self.outlineRemoveItemsRedac, F.AUC)
+        self.btnOutlineRemoveItem.clicked.connect(self.outlineRemoveItemsOutline, F.AUC)
+
+        self.tabMain.currentChanged.connect(self.toolbar.setCurrentGroup)
+        self.tabMain.currentChanged.connect(self.tabMainChanged)
+
+        qApp.focusChanged.connect(self.focusChanged)  # @UndefinedVariable
 
     def restoreSettings(self):
         """ restore settings from QSettings """
@@ -502,7 +522,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Character Infos
         self.tblPersoInfos.setRootIndex(index)
 
-        if self.mdlCharacter.rowCount(index):
+        if self.currentProject.mdlCharacter.rowCount(index):
             self.updatePersoInfoView()
 
     def updatePersoInfoView(self):
@@ -532,12 +552,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lstPlotPerso.setRootIndex(index.sibling(index.row(), Plot.characters))
 
         # Slider importance
-        imp = self.mdlPlots.getPlotImportanceByRow(index.row())
+        imp = self.currentProject.mdlPlots.getPlotImportanceByRow(index.row())
         self.sldPlotImportance.setValue(int(imp))
         
         subplotindex = index.sibling(index.row(), Plot.steps)
         self.lstSubPlots.setRootIndex(subplotindex)
-        if self.mdlPlots.rowCount(subplotindex):
+        if self.currentProject.mdlPlots.rowCount(subplotindex):
             self.updateSubPlotView()
 
         self.txtSubPlotSummary.setCurrentModelIndex(QModelIndex())
@@ -584,7 +604,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     ###############################################################################
 
     def changeCurrentWorld(self):
-        index = self.mdlWorld.selectedIndex()
+        index = self.currentProject.mdlWorld.selectedIndex()
 
         if not index.isValid():
             self.tabWorld.setEnabled(False)
@@ -612,9 +632,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # self._lastFocus is the last editor that had focus (either treeView or
     # mainEditor). So we just pass along the signal.
 
-    # Edit
-    # TODO: add a decorator 'if self._lastFocus'
-    
     def documentsCopy(self):
         "Copy selected item(s)."
         if self._lastFocus: 
@@ -712,31 +729,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # LOAD AND SAVE
     ###############################################################################
 
-    def loadProject(self, project, loadFromFile=True):
-        """Loads the project ``project``.
-
-        If ``loadFromFile`` is False, then it does not load datas from file.
-        It assumes that the datas have been populated in a different way."""
-        project = Path(project)
-        if loadFromFile and not project.exists():
-            logger.error(self.tr("The file {} does not exist. Has it been moved or deleted?").format(project))
+    def loadProject(self, project_path):
+        
+        project_path = Path(project_path)
+        if not project_path.exists():
+            logger.error(self.tr("The file {} does not exist. Has it been moved or deleted?").format(project_path))
             F.statusMessage(
-                    self.tr("The file {} does not exist. Has it been moved or deleted?").format(project), importance=3)   
-            # FIXME: better raise a FileNotFoundError?
-            # FIXME: replace the statusMessage() method by a QSignal
+                    self.tr("The file {} does not exist. Has it been moved or deleted?").format(project_path), importance=3) 
             return
+        
+        # Load empty settings
+        # FIXME: avoid the module reload
+        imp.reload(settings)
+        settings.initDefaultValues()
 
-        if loadFromFile:
-            # Load empty settings
-            imp.reload(settings)
-            settings.initDefaultValues()
+        # Load data
+        project = Project.load(project_path)
+        
+        if project.settings:
+            settings.load(project.settings, fromString=True, protocol=0)
+            settings.saveToZip = project.zipped
+            settings.defaultTextType = "md"
 
-            # Load data
-            self.loadEmptyDatas()
-            self.loadDatas(project)
+        self.currentProject = project
 
-        # TODO: separate following by a open_project() method
-        # TODO: 20181228 to the future myself: stopped reviewing here
+        # Giving some feedback
+        if not project.loadingErrors:
+            logger.info(self.tr("Project {} loaded.").format(project_path))
+            F.statusMessage(
+                    self.tr("Project {} loaded.").format(project_path), 2000)
+        else:
+            logger.error(self.tr("Project {} loaded with some errors:").format(project_path))
+            for e in project.loadingErrors:
+                logger.error(self.tr(" * {} wasn't found in project file.").format(e))
+            F.statusMessage(
+                    self.tr("Project {} loaded with errors.").format(project_path), 5000, importance=3)
+        
+        self.setupProject()
+
+    def setupProject(self):
+        """ setup the ui with the current project """
         
         # Make connections
         # Flat datas (Summary and general infos)
@@ -753,9 +785,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 (self.txtSummaryFull, 4),
                                 (self.txtPlotSummaryFull, 4),
                             ]:
-            widget.setModel(self.mdlFlatData)
+            widget.setModel(self.currentProject.mdlFlatData)
             widget.setColumn(col)
-            widget.setCurrentModelIndex(self.mdlFlatData.index(1, col))
+            widget.setCurrentModelIndex(self.currentProject.mdlFlatData.index(1, col))
 
         for widget, col in [
                                 (self.txtGeneralTitle, 0),
@@ -767,15 +799,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 (self.txtGeneralAuthor, 6),
                                 (self.txtGeneralEmail, 7),
                             ]:
-            widget.setModel(self.mdlFlatData)
+            widget.setModel(self.currentProject.mdlFlatData)
             widget.setColumn(col)
-            widget.setCurrentModelIndex(self.mdlFlatData.index(0, col))
+            widget.setCurrentModelIndex(self.currentProject.mdlFlatData.index(0, col))
 
         # Characters
-        self.lstCharacters.setCharactersModel(self.mdlCharacter)
-        self.tblPersoInfos.setModel(self.mdlCharacter)
+        self.lstCharacters.setCharactersModel(self.currentProject.mdlCharacter)
+        self.tblPersoInfos.setModel(self.currentProject.mdlCharacter)
 
-        self.btnAddPerso.clicked.connect(self.mdlCharacter.addCharacter, F.AUC)
+        self.btnAddPerso.clicked.connect(self.currentProject.mdlCharacter.addCharacter, F.AUC)
         try:
             self.btnRmPerso.clicked.connect(self.lstCharacters.removeCharacter, F.AUC)
             self.btnPersoColor.clicked.connect(self.lstCharacters.choseCharacterColor, F.AUC)
@@ -797,23 +829,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         (self.txtPersoSummaryFull, Character.summaryFull),
                         (self.txtPersoNotes, Character.notes)
                     ]:
-            w.setModel(self.mdlCharacter)
+            w.setModel(self.currentProject.mdlCharacter)
             w.setColumn(c)
         self.tabPersos.setEnabled(False)
 
         # Plots
-        self.lstSubPlots.setModel(self.mdlPlots)
-        self.lstPlotPerso.setModel(self.mdlPlots)
-        self.lstPlots.setPlotModel(self.mdlPlots)
+        self.lstSubPlots.setModel(self.currentProject.mdlPlots)
+        self.lstPlotPerso.setModel(self.currentProject.mdlPlots)
+        self.lstPlots.setPlotModel(self.currentProject.mdlPlots)
         self._updatingSubPlot = False
-        self.btnAddPlot.clicked.connect(self.mdlPlots.addPlot, F.AUC)
+        self.btnAddPlot.clicked.connect(self.currentProject.mdlPlots.addPlot, F.AUC)
         self.btnRmPlot.clicked.connect(lambda:
-                                       self.mdlPlots.removePlot(self.lstPlots.currentPlotIndex()), F.AUC)
-        self.btnAddSubPlot.clicked.connect(self.mdlPlots.addSubPlot, F.AUC)
+                                       self.currentProject.mdlPlots.removePlot(self.lstPlots.currentPlotIndex()), F.AUC)
+        self.btnAddSubPlot.clicked.connect(self.currentProject.mdlPlots.addSubPlot, F.AUC)
         self.btnAddSubPlot.clicked.connect(self.updateSubPlotView, F.AUC)
-        self.btnRmSubPlot.clicked.connect(self.mdlPlots.removeSubPlot, F.AUC)
+        self.btnRmSubPlot.clicked.connect(self.currentProject.mdlPlots.removeSubPlot, F.AUC)
         self.lstPlotPerso.selectionModel().selectionChanged.connect(self.plotPersoSelectionChanged)
-        self.btnRmPlotPerso.clicked.connect(self.mdlPlots.removePlotPerso, F.AUC)
+        self.btnRmPlotPerso.clicked.connect(self.currentProject.mdlPlots.removePlotPerso, F.AUC)
         self.lstSubPlots.selectionModel().currentRowChanged.connect(self.changeCurrentSubPlot, F.AUC)
 
         for w, c in [
@@ -822,53 +854,53 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (self.txtPlotResult, Plot.result),
             (self.sldPlotImportance, Plot.importance),
         ]:
-            w.setModel(self.mdlPlots)
+            w.setModel(self.currentProject.mdlPlots)
             w.setColumn(c)
 
         self.tabPlot.setEnabled(False)
-        self.mdlPlots.updatePlotPersoButton()
-        self.mdlCharacter.dataChanged.connect(self.mdlPlots.updatePlotPersoButton)
-        self.lstOutlinePlots.setPlotModel(self.mdlPlots)
+        self.currentProject.mdlPlots.updatePlotPersoButton(self)
+        self.currentProject.mdlCharacter.dataChanged.connect(lambda: self.currentProject.mdlPlots.updatePlotPersoButton(self))
+        self.lstOutlinePlots.setPlotModel(self.currentProject.mdlPlots)
         self.lstOutlinePlots.setShowSubPlot(True)
-        self.plotCharacterDelegate = outlineCharacterDelegate(self.mdlCharacter, self)
+        self.plotCharacterDelegate = outlineCharacterDelegate(self.currentProject.mdlCharacter, self)
         self.lstPlotPerso.setItemDelegate(self.plotCharacterDelegate)
         self.plotDelegate = plotDelegate(self)
         self.lstSubPlots.setItemDelegateForColumn(PlotStep.meta, self.plotDelegate)
 
         # World
-        self.treeWorld.setModel(self.mdlWorld)
-        for i in range(self.mdlWorld.columnCount()):
+        self.treeWorld.setModel(self.currentProject.mdlWorld)
+        for i in range(self.currentProject.mdlWorld.columnCount()):
             self.treeWorld.hideColumn(i)
         self.treeWorld.showColumn(0)
-        self.btnWorldEmptyData.setMenu(self.mdlWorld.emptyDataMenu())
+        self.btnWorldEmptyData.setMenu(self.currentProject.mdlWorld.emptyDataMenu())
         self.treeWorld.selectionModel().selectionChanged.connect(self.changeCurrentWorld, F.AUC)
-        self.btnAddWorld.clicked.connect(self.mdlWorld.addItem, F.AUC)
-        self.btnRmWorld.clicked.connect(self.mdlWorld.removeItem, F.AUC)
+        self.btnAddWorld.clicked.connect(self.currentProject.mdlWorld.addItem, F.AUC)
+        self.btnRmWorld.clicked.connect(self.currentProject.mdlWorld.removeItem, F.AUC)
         for w, c in [
             (self.txtWorldName, World.name),
             (self.txtWorldDescription, World.description),
             (self.txtWorldPassion, World.passion),
             (self.txtWorldConflict, World.conflict),
         ]:
-            w.setModel(self.mdlWorld)
+            w.setModel(self.currentProject.mdlWorld)
             w.setColumn(c)
         self.tabWorld.setEnabled(False)
         self.treeWorld.expandAll()
 
         # Outline
-        self.treeRedacOutline.setModel(self.mdlOutline)
-        self.treeOutlineOutline.setModelCharacters(self.mdlCharacter)
-        self.treeOutlineOutline.setModelLabels(self.mdlLabels)
-        self.treeOutlineOutline.setModelStatus(self.mdlStatus)
+        self.treeRedacOutline.setModel(self.currentProject.mdlOutline)
+        self.treeOutlineOutline.setModelCharacters(self.currentProject.mdlCharacter)
+        self.treeOutlineOutline.setModelLabels(self.currentProject.mdlLabels)
+        self.treeOutlineOutline.setModelStatus(self.currentProject.mdlStatus)
 
-        self.redacMetadata.setModels(self.mdlOutline, self.mdlCharacter,
-                                     self.mdlLabels, self.mdlStatus)
-        self.outlineItemEditor.setModels(self.mdlOutline, self.mdlCharacter,
-                                         self.mdlLabels, self.mdlStatus)
+        self.redacMetadata.setModels(self.currentProject.mdlOutline, self.currentProject.mdlCharacter,
+                                     self.currentProject.mdlLabels, self.currentProject.mdlStatus)
+        self.outlineItemEditor.setModels(self.currentProject.mdlOutline, self.currentProject.mdlCharacter,
+                                         self.currentProject.mdlLabels, self.currentProject.mdlStatus)
 
-        self.treeOutlineOutline.setModel(self.mdlOutline)
-        # self.redacEditor.setModel(self.mdlOutline)
-        self.storylineView.setModels(self.mdlOutline, self.mdlCharacter, self.mdlPlots)
+        self.treeOutlineOutline.setModel(self.currentProject.mdlOutline)
+        # self.redacEditor.setModel(self.currentProject.mdlOutline)
+        self.storylineView.setModels(self.currentProject.mdlOutline, self.currentProject.mdlCharacter, self.currentProject.mdlPlots)
 
         self.treeOutlineOutline.selectionModel().selectionChanged.connect(self.outlineItemEditor.selectionChanged, F.AUC)
         self.treeOutlineOutline.clicked.connect(self.outlineItemEditor.selectionChanged, F.AUC)
@@ -883,30 +915,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cheatSheet.setModels()
 
         # Debug
-        self.mdlFlatData.setVerticalHeaderLabels(["General info", "Summary"])
-        self.tblDebugFlatData.setModel(self.mdlFlatData)
-        self.tblDebugPersos.setModel(self.mdlCharacter)
-        self.tblDebugPersosInfos.setModel(self.mdlCharacter)
+        self.currentProject.mdlFlatData.setVerticalHeaderLabels(["General info", "Summary"])
+        self.tblDebugFlatData.setModel(self.currentProject.mdlFlatData)
+        self.tblDebugPersos.setModel(self.currentProject.mdlCharacter)
+        self.tblDebugPersosInfos.setModel(self.currentProject.mdlCharacter)
         self.tblDebugPersos.selectionModel().currentChanged.connect(
-                lambda: self.tblDebugPersosInfos.setRootIndex(self.mdlCharacter.index(
+                lambda: self.tblDebugPersosInfos.setRootIndex(self.currentProject.mdlCharacter.index(
                         self.tblDebugPersos.selectionModel().currentIndex().row(),
                         Character.name)), F.AUC)
 
-        self.tblDebugPlots.setModel(self.mdlPlots)
-        self.tblDebugPlotsPersos.setModel(self.mdlPlots)
-        self.tblDebugSubPlots.setModel(self.mdlPlots)
+        self.tblDebugPlots.setModel(self.currentProject.mdlPlots)
+        self.tblDebugPlotsPersos.setModel(self.currentProject.mdlPlots)
+        self.tblDebugSubPlots.setModel(self.currentProject.mdlPlots)
         self.tblDebugPlots.selectionModel().currentChanged.connect(
-                lambda: self.tblDebugPlotsPersos.setRootIndex(self.mdlPlots.index(
+                lambda: self.tblDebugPlotsPersos.setRootIndex(self.currentProject.mdlPlots.index(
                         self.tblDebugPlots.selectionModel().currentIndex().row(),
                         Plot.characters)), F.AUC)
         self.tblDebugPlots.selectionModel().currentChanged.connect(
-                lambda: self.tblDebugSubPlots.setRootIndex(self.mdlPlots.index(
+                lambda: self.tblDebugSubPlots.setRootIndex(self.currentProject.mdlPlots.index(
                         self.tblDebugPlots.selectionModel().currentIndex().row(),
                         Plot.steps)), F.AUC)
-        self.treeDebugWorld.setModel(self.mdlWorld)
-        self.treeDebugOutline.setModel(self.mdlOutline)
-        self.lstDebugLabels.setModel(self.mdlLabels)
-        self.lstDebugStatus.setModel(self.mdlStatus)
+        self.treeDebugWorld.setModel(self.currentProject.mdlWorld)
+        self.treeDebugOutline.setModel(self.currentProject.mdlOutline)
+        self.lstDebugLabels.setModel(self.currentProject.mdlLabels)
+        self.lstDebugStatus.setModel(self.currentProject.mdlStatus)
 
         # Load settings
         if settings.openIndexes and settings.openIndexes != [""]:
@@ -942,14 +974,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.saveTimerNoChanges = QTimer()
         self.saveTimerNoChanges.setInterval(settings.autoSaveNoChangesDelay * 1000)
         self.saveTimerNoChanges.setSingleShot(True)
-        self.mdlFlatData.dataChanged.connect(self.startTimerNoChanges)
-        self.mdlOutline.dataChanged.connect(self.startTimerNoChanges)
-        self.mdlCharacter.dataChanged.connect(self.startTimerNoChanges)
-        self.mdlPlots.dataChanged.connect(self.startTimerNoChanges)
-        self.mdlWorld.dataChanged.connect(self.startTimerNoChanges)
-        # self.mdlPersosInfos.dataChanged.connect(self.startTimerNoChanges)
-        self.mdlStatus.dataChanged.connect(self.startTimerNoChanges)
-        self.mdlLabels.dataChanged.connect(self.startTimerNoChanges)
+        self.currentProject.mdlFlatData.dataChanged.connect(self.startTimerNoChanges)
+        self.currentProject.mdlOutline.dataChanged.connect(self.startTimerNoChanges)
+        self.currentProject.mdlCharacter.dataChanged.connect(self.startTimerNoChanges)
+        self.currentProject.mdlPlots.dataChanged.connect(self.startTimerNoChanges)
+        self.currentProject.mdlWorld.dataChanged.connect(self.startTimerNoChanges)
+        # self.currentProject.mdlPersosInfos.dataChanged.connect(self.startTimerNoChanges)
+        self.currentProject.mdlStatus.dataChanged.connect(self.startTimerNoChanges)
+        self.currentProject.mdlLabels.dataChanged.connect(self.startTimerNoChanges)
 
         self.saveTimerNoChanges.timeout.connect(self.saveDatas)
         self.saveTimerNoChanges.stop()
@@ -966,23 +998,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tabMain.currentChanged.emit(settings.lastTab)
 
         # Add project name to Window's name
-        pName = project.name
-        if pName.endswith('.msk'):
-            pName = pName[:-4]
-        self.setWindowTitle(pName + " - " + self.tr("Manuskript"))
+        self.setWindowTitle(self.currentProject.name + " - " + self.tr("Manuskript"))
 
-        # Stuff
-        # self.checkPersosID()  # Shouldn't be necessary any longer
-
-        self.currentProject = project
-        QSettings().setValue("lastProject", project)
+        QSettings().setValue("lastProject", str(self.currentProject.filename))
 
         # Show main Window
         self.switchToProject()
 
     def closeProject(self):
 
-        if not self.currentProject:
+        if not self.currentProject.filename:
             return
 
         # Close open tabs in editor
@@ -995,9 +1020,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QSettings().setValue("lastProject", "")
 
         # Clear datas
-        self.loadEmptyDatas()
+        self.currentProject = Project()
         self.saveTimer.stop()
-        loadSave.clearSaveCache()
 
         self.breakConnections()
 
@@ -1063,75 +1087,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         If ``projectName`` is given, currentProject becomes projectName.
         In other words, it "saves as...".
         """
-
+        if not self.currentProject.filename:
+            return
+        
+        self.currentProject.settings = settings.save(protocol=0)
+        save_revisions = settings.revisions["keep"]
+        
         if projectName:
-            self.currentProject = Path(projectName)
-            QSettings().setValue("lastProject", projectName)
-
-        r = loadSave.saveProject()  # version=0
+            QSettings().setValue("lastProject", str(projectName))
+            self.currentProject.save_as(projectName, save_revisions)
+        else:
+            self.currentProject.save(save_revisions)
+        
         self.saveTimerNoChanges.stop()
-
-        projectName = self.currentProject.name
-        if r:
-            feedback = self.tr("Project {} saved.").format(projectName)
+        
+        if not self.currentProject.savingErrors:
+            feedback = self.tr("Project {} saved.").format(self.currentProject.name)
             F.statusMessage(feedback, importance=0)
         else:
-            feedback = self.tr("WARNING: Project {} not saved.").format(projectName)
+            feedback = self.tr("WARNING: errors occured while saving.").format(projectName)
             F.statusMessage(feedback, importance=3)
+        logger.info(feedback)
 
-        # Giving some feedback in console
-        logger.debug(feedback)
-
-    def loadEmptyDatas(self):
-        self.mdlFlatData = QStandardItemModel(self)
-        self.mdlCharacter = characterModel(self)
-        # self.mdlPersosProxy = persosProxyModel(self)
-        # self.mdlPersosInfos = QStandardItemModel(self)
-        self.mdlLabels = QStandardItemModel(self)
-        self.mdlStatus = QStandardItemModel(self)
-        self.mdlPlots = plotModel(self)
-        self.mdlOutline = outlineModel(self)
-        self.mdlWorld = worldModel(self)
-
-    def loadDatas(self, project):
-
-        errors = loadSave.loadProject(project)
-
-        # Giving some feedback
-        if not errors:
-            logger.info(self.tr("Project {} loaded.").format(project))
-            F.statusMessage(
-                    self.tr("Project {} loaded.").format(project), 2000)
-        else:
-            logger.error(self.tr("Project {} loaded with some errors:").format(project))
-            for e in errors:
-                logger.error(self.tr(" * {} wasn't found in project file.").format(e))
-            F.statusMessage(
-                    self.tr("Project {} loaded with some errors.").format(project), 5000, importance=3)
 
     ###############################################################################
     # MAIN CONNECTIONS
     ###############################################################################
-
-    def makeUIConnections(self):
-        "Connections that have to be made once only, even when a new project is loaded."
-        self.lstCharacters.currentItemChanged.connect(self.changeCurrentCharacter, F.AUC)
-
-        self.txtPlotFilter.textChanged.connect(self.lstPlots.setFilter, F.AUC)
-        self.lstPlots.currentItemChanged.connect(self.changeCurrentPlot, F.AUC)
-        self.lstSubPlots.clicked.connect(self.changeCurrentSubPlot, F.AUC)
-
-        self.btnRedacAddFolder.clicked.connect(self.treeRedacOutline.addFolder, F.AUC)
-        self.btnOutlineAddFolder.clicked.connect(self.treeOutlineOutline.addFolder, F.AUC)
-        self.btnRedacAddText.clicked.connect(self.treeRedacOutline.addText, F.AUC)
-        self.btnOutlineAddText.clicked.connect(self.treeOutlineOutline.addText, F.AUC)
-        self.btnRedacRemoveItem.clicked.connect(self.outlineRemoveItemsRedac, F.AUC)
-        self.btnOutlineRemoveItem.clicked.connect(self.outlineRemoveItemsOutline, F.AUC)
-
-        self.tabMain.currentChanged.connect(self.toolbar.setCurrentGroup)
-        self.tabMain.currentChanged.connect(self.tabMainChanged)
-
-        qApp.focusChanged.connect(self.focusChanged)  # @UndefinedVariable
 
     def disconnectAll(self, signal, oldHandler=None):
         # Disconnect all "oldHandler" slot connections for a signal
@@ -1155,7 +1136,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Break connections for UI elements that were connected in makeConnections()
 
         # Characters
-        self.disconnectAll(self.btnAddPerso.clicked, self.mdlCharacter.addCharacter)
+        self.disconnectAll(self.btnAddPerso.clicked, self.currentProject.mdlCharacter.addCharacter)
         self.disconnectAll(self.btnRmPerso.clicked, self.lstCharacters.removeCharacter)
         self.disconnectAll(self.btnPersoColor.clicked, self.lstCharacters.choseCharacterColor)
         self.disconnectAll(self.btnPersoAddInfo.clicked, self.lstCharacters.addCharacterInfo)
@@ -1163,22 +1144,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Plots
         self._updatingSubPlot = False
-        self.disconnectAll(self.btnAddPlot.clicked, self.mdlPlots.addPlot)
+        self.disconnectAll(self.btnAddPlot.clicked, self.currentProject.mdlPlots.addPlot)
         self.disconnectAll(self.btnRmPlot.clicked, lambda:
-                                                   self.mdlPlots.removePlot(self.lstPlots.currentPlotIndex()))
-        self.disconnectAll(self.btnAddSubPlot.clicked, self.mdlPlots.addSubPlot)
+                                                   self.currentProject.mdlPlots.removePlot(self.lstPlots.currentPlotIndex()))
+        self.disconnectAll(self.btnAddSubPlot.clicked, self.currentProject.mdlPlots.addSubPlot)
         self.disconnectAll(self.btnAddSubPlot.clicked, self.updateSubPlotView)
-        self.disconnectAll(self.btnRmSubPlot.clicked, self.mdlPlots.removeSubPlot)
+        self.disconnectAll(self.btnRmSubPlot.clicked, self.currentProject.mdlPlots.removeSubPlot)
         self.disconnectAll(self.lstPlotPerso.selectionModel().selectionChanged, self.plotPersoSelectionChanged)
         self.disconnectAll(self.lstSubPlots.selectionModel().currentRowChanged, self.changeCurrentSubPlot)
-        self.disconnectAll(self.btnRmPlotPerso.clicked, self.mdlPlots.removePlotPerso)
+        self.disconnectAll(self.btnRmPlotPerso.clicked, self.currentProject.mdlPlots.removePlotPerso)
 
-        self.disconnectAll(self.mdlCharacter.dataChanged, self.mdlPlots.updatePlotPersoButton)
+        self.disconnectAll(self.mdlCharacter.dataChanged, self.currentProject.mdlPlots.updatePlotPersoButton)
 
         # World
         self.disconnectAll(self.treeWorld.selectionModel().selectionChanged, self.changeCurrentWorld)
-        self.disconnectAll(self.btnAddWorld.clicked, self.mdlWorld.addItem)
-        self.disconnectAll(self.btnRmWorld.clicked, self.mdlWorld.removeItem)
+        self.disconnectAll(self.btnAddWorld.clicked, self.currentProject.mdlWorld.addItem)
+        self.disconnectAll(self.btnRmWorld.clicked, self.currentProject.mdlWorld.removeItem)
 
         # Outline
         self.disconnectAll(self.treeOutlineOutline.selectionModel().selectionChanged, self.outlineItemEditor.selectionChanged)
@@ -1192,15 +1173,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Debug
         self.disconnectAll(self.tblDebugPersos.selectionModel().currentChanged,
-                lambda: self.tblDebugPersosInfos.setRootIndex(self.mdlCharacter.index(
+                lambda: self.tblDebugPersosInfos.setRootIndex(self.currentProject.mdlCharacter.index(
                         self.tblDebugPersos.selectionModel().currentIndex().row(),
                         Character.name)))
         self.disconnectAll(self.tblDebugPlots.selectionModel().currentChanged,
-                lambda: self.tblDebugPlotsPersos.setRootIndex(self.mdlPlots.index(
+                lambda: self.tblDebugPlotsPersos.setRootIndex(self.currentProject.mdlPlots.index(
                         self.tblDebugPlots.selectionModel().currentIndex().row(),
                         Plot.characters)))
         self.disconnectAll(self.tblDebugPlots.selectionModel().currentChanged,
-                lambda: self.tblDebugSubPlots.setRootIndex(self.mdlPlots.index(
+                lambda: self.tblDebugSubPlots.setRootIndex(self.currentProject.mdlPlots.index(
                         self.tblDebugPlots.selectionModel().currentIndex().row(),
                         Plot.steps)))
 

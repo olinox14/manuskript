@@ -1,0 +1,2 @@
+* remove references to mainWindow() function and to UI where it's possible
+* combine run and launch in main.py

@@ -104,7 +104,7 @@ def saveProject(zip_=None):
     if zip_ is None:
         zip_ = settings.saveToZip
 
-    logger.info("\n\nSaving to: %s", "zip" if zip_ else "folder")
+    logger.info("Saving to: %s", "zip" if zip_ else "folder")
 
     # List of files to be written
     files = []

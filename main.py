@@ -20,6 +20,8 @@ with open(Path(__file__).parent / 'manuskript' / 'logging.yaml', 'rt') as f:
 
 logger = logging.getLogger('manuskript')
 
+# TODO: add a statusBarHandler to logger
+
 SYS_EXCEPT_HOOK = sys.excepthook
 def _excepthook(typ, value, trace):
     """ Override the standard error handling to log any uncatched exception """
@@ -69,7 +71,7 @@ def prepare():
     translation_file = ""
     if qsettings.contains("applicationTranslation"):
         translation_file = qsettings.value("applicationTranslation")
-        logger.info("Found translation in settings:", translation_file)
+        logger.info("Found translation in settings: %s", translation_file)
     else:
         translation_file = "manuskript_{}.qm".format(locale)
         logger.info("No translation in settings, use: %s", translation_file)
@@ -104,20 +106,15 @@ def run():
 #     2. So that prepare can be used in tests, without running the whole thing
     app = prepare()
 
-    from manuskript.mainWindow import MainWindow
-    mw = MainWindow()
-    
-    # We store the system default cursor flash time to be able to restore it
-    # later if necessary
-    mw._defaultCursorFlashTime = app.cursorFlashTime()
-
     # Parse sys args
     args = sys.argv[1:]
-    if args:
-        project_path = Path(args[0])
-        if project_path.ext == ".msk" and project_path.exists():
-            mw._autoLoadProject = project_path.abspath()
+    project_path = ""
+    if args and Path(args[0]).ext == ".msk" and Path(args[0]).exists():
+        project_path = Path(args[0]).abspath()
 
+    from manuskript.mainWindow import MainWindow
+    mw = MainWindow(project_path, app.cursorFlashTime())
+    
     mw.show()
 
     r = app.exec_()

@@ -10,16 +10,12 @@ from PyQt5.QtWidgets import QAction, QMenu
 
 from manuskript.enums import Plot
 from manuskript.enums import PlotStep
-from manuskript.functions import mainWindow
 
 
 class plotModel(QStandardItemModel):
     def __init__(self, parent):
         QStandardItemModel.__init__(self, 0, 3, parent)
         self.setHorizontalHeaderLabels([i.name for i in Plot])
-        self.mw = mainWindow()
-
-        self.updatePlotPersoButton()
 
     ###############################################################################
     # QUERIES
@@ -212,6 +208,7 @@ class plotModel(QStandardItemModel):
     ###############################################################################
 
     def addPlotPerso(self, v):
+        # FIXME: avoid the mw ref
         index = self.mw.lstPlots.currentPlotIndex()
         if index.isValid():
             if not self.item(index.row(), Plot.characters):
@@ -234,8 +231,9 @@ class plotModel(QStandardItemModel):
         parentItem = self.itemFromIndex(parent)
         parentItem.takeRow(index.row())
 
-    def updatePlotPersoButton(self):
-        menu = QMenu(self.mw)
+    def updatePlotPersoButton(self, mw):
+        menu = QMenu(mw)
+        self.mw = mw
 
         menus = []
         for i in [self.tr("Main"), self.tr("Secondary"), self.tr("Minor")]:
@@ -244,13 +242,13 @@ class plotModel(QStandardItemModel):
             menu.addMenu(m)
 
         mpr = QSignalMapper(menu)
-        for i in range(self.mw.mdlCharacter.rowCount()):
-            a = QAction(self.mw.mdlCharacter.name(i), menu)
-            a.setIcon(self.mw.mdlCharacter.icon(i))
+        for i in range(mw.currentProject.mdlCharacter.rowCount()):
+            a = QAction(mw.currentProject.mdlCharacter.name(i), menu)
+            a.setIcon(mw.currentProject.mdlCharacter.icon(i))
             a.triggered.connect(mpr.map)
-            mpr.setMapping(a, int(self.mw.mdlCharacter.ID(i)))
+            mpr.setMapping(a, int(mw.currentProject.mdlCharacter.ID(i)))
 
-            imp = int(self.mw.mdlCharacter.importance(i))
+            imp = int(mw.currentProject.mdlCharacter.importance(i))
 
             menus[2 - imp].addAction(a)
 
@@ -260,4 +258,4 @@ class plotModel(QStandardItemModel):
                 m.setEnabled(False)
 
         mpr.mapped.connect(self.addPlotPerso)
-        self.mw.btnAddPlotPerso.setMenu(menu)
+        mw.btnAddPlotPerso.setMenu(menu)

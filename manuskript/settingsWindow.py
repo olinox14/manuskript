@@ -258,7 +258,7 @@ class settingsWindow(QWidget, Ui_Settings):
         self.timerUpdateWidgets.timeout.connect(self.updateAllWidgets)
 
         # Labels
-        self.lstLabels.setModel(self.mw.mdlLabels)
+        self.lstLabels.setModel(self.mw.currentProject.mdlLabels)
         self.lstLabels.setRowHidden(0, True)
         self.lstLabels.clicked.connect(self.updateLabelColor)
         self.btnLabelAdd.clicked.connect(self.addLabel)
@@ -266,7 +266,7 @@ class settingsWindow(QWidget, Ui_Settings):
         self.btnLabelColor.clicked.connect(self.setLabelColor)
 
         # Statuses
-        self.lstStatus.setModel(self.mw.mdlStatus)
+        self.lstStatus.setModel(self.mw.currentProject.mdlStatus)
         self.lstStatus.setRowHidden(0, True)
         self.btnStatusAdd.clicked.connect(self.addStatus)
         self.btnStatusRemove.clicked.connect(self.removeStatus)

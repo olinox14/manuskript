@@ -52,10 +52,10 @@ class cheatSheet(QWidget, Ui_cheatSheet):
 
     def setModels(self):
         mw = mainWindow()
-        self.outlineModel = mw.mdlOutline
-        self.characterModel = mw.mdlCharacter
-        self.plotModel = mw.mdlPlots
-        self.worldModel = mw.mdlWorld
+        self.outlineModel = mw.currentProject.mdlOutline
+        self.characterModel = mw.currentProject.mdlCharacter
+        self.plotModel = mw.currentProject.mdlPlots
+        self.worldModel = mw.currentProject.mdlWorld
 
         self.outlineModel.dataChanged.connect(self.populateTimer.start)
         self.characterModel.dataChanged.connect(self.populateTimer.start)

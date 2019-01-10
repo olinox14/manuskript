@@ -95,7 +95,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
     def tabOpenIndexes(self):
         sel = []
         for i in range(self.tab.count()):
-            sel.append(mainWindow().mdlOutline.ID(self.tab.widget(i).currentIndex))
+            sel.append(mainWindow().currentProject.mdlOutline.ID(self.tab.widget(i).currentIndex))
         return sel
 
     def openIndexes(self):
@@ -113,7 +113,7 @@ class tabSplitter(QWidget, Ui_tabSplitter):
                 self.split(state=openIndexes[0])
 
             for i in openIndexes[1]:
-                idx = mainWindow().mdlOutline.getIndexByID(i)
+                idx = mainWindow().currentProject.mdlOutline.getIndexByID(i)
                 self.mainEditor.setCurrentModelIndex(idx, newTab=True)
 
             if openIndexes[2]:

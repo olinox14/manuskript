@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QWidget, QAction, QFileDialog, QSpinBox, QLineEdit, 
     qApp, QMessageBox
 from path import Path
 
-from manuskript import loadSave
 from manuskript import settings
 from manuskript.constants import MAIN_DIR
 from manuskript.enums import Outline
@@ -68,7 +67,7 @@ class welcome(QWidget, Ui_welcome):
 
     def setLastAccessedDirectory(self, dir_):
         sttgs = QSettings()
-        sttgs.setValue("lastAccessedDirectory", dir_)
+        sttgs.setValue("lastAccessedDirectory", str(dir_))
 
     ###############################################################################
     # AUTOLOAD
@@ -183,7 +182,6 @@ class welcome(QWidget, Ui_welcome):
             if filename.ext != ".msk":
                 filename += ".msk"
             self.appendToRecentFiles(filename)
-            loadSave.clearSaveCache()  # Ensure all file(s) are saved under new filename
             self.mw.saveDatas(filename)
             # Update Window's project name with new filename
             pName = filename.name.stripext()
@@ -216,7 +214,7 @@ class welcome(QWidget, Ui_welcome):
             # Create new project
             self.appendToRecentFiles(filename)
             self.loadDefaultDatas()
-            self.mw.loadProject(filename, loadFromFile=False)
+            self.mw.setupProject(filename)
 
     ###############################################################################
     # TEMPLATES

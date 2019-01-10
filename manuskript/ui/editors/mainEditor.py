@@ -186,7 +186,7 @@ class mainEditor(QWidget, Ui_mainEditor):
 
         # This might be called during a drag n drop operation, or while deleting
         # items. If so, we don't want to do anything.
-        if not self.mw.mdlOutline._removingRows:
+        if not self.mw.currentProject.mdlOutline._removingRows:
             if len(self.mw.treeRedacOutline.selectionModel().
                 selection().indexes()) == 0:
                 idx = QModelIndex()

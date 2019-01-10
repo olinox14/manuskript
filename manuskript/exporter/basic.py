@@ -53,9 +53,7 @@ class basicExporter:
 
     def path(self):
         cmd_loc = shutil.which(self.cmd)
-        if not cmd_loc:
-            raise FileNotFoundError("Unable to find the {} executable".format(self.cmd))
-        return Path(cmd_loc)
+        return Path(cmd_loc) if cmd_loc else None
 
     def run(self, args):
         if self.isValid() == 2:
