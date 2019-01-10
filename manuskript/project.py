@@ -16,6 +16,7 @@ from PyQt5.QtGui import QStandardItemModel, QColor, QStandardItem
 from lxml import etree as ET
 from path import Path
 
+from manuskript import constants
 from manuskript.converters import HTML2PlainText
 from manuskript.enums import Character, World, Plot, PlotStep, Outline
 from manuskript.functions import iconColor, iconFromColorString
@@ -141,7 +142,7 @@ class ProjectV0(Project):
             project._loadingErrors.append("flatModel.xml")
     
         if "perso.xml" in files:
-            cls.loadStandardItemModelXMLForCharacters(project.mdlCharacter, files["perso.xml"])
+            project.loadStandardItemModelXMLForCharacters(project.mdlCharacter, files["perso.xml"])
         else:
             project._loadingErrors.append("perso.xml")
     
@@ -178,15 +179,14 @@ class ProjectV0(Project):
         return project
     
     def save(self, *args, **kwargs):
-        files = [(Project._saveStandardItemModelXML(self.mdlFlatData), "flatModel.xml"),
+        files = [(self.saveStandardItemModelXML(self.mdlFlatData), "flatModel.xml"),
 #                  (saveStandardItemModelXML(mw.mdlCharacter), "perso.xml")),
-                 (Project._saveStandardItemModelXML(self.mdlWorld), "world.xml"),
-                 (Project._saveStandardItemModelXML(self.mdlWorld), "world.xml"),
-                 (Project._saveStandardItemModelXML(self.mdlLabels), "labels.xml"),
-                 (Project._saveStandardItemModelXML(self.mdlStatus), "status.xml"),
-                 (Project._saveStandardItemModelXML(self.mdlPlots), "plots.xml"),
+                 (self.saveStandardItemModelXML(self.mdlWorld), "world.xml"),
+                 (self.saveStandardItemModelXML(self.mdlLabels), "labels.xml"),
+                 (self.saveStandardItemModelXML(self.mdlStatus), "status.xml"),
+                 (self.saveStandardItemModelXML(self.mdlPlots), "plots.xml"),
                  (self.mdlOutline.saveToXML(), "outline.xml"),
-                 (Project._settings.save(), "settings.pickle")
+                 (self.settings.save(), "settings.pickle")
             ]
         logger.warning("file format 0 does not save characters !")
     
@@ -247,7 +247,95 @@ class ProjectV0(Project):
     
                 if len(col) != 0:
                     self.loadItem(col, mdl, mdl.indexFromItem(item))        
-        
+    
+    @staticmethod
+    def loadStandardItemModelXMLForCharacters(mdl, xml):
+        """
+        Loads a standardItemModel saved to XML by version 0, but for the new characterModel.
+        @param mdl: characterModel
+        @param xml: the content of the xml
+        @return: nothing
+        """
+        root = ET.fromstring(xml)
+        data = root.find("data")
+    
+        for row in data:
+            char = Character(mdl)
+    
+            for col in row:
+                c = int(col.attrib["col"])
+    
+                # Value
+                if col.text:
+                    char._data[c] = col.text
+    
+                # Color
+                if "color" in col.attrib:
+                    char.setColor(QColor(col.attrib["color"]))
+    
+                # Infos
+                if len(col) != 0:
+                    for rrow in col:
+                        info = CharacterInfo(char)
+                        for ccol in rrow:
+                            cc = int(ccol.attrib["col"])
+                            if cc == 11 and ccol.text:
+                                info.description = ccol.text
+                            if cc == 12 and ccol.text:
+                                info.value = ccol.text
+                        char.infos.append(info)
+    
+            mdl.characters.append(char)
+
+    @staticmethod
+    def saveStandardItemModelXML(mdl, xml=None):
+        """Saves the given QStandardItemModel to XML.
+        If xml (filename) is given, saves to xml. Otherwise returns as string."""
+    
+        root = ET.Element("model")
+        root.attrib["version"] = constants.VERSION
+    
+        # Header
+        header = ET.SubElement(root, "header")
+        vHeader = ET.SubElement(header, "vertical")
+        for x in range(mdl.rowCount()):
+            vH = ET.SubElement(vHeader, "label")
+            vH.attrib["row"] = str(x)
+            vH.attrib["text"] = str(mdl.headerData(x, Qt.Vertical))
+    
+        hHeader = ET.SubElement(header, "horizontal")
+        for y in range(mdl.columnCount()):
+            hH = ET.SubElement(hHeader, "label")
+            hH.attrib["row"] = str(y)
+            hH.attrib["text"] = str(mdl.headerData(y, Qt.Horizontal))
+    
+        # Data
+        data = ET.SubElement(root, "data")
+        ProjectV0.saveItem(data, mdl)
+    
+        if xml:
+            ET.ElementTree(root).write(xml, encoding="UTF-8", xml_declaration=True, pretty_print=True)
+        else:
+            return ET.tostring(root, encoding="UTF-8", xml_declaration=True, pretty_print=True)
+
+    @staticmethod
+    def saveItem(root, mdl, parent=QModelIndex()):
+        for x in range(mdl.rowCount(parent)):
+            row = ET.SubElement(root, "row")
+            row.attrib["row"] = str(x)
+    
+            for y in range(mdl.columnCount(parent)):
+                col = ET.SubElement(row, "col")
+                col.attrib["col"] = str(y)
+                if mdl.data(mdl.index(x, y, parent), Qt.DecorationRole) != None:
+                    color = iconColor(mdl.data(mdl.index(x, y, parent), Qt.DecorationRole)).name(QColor.HexArgb)
+                    col.attrib["color"] = color if color != "#ff000000" else "#00000000"
+                if mdl.data(mdl.index(x, y, parent)) != "":
+                    col.text = mdl.data(mdl.index(x, y, parent))
+                if mdl.hasChildren(mdl.index(x, y, parent)):
+                    ProjectV0.saveItem(col, mdl, mdl.index(x, y, parent))
+
+
 class ProjectV1(Project):
     version = 1
     
@@ -269,14 +357,11 @@ class ProjectV1(Project):
     def load(cls, filename):
         """
         Loads a project.
-        @param project: the filename of the project to open.
-        @param zip: whether the project is a zipped or not.
-        @return: an array of errors, empty if None.
+        @return: the loaded Project object
         """
-    
         project = ProjectV1(filename)
     
-        # Read and store everything in a dict
+        # Read file(s) and store everything in a dict
         try:
             zf = zipfile.ZipFile(filename)
             project.zipped = True
@@ -298,27 +383,22 @@ class ProjectV1(Project):
         files = OrderedDict(sorted(files.items()))
     
         # Settings
-        # TODO: review the settings storage
         if "settings.txt" in files:
             project.settings = files["settings.txt"]
         else:
             project._loadingErrors.append("settings.txt")
 
-    
-        ####################################################################################################################
         # Labels
-    
         mdl = project.mdlLabels
         mdl.appendRow(QStandardItem(""))  # Empty = No labels
         if "labels.txt" in files:
-            logger.debug("Reading labels:")
+            logger.debug("Reading labels")
             for s in files["labels.txt"].split("\n"):
                 if not s:
                     continue
     
                 m = re.search(r"^(.*?):\s*(.*)$", s)
-                txt = m.group(1)
-                col = m.group(2)
+                txt, col = m.group(1), m.group(2)
                 logger.debug("* Add status: {} ({})".format(txt, col))
                 icon = iconFromColorString(col)
                 mdl.appendRow(QStandardItem(icon, txt))
@@ -326,9 +406,7 @@ class ProjectV1(Project):
         else:
             project._loadingErrors.append("labels.txt")
     
-        ####################################################################################################################
         # Status
-    
         mdl = project.mdlStatus
         mdl.appendRow(QStandardItem(""))  # Empty = No status
         if "status.txt" in files:
@@ -341,52 +419,35 @@ class ProjectV1(Project):
         else:
             project._loadingErrors.append("status.txt")
     
-        ####################################################################################################################
         # Infos
-    
         mdl = project.mdlFlatData
         if "infos.txt" in files:
+            logger.debug("Reading infos")
             md, body = ProjectV1.parseMMDFile(files["infos.txt"], asDict=True)
-    
-            row = []
-            for name in ["Title", "Subtitle", "Serie", "Volume", "Genre", "License", "Author", "Email"]:
-                row.append(QStandardItem(md.get(name, "")))
-    
-            mdl.appendRow(row)
-    
+            names = ["Title", "Subtitle", "Serie", "Volume", "Genre", "License", "Author", "Email"]
+            mdl.appendRow([QStandardItem(md.get(name, "")) for name in names])
         else:
             project._loadingErrors.append("infos.txt")
     
-        ####################################################################################################################
         # Summary
-    
         mdl = project.mdlFlatData
         if "summary.txt" in files:
+            logger.debug("Reading summary")
             md, body = ProjectV1.parseMMDFile(files["summary.txt"], asDict=True)
-    
-            row = []
-            for name in ["Situation", "Sentence", "Paragraph", "Page", "Full"]:
-                row.append(QStandardItem(md.get(name, "")))
-    
-            mdl.appendRow(row)
-    
+            names = ["Situation", "Sentence", "Paragraph", "Page", "Full"]
+            mdl.appendRow([QStandardItem(md.get(name, "")) for name in names])
         else:
             project._loadingErrors.append("summary.txt")
     
-        ####################################################################################################################
         # Plots
-    
         mdl = project.mdlPlots
         if "plots.xml" in files:
             logger.debug("Reading plots")
-            # xml = bytearray(files["plots.xml"], "utf-8")
             root = ET.fromstring(files["plots.xml"])
     
             for plot in root:
                 # Create row
                 row = ProjectV1.getStandardItemRowFromXMLEnum(plot, Plot)
-    
-                # Log
                 logger.debug("* Add plot: %s", row[0].text())
     
                 # Characters
@@ -405,30 +466,23 @@ class ProjectV1(Project):
     
                 # Add row to the model
                 mdl.appendRow(row)
-    
         else:
             project._loadingErrors.append("plots.xml")
     
-        ####################################################################################################################
         # World
-    
         mdl = project.mdlWorld
         if "world.opml" in files:
             logger.debug("Reading World")
-            # xml = bytearray(files["plots.xml"], "utf-8")
             root = ET.fromstring(files["world.opml"])
             body = root.find("body")
     
             for outline in body:
                 row = ProjectV1.getOutlineItem(outline, World)
                 mdl.appendRow(row)
-    
         else:
             project._loadingErrors.append("world.opml")
     
-        ####################################################################################################################
         # Characters
-    
         mdl = project.mdlCharacter
         logger.debug("Reading Characters")
         for f in [f for f in files if "characters" in f]:
@@ -436,7 +490,7 @@ class ProjectV1(Project):
             c = mdl.addCharacter()
             c.lastPath = f
     
-            color = False
+            color_found = False
             for desc, val in md:
     
                 # Base infos
@@ -446,11 +500,11 @@ class ProjectV1(Project):
                     mdl.setData(index, val)
     
                 # Character color
-                elif desc == "Color" and not color:
+                elif desc == "Color" and not color_found:
                     c.setColor(QColor(val))
                     # We remember the first time we found "Color": it is the icon color.
                     # If "Color" comes a second time, it is a Character's info.
-                    color = True
+                    color_found = True
     
                 # Character's infos
                 else:
@@ -458,20 +512,16 @@ class ProjectV1(Project):
     
             logger.debug("* Adds {} ({})".format(c.name(), c.ID()))
     
-        ####################################################################################################################
         # Texts
         # We read outline form the outline folder. If revisions are saved, then there's also a revisions.xml which contains
         # everything, but the outline folder takes precedence (in cases it's been edited outside of manuskript.
-    
         mdl = project.mdlOutline
         logger.debug("Reading outline")
-        paths = [f for f in files if "outline" in f]
         outline = OrderedDict()
     
         # We create a structure of imbricated OrderedDict to store the whole tree.
-        for f in paths:
-            split = f.split(os.path.sep)[1:]
-            # log("* ", split)
+        for f in [f for f in files if "outline" in f]:
+            split = f.split(os.path.sep)[1:] # FIXME: use relpath instead of split
     
             last = ""
             parent = outline
@@ -493,8 +543,6 @@ class ProjectV1(Project):
     
                     # We store f to add it later as lastPath
                     parent[i + ":lastPath"] = parentLastPath / i
-    
-    
     
         # We now just have to recursively add items.
         ProjectV1.addTextItems(mdl, outline)
@@ -521,15 +569,11 @@ class ProjectV1(Project):
         """
         logger.info("Saving to: %s", "zip" if self.zipped else "folder")
     
-        # List of files to be written
-        files = []
-        # List of files to be removed
-        removes = []
-        # List of files to be moved
-        moves = []
+        # List of files to be written, removed and moved
+        files, removes, moves = [], [], []
     
         # File format version
-        files.append(("MANUSKRIPT", "1"))
+        files.append(("MANUSKRIPT", self.version))
     
         # General infos (book and author)
         # Saved in plain text, in infos.txt
@@ -538,13 +582,13 @@ class ProjectV1(Project):
         for col, name in enumerate(["Title", "Subtitle", "Serie", "Volume", "Genre", "License", "Author", "Email"]):
             item = self.mdlFlatData.item(0, col)
             val = item.text().strip() if item else ""
-    
-            if val:
-                content += "{name}:{spaces}{value}\n".format(
-                    name=name,
-                    spaces=" " * (15 - len(name)),
-                    value=val
-                )
+            if not val:
+                continue
+            content += "{name}:{spaces}{value}\n".format(
+                name=name,
+                spaces=" " * (15 - len(name)),
+                value=val
+            )
         files.append((path, content))
     
         # Summary
@@ -554,9 +598,9 @@ class ProjectV1(Project):
         for col, name in enumerate(["Situation", "Sentence", "Paragraph", "Page", "Full"]):
             item = self.mdlFlatData.item(1, col)
             val = item.text().strip() if item else ""
-    
-            if val:
-                content += self.formatMetaData(name, val, 12)
+            if not val:
+                continue
+            content += self.formatMetaData(name, val, 12)
     
         files.append((path, content))
     
@@ -623,7 +667,6 @@ class ProjectV1(Project):
     
         # Texts
         # In an outline folder
-    
         mdl = self.mdlOutline
     
         # Go through the tree
@@ -639,7 +682,6 @@ class ProjectV1(Project):
         # World
         # Either in an XML file, or in lots of plain texts?
         # More probably text, since there might be writing done in third-party.
-    
         path = "world.opml"
         mdl = self.mdlWorld
     
@@ -653,7 +695,6 @@ class ProjectV1(Project):
         # Plots
         # Either in XML or lots of plain texts?
         # More probably XML since there is not really a lot if writing to do (third-party)
-    
         path = "plots.xml"
         mdl = self.mdlPlots
     
@@ -664,8 +705,6 @@ class ProjectV1(Project):
     
         # Settings
         # Saved in readable text (json) for easier versioning. But they mustn't be shared, it seems.
-        # Maybe include them only if zipped?
-    
         files.append(("settings.txt", self.settings))
     
         # We check if the file exist and we have write access. If the file does
@@ -785,22 +824,13 @@ class ProjectV1(Project):
         )
 
     @staticmethod
-    def slugify(name):
+    def slugify(s):
         """
         A basic slug function, that escapes all spaces to "_" and all non letters/digits to "-".
         @param name: name to slugify (str)
         @return: str
         """
-        valid = string.ascii_letters + string.digits
-        newName = ""
-        for c in name:
-            if c in valid:
-                newName += c
-            elif c in string.whitespace:
-                newName += "_"
-            else:
-                newName += "-"
-        return newName
+        return re.sub("\\W", "-", re.sub("\\s", "_", s))
     
     @staticmethod
     def exportOutlineItem(root):
@@ -813,14 +843,11 @@ class ProjectV1(Project):
         @param root: OutlineItem
         @return: [(str, str)], [(str, str)], [str]
         """
-    
-        files = []
-        moves = []
-        removes = []
+        files, moves, removes = [], [], []
     
         k = 0
         for child in root.children():
-            spath = Path(os.path.join(*ProjectV1.outlineItemPath(child)))
+            spath = Path.joinpath(*ProjectV1.outlineItemPath(child))
     
             k += 1
     
@@ -845,7 +872,7 @@ class ProjectV1(Project):
                 files.append((spath, content))
     
             else:
-                logger.debug("Unknown type")
+                logger.warning("Unknown type")
     
             f, m, r = ProjectV1.exportOutlineItem(child)
             files += f
@@ -903,9 +930,6 @@ class ProjectV1(Project):
     
                 index = mdl.index(x, y, parent)
                 val = mdl.data(index)
-                #
-                # if not val:
-                #     continue
     
                 for w in Plot:
                     if y == w.value and val:
